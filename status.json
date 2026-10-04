@@ -1,11 +1,11 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T16:53:16+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-04T16:55:01+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "TOR migration: viewer integration",
-                                  "status":  "running",
+                                  "status":  "stale",
                                   "step":  4,
                                   "total":  6,
                                   "percent":  65,
