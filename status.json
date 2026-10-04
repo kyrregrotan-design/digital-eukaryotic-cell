@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T22:30:01+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-04T22:35:01+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "Tours + cascade mode: precompute (part 1)",
