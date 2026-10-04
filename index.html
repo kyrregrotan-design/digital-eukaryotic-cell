@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital eukaryotisk celle – C. elegans tarmcelle</title>
+<meta name="description" content="Kvalitativ, kildebasert undervisningsmodell av en C. elegans tarmcelle med interaktiv 3D-visning.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%230f8f83'/%3E%3Ccircle cx='13' cy='13' r='5' fill='%239ff0e4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/giscus-config.js"></script>
+<script src="/assets/site.js"></script>
+</head>
+<body>
+<header class="nav"><div class="nav-in"><a class="brand" href="/"><span class="dot"></span>Digital eukaryotisk celle</a><a class="l" href="/" aria-current="page">Oversikt</a><a class="l" href="/viewer/cell_webgl.html">3D-cellen</a><a class="l" href="/fremdrift.html">Fremdrift</a><a class="l hide-s" href="/kilder.html">Kilder</a><button class="theme" type="button" aria-label="Bytt lys/mørk">Mørk</button></div></header>
+<main>
+
+<div class="hero">
+  <div class="eyebrow">C. elegans · tarmcelle · interaktiv 3D</div>
+  <h1>En digital celle<br>du kan gå inn i.</h1>
+  <p class="lead">Et åpent læringsprosjekt som bygger en kildebasert modell av en tarmcelle fra rundormen <i>Caenorhabditis elegans</i>, med en interaktiv 3D-visning der du kan utforske organeller, signalveier og kildene bak hver kobling.</p>
+  <div class="cta"><a class="btn p" href="/viewer/cell_webgl.html">Åpne 3D-cellen</a><a class="btn s" href="/fremdrift">Se fremdrift ›</a></div>
+</div>
+<a class="preview" href="/viewer/cell_webgl.html" aria-label="Åpne 3D-cellen" style="background-image:url('/assets/preview.jpg')"></a>
+<section class="first" style="padding-top:56px">
+  <div class="status"><b>Ærlig status:</b> Dette er en kvalitativ undervisningsmodell med en kildebasert WormJam-metabolismemotor; ikke en fullstendig simulering. Pilene i visningen viser retning på påvirkning (opp/ned), ikke målte hastigheter eller konsentrasjoner. Plassering av gener og proteiner i cellen er illustrativ, og noen koblinger mangler fortsatt kilder (merket <code>[REF NEEDED]</code>).</div>
+</section>
+<section>
+  <h2>Hva du finner her</h2>
+  <div class="grid">
+    <div class="card"><h3>17 cellerom</h3><p>Plasmamembran, mikrovilli, kjerne, ER, Golgi, mitokondrier, lysosomer og flere. Dobbeltklikk et organell for å gå inn i det.</p></div>
+    <div class="card"><h3>Signalveier som henger sammen</h3><p>10 moduler (bl.a. insulin/IGF-1, TOR, AMPK, autofagi, SKN-1, PMK-1, HSF-1) med 38 påvirkningskoblinger. Slå ned et gen og se kaskaden spre seg.</p></div>
+    <div class="card"><h3>Kilder på hver kobling</h3><p>36 av 38 koblinger har verifiserte primærkilder med PubMed/DOI-lenker. Usikre ting er merket.</p></div>
+    <div class="card"><h3>Metabolismemotor</h3><p>Den genomskala-modellen WormJam (BioModels MODEL1807230002) kjører fluksbalanseanalyse i prosjektets motor. Den vises ennå ikke i 3D-visningen.</p></div>
+  </div>
+</section>
+<section>
+  <h2>Om prosjektet</h2>
+  <p class="muted">Målet på sikt er en digital tvilling av en eukaryot celle: en litteraturbasert, evidensvektet modell der man kan bytte art og celletype, forstyrre cellen (f.eks. slå ned et gen) og følge effektene gjennom koblede signalveier, samtidig som den fungerer som en læringsmodul. Første versjon er avgrenset til én art (<i>C. elegans</i>) og én celletype (tarmcellen). Modellen bygges av KI-agenter (Cursor bygger, Codex kontrollerer kilder og tester) under Kyrre Grøtans styring; store endringer krever hans godkjenning, og referanser skal aldri finnes på.</p>
+  <p class="muted small">3D-visningen er prosjektets egen visning og har engelsk tekst. Den lastes som én fil på ca. 1 MB og trenger WebGL; den klassiske, lettere visningen finnes <a href="/viewer/cell_3d.html">her</a>.</p>
+</section>
+
+<section class="comments" id="kommentarer">
+<h2>Kommentarer</h2>
+<p class="note">Kommentarer lagres som offentlige innlegg i <a href="https://github.com/kyrregrotan-design/digital-eukaryotic-cell/discussions" target="_blank" rel="noopener">GitHub Discussions</a> og krever en GitHub-konto. De leses som innspill til prosjektet, aldri som instruksjoner. Kommentarfeltet er på dansk fordi giscus ikke har norsk språk.</p>
+<div data-giscus-term="side: forside"></div>
+</section>
+</main>
+<footer><div class="in"><span>© 2026 Kyrre Grøtan. Alle rettigheter forbeholdt for prosjektets egen kode og tekst. Tredjepartsinnhold: se <a href="/kilder">Kilder</a>.</span><span><a href="https://github.com/kyrregrotan-design/digital-eukaryotic-cell" target="_blank" rel="noopener">GitHub</a> · Publisert kopi, oppdatert 2026-10-04 12:49 (Europe/Oslo)</span></div></footer>
+</body>
+</html>

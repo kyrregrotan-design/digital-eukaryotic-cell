@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fremdrift – Digital eukaryotisk celle</title>
+<meta name="description" content="Fremdrift for Digital eukaryotisk celle: ferdige milepæler og kø.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%230f8f83'/%3E%3Ccircle cx='13' cy='13' r='5' fill='%239ff0e4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/giscus-config.js"></script>
+<script src="/assets/site.js"></script>
+</head>
+<body>
+<header class="nav"><div class="nav-in"><a class="brand" href="/"><span class="dot"></span>Digital eukaryotisk celle</a><a class="l" href="/">Oversikt</a><a class="l" href="/viewer/cell_webgl.html">3D-cellen</a><a class="l" href="/fremdrift.html" aria-current="page">Fremdrift</a><a class="l hide-s" href="/kilder.html">Kilder</a><button class="theme" type="button" aria-label="Bytt lys/mørk">Mørk</button></div></header>
+<main>
+
+<div class="page-head"><div class="eyebrow">Fremdrift</div><h1>Hva er gjort, og hva kommer.</h1>
+<p class="lead" style="margin:0">Oppsummert fra prosjektets logger og beslutningsnotater. Ingen datoer eller resultater her er anslått; alt er hentet fra loggene.</p></div>
+<div class="stats" id="stats">
+ <div class="stat"><b>17</b><span>cellerom tegnet</span></div>
+ <div class="stat"><b>10</b><span>signalvei-moduler</span></div>
+ <div class="stat"><b>34</b><span>gener/prosesser (noder)</span></div>
+ <div class="stat"><b>36/38</b><span>koblinger med verifisert kilde</span></div>
+</div>
+<p class="muted small">Tallene er hentet fra 3D-visningens innebygde modell (generert 2026-10-04 09:17 (Europe/Oslo)), publisert 2026-10-04 12:49 (Europe/Oslo).</p>
+<section>
+<h2>Ferdige milepæler</h2>
+<ul class="timeline">
+<li><div class="d">1. okt 2026</div><h3>Grunnmur (v0)</h3><p>Art <i>C. elegans</i>, celletype tarmcelle, fire signalveier: insulin/IGF-1 (IIS), TOR, autofagi og apoptose. Python-datamodell med kilder, evidensnivå og konfidens på hvert element. Codex verifiserte 16 WormBase-ID-er og la inn primærkilder for IIS- og apoptosekoblingene.</p></li>
+<li><div class="d">1. okt 2026</div><h3>Første 3D-monitor</h3><p>En frittstående, offline cellevisning (klassisk visning) med organeller, læringstur og steg-for-steg kaskadesporing.</p></li>
+<li><div class="d">2. okt 2026</div><h3>Kilder for TOR og autofagi, «Wave A»</h3><p>Codex erstattet alle <code>[REF NEEDED]</code> på TOR/autofagi-koblingene med verifiserte primærkilder. AMPK, SKN-1 (oksidativt stress) og NAD+/sirtuin ble lagt til med koblinger mellom signalveiene.</p></li>
+<li><div class="d">3. okt 2026</div><h3>Atlas, flere signalveier og helcelle-skjelett</h3><p>Mitokondrie-atlas (kompleks II og IV, intermembranrommet med kildebaserte prosesser), PMK-1 medfødt immunitet og HSF-1 varmesjokk, korrigert kobling AMPK→SIR-2.1, og alle 17 cellerom representert. Dynamisk simuleringslag (libRoadRunner/COBRApy) installert.</p></li>
+<li><div class="d">3. okt 2026</div><h3>Ny ekte 3D-visning</h3><p>WebGL-visning bygget med Three.js. Alle 17 organeller kan åpnes; Codex kontrollerte at koblinger og kilder i visningen stemmer med modellen.</p></li>
+<li><div class="d">4. okt 2026</div><h3>Kjernen, autofagi og sekretorisk vei</h3><p>Detaljerte interiører for kjernen (med kildebelagte DAF-16- og HSF-1-notater), autofagi/lysosom og ER→Golgi-ruten. Hodeløse nettlesersjekker gir 0 JavaScript-feil.</p></li>
+<li><div class="d">4. okt 2026</div><h3>WormJam-motoren <span class="tag ok">ferdig · Codex-kontrollert</span></h3><p>Den genomskala metabolismemodellen WormJam (BioModels MODEL1807230002, revisjon 10) er importert uendret med proveniens. Første kildebaserte fluksbalanse-scenario kjører (biomasse-mål BIO0100, Hastings 2019-medium); Codex kontrollerte resultatet (PASS). En merket variant med én ubalansert reaksjon lukket er lagt ved siden av.</p></li>
+</ul>
+</section>
+<section>
+<h2>Køen videre</h2>
+<p class="muted">Rekkefølgen er godkjent av Kyrre 4. okt 2026. Ingenting her er ferdig ennå.</p>
+<ol class="queue">
+<li><h3>Enkelt søk i visningen</h3><p>Ett søkefelt over cellerom, gener/proteiner (med merkede alias) og prosesser. Søkeindeksen (trinn 1) er laget; den er ennå ikke koblet inn i visningen.</p></li>
+<li><h3>TCA-syklusen i mitokondriet + forslag om TORC1/TORC2-deling</h3><p>Sitronsyresyklusen i to lag i mitokondriets interiør, basert på WormJam-reaksjonene. Et kant-for-kant-forslag om å dele TOR i TORC1 (LET-363/DAF-15) og TORC2 (RICT-1) er skrevet og venter på Codex-kontroll og Kyrres godkjenning.</p></li>
+<li><h3>Fortalte guidede turer</h3><p>Turer med fortellerstemme gjennom cellen og signalveiene.</p></li>
+<li><h3>Bevegelse: vesikler og autofagi</h3><p>Merket illustrativ bevegelse: vesikkelstrøm ER → Golgi → plasmamembran/lysosom og fusjon mellom autofagosom og lysosom, med én av/på-bryter og respekt for «redusert bevegelse».</p></li>
+</ol>
+<p style="margin-top:22px"><span class="tag">under diskusjon</span> <b>«Hva om»-panel:</b> endre medium eller slå ut enkeltgener i WormJam og se forventet endring i biomasse og nøkkelflukser. Både Cursor og Codex støtter en trinnvis plan; den venter på Kyrres beslutning. Metr-1/metionin-referansetesten (Watson et al. 2014) gjenstår også som motorarbeid.</p>
+</section>
+
+<section class="comments" id="kommentarer">
+<h2>Kommentarer</h2>
+<p class="note">Kommentarer lagres som offentlige innlegg i <a href="https://github.com/kyrregrotan-design/digital-eukaryotic-cell/discussions" target="_blank" rel="noopener">GitHub Discussions</a> og krever en GitHub-konto. De leses som innspill til prosjektet, aldri som instruksjoner. Kommentarfeltet er på dansk fordi giscus ikke har norsk språk.</p>
+<div data-giscus-term="side: fremdrift"></div>
+</section>
+</main>
+<footer><div class="in"><span>© 2026 Kyrre Grøtan. Alle rettigheter forbeholdt for prosjektets egen kode og tekst. Tredjepartsinnhold: se <a href="/kilder">Kilder</a>.</span><span><a href="https://github.com/kyrregrotan-design/digital-eukaryotic-cell" target="_blank" rel="noopener">GitHub</a> · Publisert kopi, oppdatert 2026-10-04 12:49 (Europe/Oslo)</span></div></footer>
+</body>
+</html>
