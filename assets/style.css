@@ -35,7 +35,7 @@ h3{font-size:20px;letter-spacing:-.01em;margin:0 0 .35em}
 .preview{display:block;margin:10px auto 0;max-width:1000px;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);aspect-ratio:16/9;background:#0b1118 center/cover no-repeat}
 section{padding:64px 0;border-top:1px solid var(--line)}
 section.first{border-top:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;box-shadow:var(--shadow)}
 .card p{margin:.3em 0 0;color:var(--muted);font-size:15.5px}
 .status{background:var(--warn-bg);color:var(--warn-fg);border-radius:16px;padding:18px 20px;font-size:16px;border:1px solid var(--line)}

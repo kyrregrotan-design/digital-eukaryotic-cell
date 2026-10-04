@@ -27,7 +27,7 @@ Comments on every page use [giscus](https://giscus.app), stored in this reposito
 
 ## Deployment
 
-Hosted on Vercel as a static site (no build step). Pushes to `main` redeploy production. Updates are prepared from the working folder by a publish script that copies the current viewer files, scrubs local paths and re-injects the comment drawer.
+Hosted on Vercel as a static site (no build step). Currently deployed explicitly with the Vercel CLI after each push; once Vercel's Git integration is connected to this repository, pushes to `main` will redeploy production automatically. Updates are prepared from the working folder by a publish script that copies the current viewer files, scrubs local paths and re-injects the comment drawer.
 
 ## Licence
 
