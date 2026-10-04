@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T20:20:01+02:00",
+    "generated_at":  "2026-10-04T20:25:01+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
@@ -8,7 +8,7 @@
                                   "status":  "running",
                                   "step":  5,
                                   "total":  6,
-                                  "percent":  68.2,
+                                  "percent":  81.7,
                                   "step_title":  "Regenerate report and pytest",
                                   "steps":  [
                                                 "Start entry",
@@ -18,7 +18,7 @@
                                                 "Regenerate report and pytest",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  140,
+                                  "eta_seconds":  11,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-04T20:19:54+02:00",
                                   "last_run":  "2026-10-04T20:15:01+02:00",
