@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T21:45:01+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-04T21:50:01+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "What-if stage 1 viewer panel",
@@ -24,30 +24,31 @@
                                   "next_run":  "2026-10-04T22:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review what-if uncertainty metadata",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record review and hand off",
+                                 "task":  "Review what-if viewer",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  5,
+                                 "percent":  21.2,
+                                 "step_title":  "Verify all copied report values",
                                  "steps":  [
-                                               "Inspect specification and changes",
-                                               "Verify report fields and boundaries",
-                                               "Run scoped tests and integrity checks",
-                                               "Record review and hand off"
+                                               "Inspect changed payload and rendering",
+                                               "Verify all copied report values",
+                                               "Exercise labels and range handling",
+                                               "Inspect browser evidence and tests",
+                                               "Record findings and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  1115,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T20:58:29+02:00",
-                                 "last_run":  "2026-10-04T20:50:36+02:00",
-                                 "next_run":  "2026-10-04T21:45:00+02:00"
+                                 "updated":  "2026-10-04T21:49:44+02:00",
+                                 "last_run":  "2026-10-04T21:45:01+02:00",
+                                 "next_run":  "2026-10-04T22:45:00+02:00"
                              }
                },
     "next_run":  {
-                     "agent":  "codex",
-                     "time":  "2026-10-04T21:45:00+02:00"
+                     "agent":  "cursor",
+                     "time":  "2026-10-04T22:15:00+02:00"
                  },
-    "today_runs":  52,
+    "today_runs":  53,
     "queue":  [
 
               ],
