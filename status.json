@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T17:55:01+02:00",
+    "generated_at":  "2026-10-04T18:00:01+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
@@ -17,7 +17,7 @@
                                                 "Tests",
                                                 "Finish log entry"
                                             ],
-                                  "eta_seconds":  839,
+                                  "eta_seconds":  539,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-04T17:50:13+02:00",
                                   "last_run":  "2026-10-04T17:49:00+02:00",
