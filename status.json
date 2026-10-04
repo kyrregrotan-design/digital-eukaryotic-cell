@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T18:50:01+02:00",
+    "generated_at":  "2026-10-04T18:55:01+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
@@ -13,28 +13,28 @@
                                   "steps":  [
 
                                             ],
-                                  "eta_seconds":  362,
+                                  "eta_seconds":  579,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-04T18:16:14+02:00",
-                                  "last_run":  "2026-10-04T18:45:03+02:00",
+                                  "last_run":  "2026-10-04T18:53:40+02:00",
                                   "next_run":  "2026-10-04T19:15:00+02:00"
                               },
                    "codex":  {
                                  "task":  "Intestinal structures and species roadmap",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  66.5,
-                                 "step_title":  "Assess fly and human roadmap",
+                                 "percent":  100,
+                                 "step_title":  "Record recommendations and handoff",
                                  "steps":  [
                                                "Confirm scope and existing coverage",
                                                "Verify intestinal structure sources",
                                                "Assess fly and human roadmap",
                                                "Record recommendations and handoff"
                                            ],
-                                 "eta_seconds":  152,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T18:48:46+02:00",
+                                 "updated":  "2026-10-04T18:53:23+02:00",
                                  "last_run":  "2026-10-04T18:45:01+02:00",
                                  "next_run":  "2026-10-04T19:45:00+02:00"
                              }
@@ -48,6 +48,11 @@
 
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Intestinal structures and species roadmap",
+                       "finished":  "2026-10-04T18:53:23+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review TOR display corrections",
@@ -72,11 +77,6 @@
                        "agent":  "codex",
                        "task":  "Stage A visual specification v1",
                        "finished":  "2026-10-04T16:18:41+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "TOR node/gene evidence-score policy (decision 4d)",
-                       "finished":  "2026-10-04T13:29:29+02:00"
                    }
                ],
     "update_window":  "07:00-23:30"
