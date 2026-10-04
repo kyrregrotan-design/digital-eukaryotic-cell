@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T17:40:01+02:00",
+    "generated_at":  "2026-10-04T17:45:01+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  "2026-10-04T18:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review TOR viewer integration",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Review TOR display corrections",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  30,
+                                 "step_title":  "Verify evidence and styling",
                                  "steps":  [
-
+                                               "Inspect changed display code",
+                                               "Verify evidence and styling",
+                                               "Review browser evidence",
+                                               "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  206,
+                                 "eta_seconds":  1200,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T17:26:39+02:00",
+                                 "updated":  "2026-10-04T17:43:35+02:00",
                                  "last_run":  "2026-10-04T17:36:27+02:00",
                                  "next_run":  "2026-10-04T17:45:00+02:00"
                              }
@@ -44,7 +47,7 @@
                      "agent":  "codex",
                      "time":  "2026-10-04T17:45:00+02:00"
                  },
-    "today_runs":  41,
+    "today_runs":  42,
     "queue":  [
 
               ],
