@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T20:25:01+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-04T20:30:01+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "What-if stage 1: closure TCA FVA, exchange FVA, active constraints",
-                                  "status":  "running",
-                                  "step":  5,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  81.7,
-                                  "step_title":  "Regenerate report and pytest",
+                                  "percent":  100,
+                                  "step_title":  "Finish entry",
                                   "steps":  [
                                                 "Start entry",
                                                 "Closure and exchange FVA",
@@ -18,29 +18,29 @@
                                                 "Regenerate report and pytest",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  11,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-04T20:19:54+02:00",
+                                  "updated":  "2026-10-04T20:26:25+02:00",
                                   "last_run":  "2026-10-04T20:15:01+02:00",
                                   "next_run":  "2026-10-04T21:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review what-if metadata corrections",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review what-if FVA and numerical classification",
+                                 "status":  "running",
+                                 "step":  1,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record result and queue handoff",
+                                 "percent":  7.4,
+                                 "step_title":  "Inspect changed fields and code",
                                  "steps":  [
-                                               "Inspect changes and prior criteria",
-                                               "Verify GPR pruning and report metadata",
-                                               "Run focused tests and consistency checks",
-                                               "Record result and queue handoff"
+                                               "Inspect changed fields and code",
+                                               "Verify ranges and uptake-bound logic",
+                                               "Resolve numerical classification",
+                                               "Record findings and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  661,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T19:43:16+02:00",
-                                 "last_run":  "2026-10-04T19:45:01+02:00",
+                                 "updated":  "2026-10-04T20:28:59+02:00",
+                                 "last_run":  "2026-10-04T20:27:02+02:00",
                                  "next_run":  "2026-10-04T20:45:00+02:00"
                              }
                },
@@ -48,11 +48,16 @@
                      "agent":  "codex",
                      "time":  "2026-10-04T20:45:00+02:00"
                  },
-    "today_runs":  48,
+    "today_runs":  49,
     "queue":  [
 
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "What-if stage 1: closure TCA FVA, exchange FVA, active constraints",
+                       "finished":  "2026-10-04T20:26:25+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review what-if metadata corrections",
@@ -77,11 +82,6 @@
                        "agent":  "codex",
                        "task":  "Intestinal structures and species roadmap",
                        "finished":  "2026-10-04T18:53:23+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review TOR display corrections",
-                       "finished":  "2026-10-04T17:48:45+02:00"
                    }
                ],
     "update_window":  "07:00-23:30"
