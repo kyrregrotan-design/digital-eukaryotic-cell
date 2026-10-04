@@ -24,8 +24,13 @@
       $('now').className='now card idle';
     }
     txt('who', label);
-    txt('task', a && a.task ? a.task : 'Ingen oppgave registrert');
-    if(a && a.total){
+    var starting = act && !stale && a && (a.status==='previous' || !a.total);
+    txt('task', starting ? 'Starter opp …' : (a && a.task ? a.task : 'Ingen oppgave registrert'));
+    if(starting){
+      txt('step', a.task ? 'Har ikke meldt første steg ennå · forrige oppgave: '+a.task : 'Har ikke meldt første steg ennå');
+      $('bar').style.width='0%'; $('barwrap').setAttribute('aria-valuenow',0); txt('pct','0 %');
+      txt('eta', a.eta_seconds ? 'ca. '+mins(a.eta_seconds)+' igjen (estimat)' : '');
+    } else if(a && a.total){
       var line = 'Steg '+a.step+' av '+a.total + (a.step_title ? ' · '+a.step_title : '');
       if(!act || stale) line = (a.status==='done' ? 'Fullført · ' : '') + line;
       txt('step', line);
