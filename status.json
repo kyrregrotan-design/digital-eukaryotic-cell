@@ -1,34 +1,33 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T21:55:01+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-04T22:00:01+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "What-if stage 1 viewer panel",
-                                  "status":  "done",
-                                  "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Tests and log",
+                                  "task":  "What-if viewer layout fix",
+                                  "status":  "running",
+                                  "step":  3,
+                                  "total":  4,
+                                  "percent":  53.4,
+                                  "step_title":  "Browser geometry checks",
                                   "steps":  [
-                                                "Read spec and report structure",
-                                                "Export compact what-if data for the viewer",
-                                                "Build viewer panel in web",
-                                                "Browser checks",
+                                                "Read correction and viewer code",
+                                                "Apply wrapping table/provenance CSS",
+                                                "Browser geometry checks",
                                                 "Tests and log"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  178,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-04T21:11:48+02:00",
-                                  "last_run":  "2026-10-04T21:15:01+02:00",
+                                  "updated":  "2026-10-04T21:59:48+02:00",
+                                  "last_run":  "2026-10-04T21:56:38+02:00",
                                   "next_run":  "2026-10-04T22:15:00+02:00"
                               },
                    "codex":  {
                                  "task":  "Review what-if viewer",
-                                 "status":  "running",
+                                 "status":  "done",
                                  "step":  5,
                                  "total":  5,
-                                 "percent":  83.7,
+                                 "percent":  100,
                                  "step_title":  "Record findings and handoff",
                                  "steps":  [
                                                "Inspect changed payload and rendering",
@@ -37,9 +36,9 @@
                                                "Inspect browser evidence and tests",
                                                "Record findings and handoff"
                                            ],
-                                 "eta_seconds":  117,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T21:54:34+02:00",
+                                 "updated":  "2026-10-04T21:56:32+02:00",
                                  "last_run":  "2026-10-04T21:45:01+02:00",
                                  "next_run":  "2026-10-04T22:45:00+02:00"
                              }
@@ -48,11 +47,16 @@
                      "agent":  "cursor",
                      "time":  "2026-10-04T22:15:00+02:00"
                  },
-    "today_runs":  53,
+    "today_runs":  54,
     "queue":  [
 
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Review what-if viewer",
+                       "finished":  "2026-10-04T21:56:32+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "What-if stage 1 viewer panel",
@@ -77,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "What-if stage 1: closure TCA FVA, exchange FVA, active constraints",
                        "finished":  "2026-10-04T20:26:25+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review what-if metadata corrections",
-                       "finished":  "2026-10-04T19:43:16+02:00"
                    }
                ],
     "update_window":  "07:00-23:30"
