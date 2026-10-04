@@ -1,53 +1,49 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T18:45:01+02:00",
+    "generated_at":  "2026-10-04T18:50:01+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "What-if stage 1: precomputed knockouts (resume)",
-                                  "status":  "running",
-                                  "step":  2,
-                                  "total":  5,
-                                  "percent":  38,
-                                  "step_title":  "Speed up precompute",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "Diagnose stalled precompute",
-                                                "Speed up precompute",
-                                                "Run precompute on both baselines",
-                                                "Tests",
-                                                "Finish log entry"
+
                                             ],
-                                  "eta_seconds":  11,
+                                  "eta_seconds":  362,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-04T18:16:14+02:00",
-                                  "last_run":  "2026-10-04T18:15:01+02:00",
+                                  "last_run":  "2026-10-04T18:45:03+02:00",
                                   "next_run":  "2026-10-04T19:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review TOR display corrections",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Intestinal structures and species roadmap",
+                                 "status":  "running",
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "percent":  66.5,
+                                 "step_title":  "Assess fly and human roadmap",
                                  "steps":  [
-                                               "Inspect changed display code",
-                                               "Verify evidence and styling",
-                                               "Review browser evidence",
-                                               "Record verdict and handoff"
+                                               "Confirm scope and existing coverage",
+                                               "Verify intestinal structure sources",
+                                               "Assess fly and human roadmap",
+                                               "Record recommendations and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  152,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T17:48:45+02:00",
-                                 "last_run":  "2026-10-04T17:45:01+02:00",
-                                 "next_run":  "2026-10-04T18:45:00+02:00"
+                                 "updated":  "2026-10-04T18:48:46+02:00",
+                                 "last_run":  "2026-10-04T18:45:01+02:00",
+                                 "next_run":  "2026-10-04T19:45:00+02:00"
                              }
                },
     "next_run":  {
-                     "agent":  "codex",
-                     "time":  "2026-10-04T18:45:00+02:00"
+                     "agent":  "cursor",
+                     "time":  "2026-10-04T19:15:00+02:00"
                  },
-    "today_runs":  43,
+    "today_runs":  44,
     "queue":  [
 
               ],
