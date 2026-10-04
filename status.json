@@ -1,27 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T17:00:01+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-04T17:05:01+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "TOR migration: viewer integration",
-                                  "status":  "stale",
-                                  "step":  4,
-                                  "total":  6,
-                                  "percent":  65,
-                                  "step_title":  "Classic viewer cascade and display",
+                                  "task":  "TOR migration: finish viewer integration",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  5,
+                                  "percent":  38,
+                                  "step_title":  "Classic viewer leftovers",
                                   "steps":  [
-                                                "Read viewer cascade and evidence code",
-                                                "WebGL cascades use transfer rules only",
-                                                "Not-scored display and relation layer",
-                                                "Classic viewer cascade and display",
-                                                "Re-export, pytest and browser check",
+                                                "Audit interrupted 16:20 run",
+                                                "Classic viewer leftovers",
+                                                "Re-export and pytest",
+                                                "Browser check both viewers",
                                                 "Log finish"
                                             ],
-                                  "eta_seconds":  15,
+                                  "eta_seconds":  269,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-04T16:24:50+02:00",
-                                  "last_run":  "2026-10-04T16:18:57+02:00",
+                                  "updated":  "2026-10-04T17:02:00+02:00",
+                                  "last_run":  "2026-10-04T17:00:08+02:00",
                                   "next_run":  "2026-10-04T17:15:00+02:00"
                               },
                    "codex":  {
