@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T19:05:01+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-04T19:10:01+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "What-if stage 1: finish precompute part",
-                                  "status":  "running",
-                                  "step":  2,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  38,
-                                  "step_title":  "Fix tolerance and GPR placeholders, rerun",
+                                  "percent":  100,
+                                  "step_title":  "Finish log entry",
                                   "steps":  [
                                                 "Check precompute report",
                                                 "Fix tolerance and GPR placeholders, rerun",
@@ -17,29 +17,26 @@
                                                 "A/B opinion",
                                                 "Finish log entry"
                                             ],
-                                  "eta_seconds":  673,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-04T18:58:10+02:00",
+                                  "updated":  "2026-10-04T19:06:09+02:00",
                                   "last_run":  "2026-10-04T18:53:40+02:00",
                                   "next_run":  "2026-10-04T19:15:00+02:00"
                               },
                    "codex":  {
                                  "task":  "Intestinal structures and species roadmap",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record recommendations and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Confirm scope and existing coverage",
-                                               "Verify intestinal structure sources",
-                                               "Assess fly and human roadmap",
-                                               "Record recommendations and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  191,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-04T18:53:23+02:00",
-                                 "last_run":  "2026-10-04T18:45:01+02:00",
+                                 "last_run":  "2026-10-04T19:07:12+02:00",
                                  "next_run":  "2026-10-04T19:45:00+02:00"
                              }
                },
@@ -52,6 +49,11 @@
 
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "What-if stage 1: finish precompute part",
+                       "finished":  "2026-10-04T19:06:09+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Intestinal structures and species roadmap",
@@ -76,11 +78,6 @@
                        "agent":  "cursor",
                        "task":  "TOR migration: finish viewer integration",
                        "finished":  "2026-10-04T17:12:21+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Stage A visual specification v1",
-                       "finished":  "2026-10-04T16:18:41+02:00"
                    }
                ],
     "update_window":  "07:00-23:30"
