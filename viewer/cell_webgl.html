@@ -110,6 +110,12 @@
   #cap-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; box-shadow: 0 0 6px currentColor; }
   .sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
   #right ol { margin: 0 0 8px; padding-left: 18px; font-size: 0.77rem; line-height: 1.5; }
+  .wi-ranges { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; }
+  .wi-ranges th:first-child { width: 55%; }
+  .wi-ranges th:last-child { width: 45%; }
+  .wi-ranges th, .wi-ranges td { vertical-align: top; white-space: normal; overflow-wrap: anywhere; }
+  .wi-ranges code { white-space: normal; overflow-wrap: anywhere; }
+  .wi-provenance { overflow-wrap: anywhere; word-break: normal; }
   #search-in { width: 100%; box-sizing: border-box; font: inherit; font-size: 0.76rem; color: var(--text); background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; padding: 7px 10px; outline: none; }
   #search-in:focus { border-color: var(--accent); }
   #search-out { max-height: 46vh; overflow-y: auto; margin-top: 6px; }
@@ -13283,9 +13289,9 @@
   }
   function wiRangesHtml(fva, xfva, atb) {
     const at = (atb || []).map((a) => a.input_reaction + " (bound " + wiNum(a.uptake_bound) + ")");
-    return '<table style="font-size:0.72rem;border-collapse:collapse"><tr><th style="text-align:left;padding-right:8px">Reaction</th><th style="text-align:left">FVA range</th></tr>' +
-      WI.fva_keys.map((k, i) => '<tr><td style="padding-right:8px"><code>' + esc(k) + "</code>" + (i === 0 ? " (objective)" : "") + '</td><td style="white-space:nowrap">' + esc(wiRange(fva[i])) + "</td></tr>").join("") +
-      WI.exchange_keys.map((k, i) => '<tr><td style="padding-right:8px"><code>' + esc(k) + "</code> (medium input)</td><td style=\"white-space:nowrap\">" + esc(wiRange(xfva[i])) + "</td></tr>").join("") + "</table>" +
+    return '<table class="wi-ranges"><tr><th style="text-align:left;padding-right:8px">Reaction</th><th style="text-align:left">FVA range</th></tr>' +
+      WI.fva_keys.map((k, i) => '<tr><td style="padding-right:8px"><code>' + esc(k) + "</code>" + (i === 0 ? " (objective)" : "") + "</td><td>" + esc(wiRange(fva[i])) + "</td></tr>").join("") +
+      WI.exchange_keys.map((k, i) => '<tr><td style="padding-right:8px"><code>' + esc(k) + "</code> (medium input)</td><td>" + esc(wiRange(xfva[i])) + "</td></tr>").join("") + "</table>" +
       '<span class="muted" style="font-size:0.72rem">Medium inputs at their uptake bound in every optimal solution: ' + esc(at.length ? at.join(", ") : "none") + ".</span>";
   }
   function wiResultHtml(row, k) {
@@ -13314,7 +13320,7 @@
       "<h3>Caveats</h3>" + WI.caveats.map((x) => '<div class="step">' + esc(x) + "</div>").join("");
   }
   function wiSourceHtml() {
-    return '<p class="note">Model: ' + esc(WI.base_model.file) + " (SHA-256 " + esc(WI.base_model.sha256.slice(0, 12)) + "…), licence " + esc(WI.licences.base_model) + "; patch source " + esc(WI.licences.patch_source_snapshot) +
+    return '<p class="note wi-provenance">Model: ' + esc(WI.base_model.file) + " (SHA-256 " + esc(WI.base_model.sha256.slice(0, 12)) + "…), licence " + esc(WI.licences.base_model) + "; patch source " + esc(WI.licences.patch_source_snapshot) +
       ". " + esc(WI.base_model.note) + " Precomputed " + esc(WI.generated_utc) + " with cobra " + esc(WI.solver.cobra) + " / " + esc(WI.solver.solver) + " " + esc(WI.solver.glpk || "") +
       ". Full results: " + esc(WI.report_file) + " (SHA-256 " + esc(WI.report_sha256.slice(0, 12)) + "…). Approval: " + esc(WI.approval) + ".</p>";
   }
@@ -13350,7 +13356,7 @@
       "<h3>Reactions (" + nr + ")</h3>" +
       '<div class="step">Disabled by the gene rules (' + g.disabled_by_gpr.length + "): " + (g.disabled_by_gpr.length ? g.disabled_by_gpr.map((r) => "<code>" + esc(r) + "</code>").join(", ") : "none") + "</div>" +
       (g.retained.length ? '<div class="step">Kept active by other genes or placeholders (' + g.retained.length + "): " + g.retained.map((a) => "<code>" + esc(a[0]) + "</code> (" + a[1] + " alternative gene" + (a[1] === 1 ? "" : "s") + (a[2] ? ", " + a[2] + " placeholder" + (a[2] === 1 ? "" : "s") : "") + ")").join(", ") +
-        '<span class="src">A remaining route is not evidence that the gene has no biological effect. Full remaining rules are in ' + esc(WI.report_file) + ".</span></div>" : "") +
+        '<span class="src wi-provenance">A remaining route is not evidence that the gene has no biological effect. Full remaining rules are in ' + esc(WI.report_file) + ".</span></div>" : "") +
       "<h3>Results</h3>" + g.scenarios.map((r, k) => wiResultHtml(r, k)).join("") +
       '<p style="margin-top:10px">' + ipChip({ t: "whatif", id: "overview" }, "← What-if overview") + "</p>" + wiMethodHtml() + wiSourceHtml();
   }
