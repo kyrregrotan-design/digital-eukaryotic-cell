@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T18:55:01+02:00",
+    "generated_at":  "2026-10-04T19:00:01+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "What-if stage 1: precomputed knockouts (resume)",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "What-if stage 1: finish precompute part",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  5,
+                                  "percent":  28.2,
+                                  "step_title":  "Fix tolerance and GPR placeholders, rerun",
                                   "steps":  [
-
+                                                "Check precompute report",
+                                                "Fix tolerance and GPR placeholders, rerun",
+                                                "Run pytest",
+                                                "A/B opinion",
+                                                "Finish log entry"
                                             ],
-                                  "eta_seconds":  579,
+                                  "eta_seconds":  972,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-04T18:16:14+02:00",
+                                  "updated":  "2026-10-04T18:58:10+02:00",
                                   "last_run":  "2026-10-04T18:53:40+02:00",
                                   "next_run":  "2026-10-04T19:15:00+02:00"
                               },
