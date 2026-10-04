@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live – DigitalCell</title>
+<meta name="description" content="Live fremdrift for DigitalCell-agentene.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfbfd">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DigitalCell">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/giscus-config.js"></script>
+<script src="/assets/site.js"></script>
+</head>
+<body class="live">
+<header class="nav"><div class="nav-in"><a class="brand" href="/"><span class="dot"></span>Digital eukaryotisk celle</a><nav class="links" aria-label="Hovedmeny"><a class="l" href="/">Oversikt</a><a class="l" href="/viewer/cell_webgl">3D-cellen</a><a class="l" href="/live" aria-current="page">Live</a><a class="l" href="/fremdrift">Fremdrift</a><a class="l" href="/kilder">Kilder</a></nav></div></header>
+<main>
+
+<div class="live-head"><div class="eyebrow">Live · DigitalCell</div><h1>Hva skjer nå?</h1></div>
+<article class="now card" id="now" aria-live="polite">
+  <div class="who"><span class="pulse" id="dot"></span><span id="who">Henter status …</span></div>
+  <h2 id="task">&nbsp;</h2>
+  <p class="stepline" id="step">&nbsp;</p>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="barwrap"><span id="bar" style="width:0%"></span></div>
+  <div class="barmeta"><span id="pct">&nbsp;</span><span id="eta">&nbsp;</span></div>
+</article>
+<div class="tiles">
+  <div class="tile"><span class="k">Neste kjøring</span><b id="next">–</b><span class="s" id="nextsub">&nbsp;</span></div>
+  <div class="tile"><span class="k">Kjøringer i dag</span><b id="runs">–</b><span class="s">Cursor og Codex</span></div>
+</div>
+<section class="lsec"><h3>Kø</h3><ol class="lqueue" id="queue"><li>Enkelt søk i visningen</li><li>TCA-syklusen i mitokondriet + forslag om TORC1/TORC2-deling</li><li>Fortalte guidede turer</li><li>Bevegelse: vesikler og autofagi</li></ol></section>
+<section class="lsec"><h3>Nylig fullført</h3><ul class="lrecent" id="recent"><li class="muted">Ingen data ennå</li></ul>
+<h3 style="margin-top:22px">Milepæler</h3><ul class="lrecent"><li><span class="t">4. okt</span>WormJam-motoren ferdig og Codex-kontrollert</li><li><span class="t">4. okt</span>Interiører for kjernen, autofagi og sekretorisk vei</li><li><span class="t">3. okt</span>Ny ekte 3D-visning med 17 organeller</li></ul>
+<p class="small muted"><a href="/fremdrift">Hele fremdriften ›</a></p></section>
+<p class="updated" id="upd">&nbsp;</p>
+<p class="small muted lnote">Automatisk, skrivebeskyttet oversikt. Viser bare oppgavenavn og fremdrift fra agentløkka, ingen logger. Oppdateres hvert 5. minutt kl. 07:00–23:30; siden henter nye data hvert 30. sekund. Tidsanslag er estimater.</p>
+<noscript><p>Denne siden trenger JavaScript for å vise live-status.</p></noscript>
+<script src="/assets/live.js" defer></script>
+
+</main>
+<footer><div class="in"><span>© 2026 Kyrre Grøtan. Alle rettigheter forbeholdt for prosjektets egen kode og tekst. Tredjepartsinnhold: se <a href="/kilder">Kilder</a>.</span><span><a href="https://github.com/kyrregrotan-design/digital-eukaryotic-cell" target="_blank" rel="noopener">GitHub</a> · Publisert kopi, oppdatert 2026-10-04 13:15 (Europe/Oslo)</span></div></footer>
+</body>
+</html>
