@@ -1,12 +1,12 @@
 {
- "published_at": "2026-10-04 13:15 (Europe/Oslo)",
- "viewer_generated_at": "2026-10-04 09:17 (Europe/Oslo)",
+ "published_at": "2026-10-04 19:22 (Europe/Oslo)",
+ "viewer_generated_at": "2026-10-04 17:31 (Europe/Oslo)",
  "pathway_count": 10,
- "node_count": 34,
- "edge_count": 38,
- "edges_with_verified_citations": 36,
+ "node_count": 38,
+ "edge_count": 37,
+ "edges_with_verified_citations": 35,
  "compartments": 17,
- "last_data_update": "2026-10-03",
+ "last_data_update": "2026-10-04",
  "pathways": [
   "Insulin/IGF-1-like signaling (IIS)",
   "TOR signaling (let-363)",
