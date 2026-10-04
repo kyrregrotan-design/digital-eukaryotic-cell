@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-04T19:35:01+02:00",
+    "generated_at":  "2026-10-04T19:40:01+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,18 +25,21 @@
                                   "next_run":  "2026-10-04T20:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review what-if stage 1 precompute",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Review what-if metadata corrections",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  44.9,
+                                 "step_title":  "Verify GPR pruning and report metadata",
                                  "steps":  [
-
+                                               "Inspect changes and prior criteria",
+                                               "Verify GPR pruning and report metadata",
+                                               "Run focused tests and consistency checks",
+                                               "Record result and queue handoff"
                                            ],
-                                 "eta_seconds":  317,
+                                 "eta_seconds":  421,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-04T19:19:54+02:00",
+                                 "updated":  "2026-10-04T19:37:28+02:00",
                                  "last_run":  "2026-10-04T19:34:18+02:00",
                                  "next_run":  "2026-10-04T19:45:00+02:00"
                              }
@@ -45,7 +48,7 @@
                      "agent":  "codex",
                      "time":  "2026-10-04T19:45:00+02:00"
                  },
-    "today_runs":  46,
+    "today_runs":  47,
     "queue":  [
 
               ],
