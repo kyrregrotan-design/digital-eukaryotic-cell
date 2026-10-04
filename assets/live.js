@@ -41,7 +41,7 @@
     txt('runs', d.today_runs!=null ? String(d.today_runs) : '–');
     if(d.queue && d.queue.length){ var q=$('queue'); q.textContent=''; d.queue.forEach(function(x){ var li=document.createElement('li'); li.textContent=x; q.appendChild(li); }); }
     var r=$('recent'); r.textContent='';
-    (d.recent||[]).slice(0,5).forEach(function(x){ var li=document.createElement('li'); var s=document.createElement('span'); s.className='t';
+    (d.recent||[]).filter(function(x){ return x && typeof x.task==='string' && x.finished && !isNaN(new Date(x.finished)); }).slice(0,5).forEach(function(x){ var li=document.createElement('li'); var s=document.createElement('span'); s.className='t';
       s.textContent=(NAMES[x.agent]||'')+' · '+dayLabel(x.finished)+' '+hm(x.finished); li.appendChild(s); li.appendChild(document.createTextNode(x.task)); r.appendChild(li); });
     if(!r.children.length){ var li=document.createElement('li'); li.className='muted'; li.textContent='Ingen data ennå'; r.appendChild(li); }
     var u=$('upd');
