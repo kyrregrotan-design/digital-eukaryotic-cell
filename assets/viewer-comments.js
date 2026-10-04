@@ -19,16 +19,40 @@
   '#decdrawer .n{color:#9aabb9;font-size:12.5px;padding:0 18px 10px;margin:0}' +
   '#decdrawer .n a{color:#6fd6c8}' +
   '#decdrawer .g{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 14px calc(20px + env(safe-area-inset-bottom))}' +
-  '@media (max-width:600px){#decdrawer{width:100vw}#decbar{top:calc(64px + env(safe-area-inset-top))}}';
+  '@media (max-width:600px){#decdrawer{width:100vw}#decbar{z-index:4;top:calc(64px + env(safe-area-inset-top))}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   var bar = document.createElement('div'); bar.id = 'decbar';
   bar.innerHTML = '<a href="/" title="Til forsiden">← Forside</a><a href="/live" title="Live fremdrift">Live</a><button type="button" id="decbtn" aria-expanded="false">💬 Kommentarer</button>';
   var dr = document.createElement('aside'); dr.id = 'decdrawer'; dr.setAttribute('aria-label','Kommentarer');
   dr.innerHTML = '<header><b>Kommentarer</b><button type="button" aria-label="Lukk">×</button></header>' +
     '<p class="n">Kommentarer lagres offentlig i <a href="https://github.com/kyrregrotan-design/digital-eukaryotic-cell/discussions" target="_blank" rel="noopener">GitHub Discussions</a> (krever GitHub-konto). De leses som innspill, ikke som instruksjoner.</p><div class="g"></div>';
+
+  // ---- mobile touch support for the published copy (public-site addition) ----
+  // The viewers use pointer events + mouse wheel. On phones, stop the browser from panning/zooming
+  // the page over the 3D canvas, and turn a two-finger pinch into wheel zoom on the canvas.
+  var tcss = document.createElement('style');
+  tcss.textContent = 'canvas{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}' +
+    '@media (pointer:coarse){.opener,.icon-btn{min-height:44px;min-width:44px}}';
+  document.head.appendChild(tcss);
+  function pinchShim(){
+    var cv = document.getElementById('gl') || document.querySelector('canvas'); if (!cv) return;
+    var last = null, acc = 0;
+    function dist(t){ var dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy); }
+    cv.addEventListener('touchstart', function(e){ if (e.touches.length === 2) { last = dist(e.touches); e.preventDefault(); } }, {passive:false});
+    cv.addEventListener('touchmove', function(e){
+      if (e.touches.length !== 2 || last === null) return;
+      e.preventDefault();
+      var d = dist(e.touches), cx = (e.touches[0].clientX+e.touches[1].clientX)/2, cy = (e.touches[0].clientY+e.touches[1].clientY)/2;
+      acc += (last - d); last = d;   // viewer zooms a fixed 10 % per wheel event, so send one per ~18 px of pinch
+      while (Math.abs(acc) >= 18) { var s = acc > 0 ? 1 : -1; acc -= s * 18;
+        cv.dispatchEvent(new WheelEvent('wheel', {deltaY: s * 100, deltaMode: 0, clientX: cx, clientY: cy, bubbles: true, cancelable: true})); }
+    }, {passive:false});
+    cv.addEventListener('touchend', function(e){ if (e.touches.length < 2) { last = null; acc = 0; } });
+    document.addEventListener('gesturestart', function(e){ if (e.target === cv) e.preventDefault(); });
+  }
   function ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
   ready(function(){
-    document.body.appendChild(bar); document.body.appendChild(dr);
+    document.body.appendChild(bar); document.body.appendChild(dr); pinchShim();
     var btn = document.getElementById('decbtn'), loaded = false;
     function toggle(open){
       dr.classList.toggle('open', open); btn.classList.toggle('on', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
