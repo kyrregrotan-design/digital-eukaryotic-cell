@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T15:45:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-05T15:50:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A step 5: reduced motion, hidden tab, tour exit, what-if acceptance",
@@ -25,30 +25,29 @@
                                   "next_run":  "2026-10-05T16:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review narrow breadcrumb correction",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and queue handoff",
+                                 "task":  "Stage A motion and state review",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  3,
+                                 "percent":  40,
+                                 "step_title":  "Verify saved results and screenshots",
                                  "steps":  [
-                                               "Inspect correction and acceptance helper",
-                                               "Verify saved runs and screenshots",
-                                               "Check label overlap and narrow controls",
-                                               "Record verdict and queue handoff"
+                                               "Inspect helper and acceptance gates",
+                                               "Verify saved results and screenshots",
+                                               "Record verdict and remaining gates"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  453,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T15:14:08+02:00",
-                                 "last_run":  "2026-10-05T15:05:50+02:00",
-                                 "next_run":  "2026-10-05T15:45:00+02:00"
+                                 "updated":  "2026-10-05T15:49:12+02:00",
+                                 "last_run":  "2026-10-05T15:45:01+02:00",
+                                 "next_run":  "2026-10-05T16:45:00+02:00"
                              }
                },
     "next_run":  {
-                     "agent":  "codex",
-                     "time":  "2026-10-05T15:45:00+02:00"
+                     "agent":  "cursor",
+                     "time":  "2026-10-05T16:15:00+02:00"
                  },
-    "today_runs":  37,
+    "today_runs":  38,
     "queue":  [
 
               ],
