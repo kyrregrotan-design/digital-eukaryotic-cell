@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T11:45:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-05T11:50:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A step 4: look/quality UI",
@@ -24,30 +24,30 @@
                                   "next_run":  "2026-10-05T12:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Stage A depth-cue review",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review graphics settings UI",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Run read-only checks and report",
+                                 "percent":  26.3,
+                                 "step_title":  "Verify controls and persistence",
                                  "steps":  [
-                                               "Read depth-cue code and specification",
-                                               "Verify shaders and preset restoration",
-                                               "Inspect browser evidence and screenshots",
-                                               "Run read-only checks and report"
+                                               "Read specification and code",
+                                               "Verify controls and persistence",
+                                               "Review browser evidence and tests",
+                                               "Record findings and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  846,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T11:04:52+02:00",
-                                 "last_run":  "2026-10-05T10:50:53+02:00",
-                                 "next_run":  "2026-10-05T11:45:00+02:00"
+                                 "updated":  "2026-10-05T11:49:47+02:00",
+                                 "last_run":  "2026-10-05T11:45:01+02:00",
+                                 "next_run":  "2026-10-05T12:45:00+02:00"
                              }
                },
     "next_run":  {
-                     "agent":  "codex",
-                     "time":  "2026-10-05T11:45:00+02:00"
+                     "agent":  "cursor",
+                     "time":  "2026-10-05T12:15:00+02:00"
                  },
-    "today_runs":  28,
+    "today_runs":  29,
     "queue":  [
 
               ],
