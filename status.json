@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T18:10:03+02:00",
+    "generated_at":  "2026-10-05T18:15:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Aging observations curation and validator review",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  50.4,
-                                 "step_title":  "Check validator boundaries",
+                                 "percent":  86.8,
+                                 "step_title":  "Record exact findings and handoff",
                                  "steps":  [
                                                "Inspect candidates and approval",
                                                "Verify primary study contexts",
                                                "Check validator boundaries",
                                                "Record exact findings and handoff"
                                            ],
-                                 "eta_seconds":  842,
+                                 "eta_seconds":  176,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T18:09:56+02:00",
+                                 "updated":  "2026-10-05T18:12:26+02:00",
                                  "last_run":  "2026-10-05T17:55:48+02:00",
                                  "next_run":  "2026-10-05T18:45:00+02:00"
                              }
