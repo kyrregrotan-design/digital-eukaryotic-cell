@@ -143,6 +143,10 @@
   .tour-act td { padding: 2px 4px; border-bottom: 1px solid var(--line); }
   .tour-act td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
   .tour-flag { color: #f2c46d; }
+  .gfx { display: grid; gap: 4px; font-size: 0.72rem; color: var(--muted); margin: 0 0 8px; }
+  .gfx select { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); border-radius: 8px; padding: 5px 6px; font: inherit; font-size: 0.74rem; }
+  .gfx select option { background: #16222e; }
+  #g-status.short { color: var(--warn); }
 </style>
 </head>
 <body>
@@ -158,7 +162,7 @@
     <button class="closer" id="close-left" title="Hide this panel">‹</button>
     <h1 id="title">Digital cell</h1>
     <div class="sub" id="subtitle"></div>
-    <div class="sub"><a href="cell_3d.html">Open classic view</a></div>
+    <div class="sub"><a href="cell_3d.html">Classic 2D fallback</a></div>
   </div>
   <div class="section" id="search-sec">
     <input id="search-in" type="search" placeholder="Search genes, proteins, organelles, pathways…" autocomplete="off" aria-label="Search the cell model" />
@@ -205,6 +209,26 @@
     <div class="note" id="anatomy-note">Gut granules (blue-teal), the apical junction (CeAJ, green band) on a faint neighbouring-cell boundary, and the terminal web (yellow) above the IF-rich endotube (pink) under the brush border. Sourced atlas records, drawn schematically: number, size, colour and position are display choices. Not simulated. Click one for its sources and cautions.</div>
     <label><input type="checkbox" id="t-spin" /> Slow rotation</label>
     <div class="row" style="margin-top:6px"><button class="b" id="reset-view">Reset view</button></div>
+  </div>
+  <div class="section" id="graphics-sec">
+    <p class="title">Graphics</p>
+    <label class="gfx">Graphics look
+      <select id="g-look">
+        <option value="advanced">Advanced (Stage A look)</option>
+        <option value="standard">Standard (existing look)</option>
+      </select>
+    </label>
+    <label class="gfx">Rendering quality
+      <select id="g-quality">
+        <option value="auto">Auto (recommended)</option>
+        <option value="light">Light</option>
+        <option value="balanced">Balanced</option>
+        <option value="high">High</option>
+      </select>
+    </label>
+    <div class="note" id="g-status" aria-live="polite"></div>
+    <div class="row" style="margin-top:6px"><button class="b" id="g-reset" title="Back to Advanced look and Auto quality, and forget the saved choice">Reset graphics settings</button></div>
+    <div class="note" id="g-note">Both looks show the same model, data and controls; colours and shading are teaching conventions, not measurements. Auto picks Light, Balanced or High from measured frame intervals (not GPU timings). Choices are saved in this browser only.</div>
   </div>
   <div class="section">
     <p class="title">About this view</p>
@@ -266,7 +290,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 10:45 (Europe/Oslo)",
+  "generated_at": "2026-10-05 11:10 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -11198,8 +11222,16 @@
       setTier(i, "manual choice", now);
       return true;
     }
-    function state() {
+    function perf() {
       const last = history[history.length - 1] || null;
+      return {
+        mode, tier: QTIERS[tier].id, lastWindow: last, windows: history.length,
+        belowTarget: !!last && (last.median_ms > QA.targetMed || last.p95_ms > QA.targetP95),
+        cadenceBelow60: ceiling !== null && history.length >= 3 && ceiling > QA.downMed,
+      };
+    }
+    function state() {
+      const last = history[history.length - 1] || null, p = perf();
       return {
         mode, tier: QTIERS[tier].id, budget: QTIERS[tier],
         pixelRatio: r2(renderer.getPixelRatio()), buffer: [canvas.width, canvas.height], css: [window.innerWidth, window.innerHeight],
@@ -11208,14 +11240,14 @@
         spheres: sphereState(),
         pool, trial: trial ? { from: QTIERS[trial.from].id, eligible_ms: r2(trial.eligibleMs) } : null, blocked: [...blocked].map((i) => QTIERS[i].id),
         lastWindow: last, windows: history.length, windowsTotal: nWin, transitions: transitions.slice(), stalls: JSON.parse(JSON.stringify(stalls)),
-        belowTarget: !!last && (last.median_ms > QA.targetMed || last.p95_ms > QA.targetP95),
-        cadenceBelow60: ceiling !== null && history.length >= 3 && ceiling > QA.downMed,
+        belowTarget: p.belowTarget,
+        cadenceBelow60: p.cadenceBelow60,
         bestWindowMedian_ms: ceiling === null ? null : r2(ceiling), sim,
         memory: { geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: (renderer.info.programs || []).length },
       };
     }
     return {
-      pixelRatio, applyMaterials, applyExtraMaterials, applyGeometry, applyPool, setMode, state, settle,
+      pixelRatio, applyMaterials, applyExtraMaterials, applyGeometry, applyPool, setMode, state, perf, settle,
       frame: (now) => { if (!sim) sample(now); },
       init: () => { applyMaterials(); applyAllExtra(); applyGeometry(); applyPool(); },
       // Synthetic samples share controller state with live sampling: reload the page before recording live evidence.
@@ -11231,6 +11263,91 @@
   window.__setQuality = (m) => { const ok = QUALITY.setMode(m); return ok ? QUALITY.state() : null; };
   window.__qualitySim = (on) => QUALITY.simulate(on);
   window.__qualityFeed = (dts) => QUALITY.feed(dts);
+
+  // ---------------------------------------------------------------- graphics settings UI (Stage A)
+  // Kyrre 2026-10-05 00:22: 'Graphics look' and 'Rendering quality' are separate controls; Advanced is the default look
+  // for new visitors; choices persist in localStorage with a reset. Storage may be missing, blocked or hold stale or
+  // foreign values, so every access is guarded, unknown values fall back to the defaults, and nothing is written
+  // until the visitor changes a setting. Switching changes materials and detail only: camera, selection, interior,
+  // tour and simulation state are untouched.
+  const GFX_KEY = "digitalcell.graphics.v1", GFX_DEFAULT = { look: "advanced", quality: "auto" };
+  const GFX_QUALITY = ["auto"].concat(QTIERS.map((t) => t.id));
+  const GRAPHICS = (function () {
+    const lookSel = document.getElementById("g-look"), qSel = document.getElementById("g-quality"), statusEl = document.getElementById("g-status");
+    let storage = "unused", loaded = null;
+    const tierName = (id) => id.charAt(0).toUpperCase() + id.slice(1);
+    function read() {
+      try {
+        const raw = window.localStorage.getItem(GFX_KEY);
+        storage = "ok";
+        const v = raw ? JSON.parse(raw) : null;
+        return v && typeof v === "object" ? v : {};
+      } catch (e) { if (storage !== "ok") storage = "unavailable"; return {}; }
+    }
+    function valid(v) {
+      return {
+        look: typeof v.look === "string" && Object.prototype.hasOwnProperty.call(LOOKS, v.look) ? v.look : GFX_DEFAULT.look,
+        quality: GFX_QUALITY.includes(v.quality) ? v.quality : GFX_DEFAULT.quality,
+      };
+    }
+    function save() {
+      try { window.localStorage.setItem(GFX_KEY, JSON.stringify({ look: lookCur, quality: qSel.value })); storage = "ok"; } catch (e) { storage = "unavailable"; }
+    }
+    function forget() {
+      try { window.localStorage.removeItem(GFX_KEY); storage = "ok"; } catch (e) { storage = "unavailable"; }
+    }
+    function setLook(name) {
+      if (!LOOKS[name] || name === lookCur) return 0;
+      const n = applyLook(LOOKS[name]);
+      lookCur = name; QUALITY.applyMaterials(); QUALITY.applyGeometry();
+      return n;
+    }
+    function setQuality(q) {
+      const p = QUALITY.perf();
+      if (q === "auto" ? p.mode === "auto" : p.mode === "manual" && p.tier === q) return false;
+      return QUALITY.setMode(q);
+    }
+    function apply(v) { setLook(v.look); setQuality(v.quality); sync(); update(); }
+    function sync() {
+      const p = QUALITY.perf();
+      lookSel.value = lookCur;
+      qSel.value = p.mode === "auto" ? "auto" : p.tier;
+    }
+    function statusText() {
+      const p = QUALITY.perf(), w = p.lastWindow, here = w && w.tier === p.tier;
+      const head = (p.mode === "auto" ? "Auto: current tier " : "Manual: ") + tierName(p.tier) + ". ";
+      if (!here) return { text: head + "Measuring frame intervals at this tier…", short: false };
+      let text = head + "Last 2 s: median " + w.median_ms.toFixed(1) + " ms, p95 " + w.p95_ms.toFixed(1) + " ms per frame.";
+      const short = p.belowTarget || p.cadenceBelow60;
+      if (p.belowTarget) {
+        text += " Below the 60 fps target (median ≤ 17.5 ms, p95 ≤ 20 ms).";
+        if (p.mode === "manual") text += " Your choice is kept; choose Auto or a lower tier to adapt.";
+        else if (p.tier === QTIERS[0].id) text += " Already at the lowest tier.";
+      }
+      if (p.cadenceBelow60) text += " This display or browser delivers frames slower than 60 Hz, so the target cannot be certified here.";
+      if (storage === "unavailable") text += " Settings cannot be saved in this browser; they apply to this visit only.";
+      return { text, short };
+    }
+    function update() {
+      const s = statusText();
+      if (statusEl.textContent !== s.text) statusEl.textContent = s.text;
+      statusEl.classList.toggle("short", s.short);
+    }
+    lookSel.onchange = () => { setLook(lookSel.value); save(); sync(); update(); };
+    qSel.onchange = () => { setQuality(qSel.value); save(); sync(); update(); };
+    document.getElementById("g-reset").onclick = () => { forget(); apply(GFX_DEFAULT); };
+    return {
+      init: () => { loaded = read(); apply(valid(loaded)); setInterval(update, 1000); },
+      state: () => {
+        let raw = null;
+        try { raw = window.localStorage.getItem(GFX_KEY); } catch (e) { raw = "(unavailable)"; }
+        return { look: lookCur, quality: QUALITY.perf().mode === "auto" ? "auto" : QUALITY.perf().tier, tier: QUALITY.perf().tier,
+          selects: { look: lookSel.value, quality: qSel.value }, stored: raw, storage, loaded, defaults: GFX_DEFAULT,
+          status: statusEl.textContent, short: statusEl.classList.contains("short") };
+      },
+    };
+  })();
+  window.__graphics = () => GRAPHICS.state();
 
   window.__motionSync = motionSync;
   window.__motionAt = (t) => { motionClock = t; MOTION.update(t); return MOTION.phase(); };
@@ -14951,6 +15068,7 @@
   if (window.innerWidth < 900) setPanel("left", false);
   resize();
   QUALITY.init();
+  GRAPHICS.init();
   cam.dist = camGoal.dist;
   renderPwList();
   refreshPathwayStyles();
