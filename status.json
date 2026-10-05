@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T17:45:03+02:00",
+    "generated_at":  "2026-10-05T17:50:03+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -39,7 +39,7 @@
                                  "eta_seconds":  null,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-05T15:54:46+02:00",
-                                 "last_run":  "2026-10-05T16:45:01+02:00",
+                                 "last_run":  "2026-10-05T17:45:01+02:00",
                                  "next_run":  "2026-10-05T18:45:00+02:00"
                              }
                },
@@ -85,17 +85,17 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  68.3,
+                      "percent":  75.6,
                       "total":  15,
-                      "done":  11,
+                      "done":  12,
                       "in_progress":  1,
-                      "todo":  3,
-                      "remaining":  4,
+                      "todo":  2,
+                      "remaining":  3,
                       "weight_total":  41,
-                      "weight_done":  28,
+                      "weight_done":  31,
                       "groups":  [
                                      "Ferdig i dag",
-                                     "Nå",
+                                     "NÃ¥",
                                      "Neste",
                                      "Senere"
                                  ],
@@ -110,7 +110,7 @@
                                     {
                                         "id":  "search",
                                         "group":  "Ferdig i dag",
-                                        "text":  "Søkefelt (Ctrl+K) i celleviseren",
+                                        "text":  "SÃ¸kefelt (Ctrl+K) i celleviseren",
                                         "status":  "done",
                                         "weight":  2
                                     },
@@ -144,15 +144,15 @@
                                     },
                                     {
                                         "id":  "tor-display-fixes",
-                                        "group":  "Nå",
-                                        "text":  "Codex\u0027 fire små visningsrettelser til TOR",
+                                        "group":  "NÃ¥",
+                                        "text":  "Codex\u0027 fire smÃ¥ visningsrettelser til TOR",
                                         "status":  "done",
                                         "weight":  1
                                     },
                                     {
                                         "id":  "what-if-1",
-                                        "group":  "Nå",
-                                        "text":  "«Hva om»-panelet, trinn 1",
+                                        "group":  "NÃ¥",
+                                        "text":  "Â«Hva omÂ»-panelet, trinn 1",
                                         "status":  "done",
                                         "weight":  3
                                     },
@@ -166,7 +166,7 @@
                                     {
                                         "id":  "motion",
                                         "group":  "Senere",
-                                        "text":  "Godkjente bevegelser: vesikkelstrøm og autofagi",
+                                        "text":  "Godkjente bevegelser: vesikkelstrÃ¸m og autofagi",
                                         "status":  "done",
                                         "weight":  3
                                     },
@@ -180,15 +180,15 @@
                                     {
                                         "id":  "visual-stage-a",
                                         "group":  "Senere",
-                                        "text":  "Grafikkløft trinn A",
-                                        "status":  "in_progress",
+                                        "text":  "GrafikklÃ¸ft trinn A",
+                                        "status":  "done",
                                         "weight":  3
                                     },
                                     {
                                         "id":  "aging-observations",
                                         "group":  "Senere",
-                                        "text":  "Aldringsobservasjoner: kildebasert, illustrativ tidslinje (etter grafikkløft trinn A)",
-                                        "status":  "todo",
+                                        "text":  "Aldringsobservasjoner: kildebasert, illustrativ tidslinje (etter grafikklÃ¸ft trinn A)",
+                                        "status":  "in_progress",
                                         "weight":  4
                                     },
                                     {
@@ -201,12 +201,12 @@
                                     {
                                         "id":  "tours-neural-voice",
                                         "group":  "Senere",
-                                        "text":  "Turer: naturlig nevral stemme, forhåndsinnspilte klipp (etter 2D-visningen)",
+                                        "text":  "Turer: naturlig nevral stemme, forhÃ¥ndsinnspilte klipp (etter 2D-visningen)",
                                         "status":  "todo",
                                         "weight":  3
                                     }
                                 ],
-                      "updated":  "2026-10-05T03:18:00+02:00",
-                      "updated_by":  "Cursor"
+                      "updated":  "2026-10-05T17:49:07+02:00",
+                      "updated_by":  "Grok Bot"
                   }
 }
