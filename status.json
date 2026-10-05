@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T20:35:03+02:00",
+    "generated_at":  "2026-10-05T20:40:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  "2026-10-05T21:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Aging card layout acceptance",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Review SVG tour view",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  30.7,
+                                 "step_title":  "Verify state and route rendering",
                                  "steps":  [
-
+                                               "Inspect route and player code",
+                                               "Verify state and route rendering",
+                                               "Check browser evidence and tests",
+                                               "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  418,
+                                 "eta_seconds":  1091,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T19:46:46+02:00",
+                                 "updated":  "2026-10-05T20:38:34+02:00",
                                  "last_run":  "2026-10-05T20:32:01+02:00",
                                  "next_run":  "2026-10-05T20:45:00+02:00"
                              }
@@ -44,7 +47,7 @@
                      "agent":  "codex",
                      "time":  "2026-10-05T20:45:00+02:00"
                  },
-    "today_runs":  50,
+    "today_runs":  51,
     "queue":  [
 
               ],
