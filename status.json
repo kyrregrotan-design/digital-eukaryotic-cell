@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T22:05:03+02:00",
+    "generated_at":  "2026-10-05T22:11:35+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Tour Sources card foreground fix",
                                   "status":  "running",
-                                  "step":  2,
+                                  "step":  3,
                                   "total":  5,
-                                  "percent":  37.4,
-                                  "step_title":  "Apply CSS and handlers",
+                                  "percent":  58,
+                                  "step_title":  "Browser evidence",
                                   "steps":  [
                                                 "Read spec",
                                                 "Apply CSS and handlers",
@@ -17,9 +17,9 @@
                                                 "Tour tests",
                                                 "Finish log"
                                             ],
-                                  "eta_seconds":  130,
+                                  "eta_seconds":  9,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T22:04:27+02:00",
+                                  "updated":  "2026-10-05T22:05:50+02:00",
                                   "last_run":  "2026-10-05T22:03:46+02:00",
                                   "next_run":  "2026-10-05T22:15:00+02:00"
                               },
