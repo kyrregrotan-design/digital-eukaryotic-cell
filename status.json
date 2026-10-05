@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T08:55:03+02:00",
+    "generated_at":  "2026-10-05T08:58:28+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -27,10 +27,10 @@
                    "codex":  {
                                  "task":  "Sphere budgets review and daily database scan",
                                  "status":  "running",
-                                 "step":  4,
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  78,
-                                 "step_title":  "Scan databases and publications",
+                                 "percent":  96,
+                                 "step_title":  "Record findings and hand off",
                                  "steps":  [
                                                "Review sphere and material code",
                                                "Verify saved browser evidence",
@@ -38,9 +38,9 @@
                                                "Scan databases and publications",
                                                "Record findings and hand off"
                                            ],
-                                 "eta_seconds":  141,
+                                 "eta_seconds":  34,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T08:52:26+02:00",
+                                 "updated":  "2026-10-05T08:56:14+02:00",
                                  "last_run":  "2026-10-05T08:45:01+02:00",
                                  "next_run":  "2026-10-05T09:45:00+02:00"
                              }
@@ -85,5 +85,130 @@
                        "finished":  "2026-10-05T06:58:25+02:00"
                    }
                ],
-    "update_window":  "07:00-23:30"
+    "update_window":  "07:00-23:30",
+    "checklist":  {
+                      "percent":  68.3,
+                      "total":  15,
+                      "done":  11,
+                      "in_progress":  1,
+                      "todo":  3,
+                      "remaining":  4,
+                      "weight_total":  41,
+                      "weight_done":  28,
+                      "groups":  [
+                                     "Ferdig i dag",
+                                     "Nå",
+                                     "Neste",
+                                     "Senere"
+                                 ],
+                      "items":  [
+                                    {
+                                        "id":  "wormjam-engine",
+                                        "group":  "Ferdig i dag",
+                                        "text":  "WormJam-metabolisme importert og verifisert",
+                                        "status":  "done",
+                                        "weight":  3
+                                    },
+                                    {
+                                        "id":  "search",
+                                        "group":  "Ferdig i dag",
+                                        "text":  "Søkefelt (Ctrl+K) i celleviseren",
+                                        "status":  "done",
+                                        "weight":  2
+                                    },
+                                    {
+                                        "id":  "tca-data",
+                                        "group":  "Ferdig i dag",
+                                        "text":  "TCA-syklus: data og eksport",
+                                        "status":  "done",
+                                        "weight":  2
+                                    },
+                                    {
+                                        "id":  "tca-ui",
+                                        "group":  "Ferdig i dag",
+                                        "text":  "TCA-syklus: visning i celleviseren",
+                                        "status":  "done",
+                                        "weight":  2
+                                    },
+                                    {
+                                        "id":  "tor-data",
+                                        "group":  "Ferdig i dag",
+                                        "text":  "TOR-oppdeling (TORC1/TORC2): data og motor",
+                                        "status":  "done",
+                                        "weight":  2
+                                    },
+                                    {
+                                        "id":  "tor-viewer",
+                                        "group":  "Ferdig i dag",
+                                        "text":  "TOR-oppdeling i begge visningene",
+                                        "status":  "done",
+                                        "weight":  2
+                                    },
+                                    {
+                                        "id":  "tor-display-fixes",
+                                        "group":  "Nå",
+                                        "text":  "Codex\u0027 fire små visningsrettelser til TOR",
+                                        "status":  "done",
+                                        "weight":  1
+                                    },
+                                    {
+                                        "id":  "what-if-1",
+                                        "group":  "Nå",
+                                        "text":  "«Hva om»-panelet, trinn 1",
+                                        "status":  "done",
+                                        "weight":  3
+                                    },
+                                    {
+                                        "id":  "tours-cascade",
+                                        "group":  "Neste",
+                                        "text":  "Fortalte turer med kaskademodus (engelsk stemme og undertekst)",
+                                        "status":  "done",
+                                        "weight":  5
+                                    },
+                                    {
+                                        "id":  "motion",
+                                        "group":  "Senere",
+                                        "text":  "Godkjente bevegelser: vesikkelstrøm og autofagi",
+                                        "status":  "done",
+                                        "weight":  3
+                                    },
+                                    {
+                                        "id":  "anatomy-gut-granules-ceaj-tw",
+                                        "group":  "Senere",
+                                        "text":  "Tarmgranuler, celleforbindelser og terminal web",
+                                        "status":  "done",
+                                        "weight":  3
+                                    },
+                                    {
+                                        "id":  "visual-stage-a",
+                                        "group":  "Senere",
+                                        "text":  "Grafikkløft trinn A",
+                                        "status":  "in_progress",
+                                        "weight":  3
+                                    },
+                                    {
+                                        "id":  "aging-observations",
+                                        "group":  "Senere",
+                                        "text":  "Aldringsobservasjoner: kildebasert, illustrativ tidslinje (etter grafikkløft trinn A)",
+                                        "status":  "todo",
+                                        "weight":  4
+                                    },
+                                    {
+                                        "id":  "tours-2d-view",
+                                        "group":  "Senere",
+                                        "text":  "Turer: 2D-undervisningsvisning i turspilleren (etter aldringsobservasjoner)",
+                                        "status":  "todo",
+                                        "weight":  3
+                                    },
+                                    {
+                                        "id":  "tours-neural-voice",
+                                        "group":  "Senere",
+                                        "text":  "Turer: naturlig nevral stemme, forhåndsinnspilte klipp (etter 2D-visningen)",
+                                        "status":  "todo",
+                                        "weight":  3
+                                    }
+                                ],
+                      "updated":  "2026-10-05T03:18:00+02:00",
+                      "updated_by":  "Cursor"
+                  }
 }
