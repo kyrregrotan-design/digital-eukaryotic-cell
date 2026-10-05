@@ -145,6 +145,21 @@
   #tour-player select { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); border-radius: 8px; padding: 5px 6px; font: inherit; font-size: 0.74rem; }
   #tour-player select option { background: #16222e; }
   #tp-voice-note { margin-top: 6px; font-size: 0.68rem; color: var(--muted); }
+  #tp-2d { margin: 4px 0 8px; }
+  #tp-2d-head, #tp-2d-foot { font-size: 0.66rem; color: var(--muted); }
+  #tp-2d-foot { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  #tp-svg-wrap { overflow-x: auto; }
+  #tp-svg { display: block; width: 100%; height: auto; max-height: 38vh; }
+  #tp-svg .n rect { fill: rgba(255, 255, 255, 0.05); stroke: #5b6b78; stroke-width: 1.2; }
+  #tp-svg .n.seed rect { stroke-dasharray: 4 3; }
+  #tp-svg .n.hl rect { stroke: var(--accent); stroke-width: 2.2; fill: rgba(255, 255, 255, 0.1); }
+  #tp-svg .n text { fill: #c9d4dc; font-size: 12px; }
+  #tp-svg .n.up .sg { fill: #fff; } #tp-svg .n.down .sg { fill: #7aa7ff; }
+  #tp-svg .e { stroke: #46535e; fill: none; stroke-width: 1.6; }
+  #tp-svg .e.done { stroke: #8a9aa8; }
+  #tp-svg .e.on { stroke-width: 3; }
+  #tp-svg .e.mem { stroke-dasharray: 3 3; }
+  #tp-loc .cell { fill: rgba(255, 255, 255, 0.04); stroke: #5b6b78; }
   #ag-pos { width: 100%; accent-color: var(--accent); margin: 6px 0 2px; }
   .ag-days { position: relative; height: 28px; }
   .ag-days .chip { position: absolute; top: 0; white-space: nowrap; }
@@ -279,6 +294,11 @@
 </div>
 <div class="panel outer-only" id="tour-player" role="region" aria-label="Narrated tour player">
   <span id="tp-step"></span><b id="tp-title"></b>
+  <div id="tp-2d" hidden>
+    <div id="tp-2d-head"><span>Illustrative layout: positions are schematic, not cell geography or distances.</span></div>
+    <div id="tp-svg-wrap"><svg id="tp-svg" role="img" aria-label="Tour route diagram"></svg></div>
+    <div id="tp-2d-foot"><svg id="tp-loc" viewBox="0 0 120 64" width="120" height="64" role="img" aria-label="Static locator"></svg><span id="tp-loc-note">Locator: where these nodes are drawn in the 3D view. Schematic placement, not measured subcellular localization.</span></div>
+  </div>
   <div id="tp-sub" aria-live="polite"></div>
   <div id="tp-bar"><div id="tp-prog"></div></div>
   <div class="row" id="tp-ctrl">
@@ -286,6 +306,7 @@
     <button class="b" id="tp-play">▶ Play</button>
     <button class="b" id="tp-replay" title="Say this part again">↻ Replay</button>
     <button class="b" id="tp-next" title="Next part">Next ›</button>
+    <select id="tp-view" title="Show the tour in the 3D cell or as a 2D route diagram"><option value="3d" selected>View: 3D cell</option><option value="2d">View: 2D diagram</option></select>
     <select id="tp-rate" title="Speaking and reading speed"><option value="0.8">0.8×</option><option value="1" selected>1×</option><option value="1.2">1.2×</option></select>
     <label><input type="checkbox" id="tp-voice" checked /> Voice</label>
     <button class="b" id="tp-cards" title="Show this part's sources, caveats and limitations in the detail panel">Sources</button>
@@ -15052,6 +15073,7 @@
     tourEl("tp-next").disabled = c.i === lines.length - 1;
     document.getElementById("status-pill").textContent = "tour · " + t.label + " · step " + line.step;
     tourCards();
+    tour2dRender();
     if (autoplay !== undefined) c.playing = !!autoplay && !!(TSYN && tourVoice && tourEl("tp-voice").checked);
     tourPlayButton();
     if (c.playing) tourSpeak();
@@ -15128,6 +15150,66 @@
     selected = null; setPerturbButtons();
     detail.innerHTML = html; openDetail();
   }
+  let tourView = "3d";
+  const TOUR_GLYPH = { activates: "act", inhibits: "inh", transcriptionally_regulates: "tx", part_of: "mem", component_transfer: "mem" };
+  function tour2dLayout(t) {
+    const route = t.route || [], depth = { [t.input]: 0 };
+    for (let k = 0; k <= route.length; k++) route.forEach((e) => {
+      if (!(e.source in depth)) return;
+      const d = Math.min(route.length, depth[e.source] + 1);
+      if (!(e.target in depth) || depth[e.target] < d) depth[e.target] = d;
+    });
+    const ids = [...new Set([t.input, ...route.map((e) => e.source), ...route.map((e) => e.target), ...(t.route_nodes || [])])];
+    const cols = {}; ids.forEach((id) => { const d = depth[id] || 0; (cols[d] = cols[d] || []).push(id); });
+    const maxD = Math.max(1, ...Object.keys(cols).map(Number)), maxRows = Math.max(...Object.values(cols).map((c) => c.length));
+    const NW = 112, NH = 30, W = Math.max(560, 24 + (maxD + 1) * NW + maxD * 60), H = Math.max(96, 36 + maxRows * 46), pos = {};
+    Object.keys(cols).forEach((d) => cols[d].forEach((id, r) => {
+      pos[id] = { x: 12 + NW / 2 + Number(d) * (W - 24 - NW) / maxD, y: H / 2 + (r - (cols[d].length - 1) / 2) * 46 };
+    }));
+    return { W, H, NW, NH, ids, pos };
+  }
+  function tour2dRender() {
+    const c = tourCur, box = tourEl("tp-2d");
+    box.hidden = !c || tourView !== "2d";
+    if (box.hidden) return;
+    const t = c.t, line = t.script[c.i], L = c.L || (c.L = tour2dLayout(t));
+    const h = t.history[Math.min(line.step, t.history.length - 1)] || { activities: {} };
+    const col = pwColor(t.pathway_id), hl = new Set(line.highlight_nodes || []);
+    const mk = (id, inner) => '<marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' + inner + "</marker>";
+    let s = "<defs>" + mk("tg-act", '<path d="M0,1 L10,5 L0,9 z" fill="#9aabb9"/>') + mk("tg-inh", '<path d="M8,0 L8,10" stroke="#9aabb9" stroke-width="3"/>') +
+      mk("tg-tx", '<circle cx="5" cy="5" r="3.6" fill="none" stroke="#9aabb9" stroke-width="1.6"/>') + "</defs>";
+    (t.route || []).forEach((e) => {
+      const a = L.pos[e.source], b = L.pos[e.target]; if (!a || !b) return;
+      const g = TOUR_GLYPH[e.interaction] || "act", on = line.kind === "route" && e.edge_id === line.edge_id;
+      const done = line.kind === "off_route" || (line.kind === "route" && e.first_step <= line.step);
+      const x1 = a.x + (b.x >= a.x ? L.NW / 2 : -L.NW / 2), x2 = b.x + (b.x >= a.x ? -L.NW / 2 - 2 : L.NW / 2 + 2);
+      s += '<path class="e ' + g + (done ? " done" : "") + (on ? " on" : "") + '" data-edge="' + esc(e.edge_id) + '" d="M' + x1 + "," + a.y + " C" + (x1 + x2) / 2 + "," + a.y + " " + (x1 + x2) / 2 + "," + b.y + " " + x2 + "," + b.y + '"' +
+        (g === "mem" ? "" : ' marker-end="url(#tg-' + g + ')"') + (on ? ' style="stroke:' + col + '"' : "") + "><title>" + esc(tourLabel(t, e.source) + " " + (VERB[e.interaction] || e.interaction) + " " + tourLabel(t, e.target) + " (" + e.edge_id + ")") + "</title></path>";
+    });
+    L.ids.forEach((id) => {
+      const p = L.pos[id], sg = tourSign(h.activities[id] || 0), lab = tourLabel(t, id);
+      const short = lab.length > 15 ? lab.slice(0, 14) + "…" : lab;
+      s += '<g class="n' + (id === t.input ? " seed" : "") + (hl.has(id) ? " hl" : "") + (sg > 0 ? " up" : sg < 0 ? " down" : "") + '" data-id="' + esc(id) + '" transform="translate(' + (p.x - L.NW / 2) + "," + (p.y - L.NH / 2) + ')"><title>' + esc(lab) + (id === t.input ? " (tour input)" : "") + "</title>" +
+        '<rect width="' + L.NW + '" height="' + L.NH + '" rx="8"' + (hl.has(id) ? ' style="stroke:' + col + '"' : "") + '/><text x="8" y="19">' + esc(short) + '</text><text class="sg" x="' + (L.NW - 14) + '" y="19">' + (sg > 0 ? "↑" : sg < 0 ? "↓" : "") + "</text></g>";
+    });
+    const svg = tourEl("tp-svg");
+    svg.setAttribute("viewBox", "0 0 " + L.W + " " + L.H);
+    svg.style.minWidth = Math.round(L.W * 0.75) + "px";
+    svg.innerHTML = s;
+    const pts = L.ids.map((id) => [id, nodePos[id]]).filter((x) => x[1]), all = Object.values(nodePos);
+    let loc = '<rect class="cell" x="4" y="4" width="112" height="56" rx="24"/>';
+    if (all.length && pts.length) {
+      const ext = ["x", "y", "z"].map((k) => { const v = all.map((q) => q[k]); return { k, lo: Math.min(...v), hi: Math.max(...v) }; }).sort((p, q) => (q.hi - q.lo) - (p.hi - p.lo));
+      const [u, w] = ext, f = (v, e, a, b) => a + (e.hi > e.lo ? (v - e.lo) / (e.hi - e.lo) : 0.5) * (b - a);
+      pts.forEach(([id, q]) => { loc += '<circle data-id="' + esc(id) + '" cx="' + f(q[u.k], u, 14, 106).toFixed(1) + '" cy="' + f(q[w.k], w, 52, 12).toFixed(1) + '" r="' + (hl.has(id) ? 3.6 : 2.2) + '" fill="' + (hl.has(id) ? col : "#8a9aa8") + '"/>'; });
+    }
+    tourEl("tp-loc").innerHTML = loc;
+  }
+  tourEl("tp-view").onchange = (ev) => { tourView = ev.target.value === "2d" ? "2d" : "3d"; tour2dRender(); };
+  window.__tour2d = () => tourCur && !tourEl("tp-2d").hidden ? {
+    nodes: [...tourEl("tp-svg").querySelectorAll(".n")].map((g) => ({ id: g.getAttribute("data-id"), cls: g.getAttribute("class") })),
+    edges: [...tourEl("tp-svg").querySelectorAll(".e")].map((p) => ({ id: p.getAttribute("data-edge"), cls: p.getAttribute("class") })),
+    loc: tourEl("tp-loc").querySelectorAll("circle").length } : null;
   tourEl("tp-prev").onclick = () => { if (tourCur) tourShow(tourCur.i - 1); };
   tourEl("tp-next").onclick = () => { if (tourCur) tourShow(tourCur.i + 1); };
   tourEl("tp-replay").onclick = () => {
