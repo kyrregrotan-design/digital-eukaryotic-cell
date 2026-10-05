@@ -1,27 +1,28 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T10:15:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-05T10:20:03+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage A step 3: Advanced look preset",
-                                  "status":  "done",
-                                  "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Finish log",
+                                  "task":  "Stage A step 3: palette anchors, shell opacity, depth cues",
+                                  "status":  "running",
+                                  "step":  4,
+                                  "total":  6,
+                                  "percent":  65,
+                                  "step_title":  "Tests and re-export",
                                   "steps":  [
-                                                "Read spec and look code",
-                                                "Build Advanced preset",
+                                                "Read spec and code",
+                                                "Palette-anchor overrides",
+                                                "Per-tier shell opacity",
                                                 "Tests and re-export",
-                                                "Runtime browser check",
-                                                "Finish log"
+                                                "Browser check",
+                                                "Log and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  98,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T09:34:25+02:00",
-                                  "last_run":  "2026-10-05T09:23:22+02:00",
-                                  "next_run":  "2026-10-05T10:15:00+02:00"
+                                  "updated":  "2026-10-05T10:18:20+02:00",
+                                  "last_run":  "2026-10-05T10:15:01+02:00",
+                                  "next_run":  "2026-10-05T11:15:00+02:00"
                               },
                    "codex":  {
                                  "task":  "Review Advanced graphics preset",
@@ -44,10 +45,10 @@
                              }
                },
     "next_run":  {
-                     "agent":  "cursor",
-                     "time":  "2026-10-05T10:15:00+02:00"
+                     "agent":  "codex",
+                     "time":  "2026-10-05T10:45:00+02:00"
                  },
-    "today_runs":  23,
+    "today_runs":  24,
     "queue":  [
 
               ],
