@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T15:05:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-05T15:10:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A step 5: narrow breadcrumb/opener fix (Codex correction 1)",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  65,
-                                  "step_title":  "Real-pointer narrow interior check + desktop spot check",
+                                  "percent":  100,
+                                  "step_title":  "Finish log entry",
                                   "steps":  [
                                                 "Read logs and plan",
                                                 "Apply responsive breadcrumb CSS",
@@ -18,29 +18,29 @@
                                                 "Inspect screenshots",
                                                 "Finish log entry"
                                             ],
-                                  "eta_seconds":  12,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T15:00:56+02:00",
+                                  "updated":  "2026-10-05T15:05:31+02:00",
                                   "last_run":  "2026-10-05T14:57:00+02:00",
                                   "next_run":  "2026-10-05T15:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Stage A layout fix review",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review narrow breadcrumb correction",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "percent":  30.9,
+                                 "step_title":  "Verify saved runs and screenshots",
                                  "steps":  [
-                                               "Review layout code",
-                                               "Check saved browser evidence",
-                                               "Test narrow interior",
-                                               "Record verdict and handoff"
+                                               "Inspect correction and acceptance helper",
+                                               "Verify saved runs and screenshots",
+                                               "Check label overlap and narrow controls",
+                                               "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  568,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T14:56:41+02:00",
-                                 "last_run":  "2026-10-05T14:45:02+02:00",
+                                 "updated":  "2026-10-05T15:09:15+02:00",
+                                 "last_run":  "2026-10-05T15:05:50+02:00",
                                  "next_run":  "2026-10-05T15:45:00+02:00"
                              }
                },
@@ -48,11 +48,16 @@
                      "agent":  "cursor",
                      "time":  "2026-10-05T15:15:00+02:00"
                  },
-    "today_runs":  35,
+    "today_runs":  36,
     "queue":  [
 
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Stage A step 5: narrow breadcrumb/opener fix (Codex correction 1)",
+                       "finished":  "2026-10-05T15:05:31+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Stage A layout fix review",
@@ -77,11 +82,6 @@
                        "agent":  "cursor",
                        "task":  "Stage A step 5: acceptance matrix (part 1)",
                        "finished":  "2026-10-05T12:34:27+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review blocked-storage correction",
-                       "finished":  "2026-10-05T12:22:56+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
