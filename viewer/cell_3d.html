@@ -361,7 +361,7 @@
 </div>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-04 23:17 (Europe/Oslo)",
+  "generated_at": "2026-10-05 08:13 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -3435,7 +3435,7 @@
             "label": "Cell junctions and apical-basal polarity",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Atlas detail: anatomy_details 'ceaj' (C. elegans apical junction) and 'terminal_web_endotube'. Atlas-only; no permeability or neighbour-cell simulation."
           }
         ],
         "coverage": {
@@ -3469,7 +3469,7 @@
             "label": "Actin core and terminal web",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Atlas detail: anatomy_details 'terminal_web_endotube' (actin-rich terminal web and associated IF-rich endotube). Atlas-only; no force, turnover or mechanics simulated."
           }
         ],
         "coverage": {
@@ -3567,7 +3567,7 @@
             "label": "Intermediate filaments",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Atlas detail: anatomy_details 'terminal_web_endotube' (IFB-2/IFC-2 in the subapical endotube; IFO-1 as organizer)."
           }
         ],
         "coverage": {
@@ -4112,6 +4112,186 @@
           "simulation_implemented": "none"
         },
         "gaps": "No ribosomal protein inventory imported."
+      }
+    ],
+    "anatomy_details": [
+      {
+        "id": "gut_granules",
+        "label": "Gut granules (intestinal lysosome-related organelles)",
+        "kind": "lysosome_related_organelle_population",
+        "parent_compartment": "cytosol",
+        "linked_process_ids": [],
+        "distinct_from": [
+          "lysosomes",
+          "lipid_droplets"
+        ],
+        "proteins": [
+          {
+            "symbol": "GLO-1",
+            "role": "Source-supported role in gut-granule biogenesis"
+          },
+          {
+            "symbol": "PGP-2",
+            "role": "Source-supported role in gut-granule biogenesis"
+          }
+        ],
+        "note": "Specialized intestinal lysosome-related organelles with autofluorescent contents. GLO-1 and PGP-2 have source-supported roles in their biogenesis; assay and life-stage scope are recorded per source. Gut granules are distinct from the major neutral-lipid stores. Number, colour and placement in this view are schematic.",
+        "scope_notes": [
+          "Kept distinct from both the lipid-droplet inventory and ordinary degradative lysosomes.",
+          "The historical fat-storage interpretation in Schroeder et al. 2007 is not used as the organelle definition (O'Rourke et al. 2009).",
+          "Autofluorescence is not a quantitative fat, age or flux meter.",
+          "Several GLO-1 protein-colocalization figures are embryonic and keep that scope."
+        ],
+        "sources": [
+          {
+            "citation": "Schroeder et al. 2007, PMID 17202409",
+            "doi": null,
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1805080/",
+            "note": "Reports PGP-2 localization and gut-granule defects in adults as well as embryos. Verified by Codex 2026-10-04 (codex_findings_2026-10-04.md, 18:47)."
+          },
+          {
+            "citation": "Morris et al. 2018, PLoS Genetics 14(11):e1007772. Function and regulation of the Caenorhabditis elegans Rab32 family member GLO-1 in lysosome-related organelle biogenesis.",
+            "doi": "10.1371/journal.pgen.1007772",
+            "url": "https://doi.org/10.1371/journal.pgen.1007772",
+            "note": "Separates embryonic assays from adult autofluorescent-granule measurements (Table 2). Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "O'Rourke et al. 2009, PMID 19883620",
+            "doi": "10.1016/j.cmet.2009.10.002",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/19883620/",
+            "note": "Experimentally distinguishes the major neutral-fat stores from the lysosome-related organelles labelled by vital dyes. Verified by Codex 2026-10-04 (18:47)."
+          }
+        ],
+        "display": "schematic",
+        "simulation_links": [],
+        "added": "2026-10-05",
+        "gaps": "No glo-1/pgp-2 perturbation model or immune/stress cascade (needs separate source mapping, scoring and approval); no WBGene/GO identifiers imported for these proteins."
+      },
+      {
+        "id": "ceaj",
+        "label": "Apical junction (CeAJ)",
+        "kind": "intercellular_junction",
+        "parent_compartment": "plasma_membrane",
+        "linked_process_ids": [
+          "pm_junctions_polarity"
+        ],
+        "distinct_from": [],
+        "proteins": [
+          {
+            "symbol": "DLG-1",
+            "role": "DLG-1/AJM-1 junctional assembly"
+          },
+          {
+            "symbol": "AJM-1",
+            "role": "DLG-1/AJM-1 junctional assembly"
+          },
+          {
+            "symbol": "HMR-1",
+            "role": "Cadherin/catenin CeAJ assembly: E-cadherin (gene hmr-1)"
+          },
+          {
+            "symbol": "HMP-1",
+            "role": "Cadherin/catenin CeAJ assembly: alpha-catenin (gene hmp-1)"
+          },
+          {
+            "symbol": "HMP-2",
+            "role": "Cadherin/catenin CeAJ assembly: beta-catenin (gene hmp-2)"
+          }
+        ],
+        "note": "The C. elegans apical junction (CeAJ) connects adjacent intestinal cells near their apical border. Cadherin/catenin and DLG-1/AJM-1 assemblies have distinct source-supported roles. This single-cell view shows a schematic neighbouring membrane for context; it does not simulate intercellular transport or permeability.",
+        "scope_notes": [
+          "Not relabelled as a complete mammalian tight-junction/desmosome system.",
+          "Developmental assembly results are not presented as measured adult permeability or kinetics.",
+          "A disturbed endotube need not imply loss of the intestinal barrier (Geisler et al. 2016, SMA-5 mutants); leakiness is not inferred from cytoskeletal shape.",
+          "Drawn as a thin adjoining-cell boundary, not as a free-standing intracellular ring."
+        ],
+        "sources": [
+          {
+            "citation": "Geisler et al. 2016, PMID 27733627",
+            "doi": "10.1091/mbc.E16-02-0099",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5170608/",
+            "note": "DLG-1 immunostaining in isolated adult intestines (Fig. 7); SMA-5 mutant results. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "McMahon et al. 2001, Journal of Cell Science 114(Pt 12):2265-2277. Assembly of C. elegans apical junctions involves positioning and compaction by LET-413 and protein aggregation by the MAGUK protein DLG-1.",
+            "doi": "10.1242/jcs.114.12.2265",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/11493666/",
+            "note": "Distinguishes the DLG-1-associated junctional unit from the cadherin/catenin unit; developmental assembly evidence. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Bernadskaya et al. 2011, Molecular Biology of the Cell 22(16):2886-2899. Arp2/3 promotes junction formation and maintenance in the Caenorhabditis elegans intestine by regulating membrane association of apical proteins.",
+            "doi": "10.1091/mbc.E10-10-0862",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3154884/",
+            "note": "Separates embryonic morphogenesis from adult intestinal endpoints after RNAi begun at L1 (Figs. 2-3); adult endpoints are not adult-only perturbation kinetics or a permeability measurement. Bibliography and assay scope checked by Codex 2026-10-05."
+          },
+          {
+            "citation": "Cordova-Burgos et al. 2021, Journal of Developmental Biology 9(2):19. E-Cadherin/HMR-1 Membrane Enrichment Is Polarized by WAVE-Dependent Branched Actin.",
+            "doi": "10.3390/jdb9020019",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8162361/",
+            "note": "Introduction identifies HMR-1/E-cadherin, HMP-1/alpha-catenin and HMP-2/beta-catenin in the cadherin/catenin complex. Component labels only; no new simulation edge, evidence score or quantitative parameter. Verified by Codex 2026-10-05."
+          }
+        ],
+        "display": "schematic",
+        "simulation_links": [],
+        "added": "2026-10-05",
+        "gaps": "No WBGene/GO identifiers imported; no signed influence edges, permeability constants or neighbour-cell simulation."
+      },
+      {
+        "id": "terminal_web_endotube",
+        "label": "Actin-rich terminal web and associated IF-rich endotube",
+        "kind": "subapical_cytoskeletal_assembly",
+        "parent_compartment": "apical_microvilli",
+        "linked_process_ids": [
+          "mv_actin_core",
+          "cs_actin",
+          "cs_intermediate",
+          "pm_junctions_polarity"
+        ],
+        "distinct_from": [],
+        "proteins": [
+          {
+            "symbol": "IFB-2",
+            "role": "Intermediate-filament protein of the endotube"
+          },
+          {
+            "symbol": "IFC-2",
+            "role": "Intermediate-filament protein of the endotube"
+          },
+          {
+            "symbol": "IFO-1",
+            "role": "Intestinal filament organizer (not a filament subunit)"
+          }
+        ],
+        "note": "The brush border overlies a subapical cytoskeletal assembly. IFB-2 and IFC-2 belong to the intermediate-filament-rich endotube; IFO-1 organizes this network. These layers and their junctional contacts are drawn schematically. No force, turnover rate or mechanical response is simulated.",
+        "scope_notes": [
+          "The actin-rich terminal web is distinguished from the underlying intermediate-filament-rich endotube; some older descriptions include the endotube within the terminal web.",
+          "Adult staining in Geisler et al. 2016 Fig. 7 separates IFB-2/IFC-2, DLG-1 and apical F-actin.",
+          "Does not authorize a microvillar ripple, cytoskeleton cargo motion, an SMA-5 cascade or a mechanical solver."
+        ],
+        "sources": [
+          {
+            "citation": "Bossinger et al. 2004, PMID 15063180",
+            "doi": "10.1016/j.ydbio.2004.01.003",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/15063180/",
+            "note": "Localizes IFB-2 to the subapical endotube, reports persistence into adulthood and continuity with apical junctions. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Carberry et al. 2012, PMID 22510987",
+            "doi": "10.1242/dev.075788",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/22510987/",
+            "note": "Identifies IFO-1 as an intestinal filament organizer; abnormal IFB-2/IFC-2 distribution after its disruption. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Geisler et al. 2016, PMID 27733627",
+            "doi": "10.1091/mbc.E16-02-0099",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5170608/",
+            "note": "Adult intestinal staining (Fig. 7). Verified by Codex 2026-10-04 (18:47)."
+          }
+        ],
+        "display": "schematic",
+        "simulation_links": [],
+        "added": "2026-10-05",
+        "gaps": "No WBGene/GO identifiers imported; no actin terminal-web protein inventory [REF NEEDED]."
       }
     ]
   },
@@ -7985,6 +8165,88 @@
       "pathway_ids": []
     },
     {
+      "key": "anatomy_detail:gut_granules",
+      "type": "anatomy_detail",
+      "id": "gut_granules",
+      "label": "Gut granules (intestinal lysosome-related organelles)",
+      "aliases": [
+        {
+          "text": "GLO-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "PGP-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        }
+      ],
+      "destination": {
+        "scheme": "wholecell_anatomy",
+        "id": "gut_granules",
+        "basis": "schematic atlas detail (display position, not localization evidence)"
+      },
+      "parent_compartment": "cytosol"
+    },
+    {
+      "key": "anatomy_detail:ceaj",
+      "type": "anatomy_detail",
+      "id": "ceaj",
+      "label": "Apical junction (CeAJ)",
+      "aliases": [
+        {
+          "text": "DLG-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "AJM-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "HMR-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "HMP-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "HMP-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        }
+      ],
+      "destination": {
+        "scheme": "wholecell_anatomy",
+        "id": "ceaj",
+        "basis": "schematic atlas detail (display position, not localization evidence)"
+      },
+      "parent_compartment": "plasma_membrane"
+    },
+    {
+      "key": "anatomy_detail:terminal_web_endotube",
+      "type": "anatomy_detail",
+      "id": "terminal_web_endotube",
+      "label": "Actin-rich terminal web and associated IF-rich endotube",
+      "aliases": [
+        {
+          "text": "IFB-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "IFC-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "IFO-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        }
+      ],
+      "destination": {
+        "scheme": "wholecell_anatomy",
+        "id": "terminal_web_endotube",
+        "basis": "schematic atlas detail (display position, not localization evidence)"
+      },
+      "parent_compartment": "apical_microvilli"
+    },
+    {
       "key": "atlas_compartment:cell",
       "type": "atlas_compartment",
       "id": "cell",
@@ -11037,7 +11299,8 @@
 
   // ---- search (embedded search_index) ----
   // Aliases keep their relation (an orthology term is not a synonym); only recorded destinations are used.
-  const SEARCH = MODEL.search_index || [];
+  // The classic viewer draws no schematic anatomy details, so they have no destination here.
+  const SEARCH = (MODEL.search_index || []).filter((e) => e.type !== "anatomy_detail");
   const SEARCH_GROUPS = {
     pathway_node: "Genes and model nodes", protein: "Atlas proteins", complex: "Complexes", carrier: "Carriers",
     pathway: "Pathways", compartment: "Compartments", atlas_compartment: "Atlas compartments",

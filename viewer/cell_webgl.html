@@ -125,6 +125,24 @@
   .srch-hit:hover, .srch-hit:focus { background: var(--accent-dim); outline: none; }
   .srch-alias, .srch-basis { display: block; font-size: 0.66rem; color: var(--muted); line-height: 1.35; }
   .srch-none { font-size: 0.72rem; color: var(--muted); padding: 4px 2px; }
+  #tour-list .b { text-align: left; }
+  #tour-player { left: 50%; transform: translateX(-50%); bottom: 16px; width: min(720px, calc(100vw - 32px)); padding: 10px 14px; display: none; }
+  body.touring #tour-player { display: block; }
+  body.touring #legend { display: none; }
+  #tp-step { display: block; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); }
+  #tp-title { display: block; font-size: 0.92rem; margin: 2px 0 4px; }
+  #tp-sub { font-size: 0.82rem; line-height: 1.5; color: #e6edf2; max-height: 7.5em; overflow-y: auto; }
+  #tp-bar { height: 2px; background: var(--line); border-radius: 2px; margin: 8px 0; overflow: hidden; }
+  #tp-prog { height: 100%; width: 0; background: var(--accent); }
+  #tp-ctrl { align-items: center; }
+  #tp-ctrl label { font-size: 0.72rem; color: var(--muted); display: inline-flex; align-items: center; gap: 4px; }
+  #tour-player select { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); border-radius: 8px; padding: 5px 6px; font: inherit; font-size: 0.74rem; }
+  #tour-player select option { background: #16222e; }
+  #tp-voice-note { margin-top: 6px; font-size: 0.68rem; color: var(--muted); }
+  .tour-act { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+  .tour-act td { padding: 2px 4px; border-bottom: 1px solid var(--line); }
+  .tour-act td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .tour-flag { color: #f2c46d; }
 </style>
 </head>
 <body>
@@ -151,6 +169,11 @@
     <div class="row"><button class="b" id="whatif-open">Gene knockouts and medium changes</button></div>
     <div class="note" id="whatif-sec-note">Precomputed FBA results from the WormJam whole-animal model: model calculation, not yet benchmarked.</div>
   </div>
+  <div class="section outer-only" id="tours-sec">
+    <p class="title">Narrated tours (signal cascade)</p>
+    <div class="row" id="tour-list"></div>
+    <div class="note" id="tours-sec-note">English voice with subtitles; every step can also be read and stepped through without sound. Precomputed by the Python cascade engine: qualitative, not kinetic.</div>
+  </div>
   <div class="section inside-only" id="inside-sec"></div>
   <div class="section outer-only">
     <p class="title">Signalling pathways</p>
@@ -176,6 +199,10 @@
     <label><input type="checkbox" id="t-labels" checked /> Organelle names</label>
     <label><input type="checkbox" id="t-genes" /> All gene names</label>
     <label><input type="checkbox" id="t-flow" checked /> Ambient signal flow</label>
+    <label><input type="checkbox" id="t-motion" checked /> Illustrative motion</label>
+    <div class="note" id="motion-note">Illustration, not simulation. Vesicles bud from the ER and travel to the Golgi (COPII; generic overview source: Reactome R-CEL-203973, computationally inferred from human, not worm or adult-intestinal evidence). From the trans-Golgi, green vesicles go to the plasma membrane and purple ones towards lysosomes, and an autophagosome fuses with a lysosome to form an autolysosome (textbook overview; source [REF NEEDED]). Paths, vesicle numbers and timing are arbitrary display choices, not measured speeds or rates. The plasma-membrane arrival points do not show apical or basolateral sorting: the model has no sourced sorting data.</div>
+    <label><input type="checkbox" id="t-anatomy" checked /> Atlas anatomy details (schematic)</label>
+    <div class="note" id="anatomy-note">Gut granules (blue-teal), the apical junction (CeAJ, green band) on a faint neighbouring-cell boundary, and the terminal web (yellow) above the IF-rich endotube (pink) under the brush border. Sourced atlas records, drawn schematically: number, size, colour and position are display choices. Not simulated. Click one for its sources and cautions.</div>
     <label><input type="checkbox" id="t-spin" /> Slow rotation</label>
     <div class="row" style="margin-top:6px"><button class="b" id="reset-view">Reset view</button></div>
   </div>
@@ -206,6 +233,23 @@
   <div class="row" id="cap-kd"></div>
   <div id="cap-legend"></div>
 </div>
+<div class="panel outer-only" id="tour-player" role="region" aria-label="Narrated tour player">
+  <span id="tp-step"></span><b id="tp-title"></b>
+  <div id="tp-sub" aria-live="polite"></div>
+  <div id="tp-bar"><div id="tp-prog"></div></div>
+  <div class="row" id="tp-ctrl">
+    <button class="b" id="tp-prev" title="Previous part">‹ Back</button>
+    <button class="b" id="tp-play">▶ Play</button>
+    <button class="b" id="tp-replay" title="Say this part again">↻ Replay</button>
+    <button class="b" id="tp-next" title="Next part">Next ›</button>
+    <select id="tp-rate" title="Speaking and reading speed"><option value="0.8">0.8×</option><option value="1" selected>1×</option><option value="1.2">1.2×</option></select>
+    <label><input type="checkbox" id="tp-voice" checked /> Voice</label>
+    <button class="b" id="tp-cards" title="Show this part's sources, caveats and limitations in the detail panel">Sources</button>
+    <span class="sep"></span>
+    <button class="b" id="tp-close" title="Close the tour (Esc)">✕ Close</button>
+  </div>
+  <div id="tp-voice-note"></div>
+</div>
 <div class="panel outer-only" id="legend">
   <span><svg width="34" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="#9aabb9" stroke-width="2"/><polygon points="26,1 34,5 26,9" fill="#9aabb9"/></svg>activates</span>
   <span><svg width="34" height="10"><line x1="0" y1="5" x2="30" y2="5" stroke="#9aabb9" stroke-width="2"/><line x1="31" y1="0" x2="31" y2="10" stroke="#9aabb9" stroke-width="3"/></svg>inhibits</span>
@@ -222,7 +266,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-04 23:17 (Europe/Oslo)",
+  "generated_at": "2026-10-05 08:13 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -3296,7 +3340,7 @@
             "label": "Cell junctions and apical-basal polarity",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Atlas detail: anatomy_details 'ceaj' (C. elegans apical junction) and 'terminal_web_endotube'. Atlas-only; no permeability or neighbour-cell simulation."
           }
         ],
         "coverage": {
@@ -3330,7 +3374,7 @@
             "label": "Actin core and terminal web",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Atlas detail: anatomy_details 'terminal_web_endotube' (actin-rich terminal web and associated IF-rich endotube). Atlas-only; no force, turnover or mechanics simulated."
           }
         ],
         "coverage": {
@@ -3428,7 +3472,7 @@
             "label": "Intermediate filaments",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Atlas detail: anatomy_details 'terminal_web_endotube' (IFB-2/IFC-2 in the subapical endotube; IFO-1 as organizer)."
           }
         ],
         "coverage": {
@@ -3973,6 +4017,186 @@
           "simulation_implemented": "none"
         },
         "gaps": "No ribosomal protein inventory imported."
+      }
+    ],
+    "anatomy_details": [
+      {
+        "id": "gut_granules",
+        "label": "Gut granules (intestinal lysosome-related organelles)",
+        "kind": "lysosome_related_organelle_population",
+        "parent_compartment": "cytosol",
+        "linked_process_ids": [],
+        "distinct_from": [
+          "lysosomes",
+          "lipid_droplets"
+        ],
+        "proteins": [
+          {
+            "symbol": "GLO-1",
+            "role": "Source-supported role in gut-granule biogenesis"
+          },
+          {
+            "symbol": "PGP-2",
+            "role": "Source-supported role in gut-granule biogenesis"
+          }
+        ],
+        "note": "Specialized intestinal lysosome-related organelles with autofluorescent contents. GLO-1 and PGP-2 have source-supported roles in their biogenesis; assay and life-stage scope are recorded per source. Gut granules are distinct from the major neutral-lipid stores. Number, colour and placement in this view are schematic.",
+        "scope_notes": [
+          "Kept distinct from both the lipid-droplet inventory and ordinary degradative lysosomes.",
+          "The historical fat-storage interpretation in Schroeder et al. 2007 is not used as the organelle definition (O'Rourke et al. 2009).",
+          "Autofluorescence is not a quantitative fat, age or flux meter.",
+          "Several GLO-1 protein-colocalization figures are embryonic and keep that scope."
+        ],
+        "sources": [
+          {
+            "citation": "Schroeder et al. 2007, PMID 17202409",
+            "doi": null,
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1805080/",
+            "note": "Reports PGP-2 localization and gut-granule defects in adults as well as embryos. Verified by Codex 2026-10-04 (codex_findings_2026-10-04.md, 18:47)."
+          },
+          {
+            "citation": "Morris et al. 2018, PLoS Genetics 14(11):e1007772. Function and regulation of the Caenorhabditis elegans Rab32 family member GLO-1 in lysosome-related organelle biogenesis.",
+            "doi": "10.1371/journal.pgen.1007772",
+            "url": "https://doi.org/10.1371/journal.pgen.1007772",
+            "note": "Separates embryonic assays from adult autofluorescent-granule measurements (Table 2). Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "O'Rourke et al. 2009, PMID 19883620",
+            "doi": "10.1016/j.cmet.2009.10.002",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/19883620/",
+            "note": "Experimentally distinguishes the major neutral-fat stores from the lysosome-related organelles labelled by vital dyes. Verified by Codex 2026-10-04 (18:47)."
+          }
+        ],
+        "display": "schematic",
+        "simulation_links": [],
+        "added": "2026-10-05",
+        "gaps": "No glo-1/pgp-2 perturbation model or immune/stress cascade (needs separate source mapping, scoring and approval); no WBGene/GO identifiers imported for these proteins."
+      },
+      {
+        "id": "ceaj",
+        "label": "Apical junction (CeAJ)",
+        "kind": "intercellular_junction",
+        "parent_compartment": "plasma_membrane",
+        "linked_process_ids": [
+          "pm_junctions_polarity"
+        ],
+        "distinct_from": [],
+        "proteins": [
+          {
+            "symbol": "DLG-1",
+            "role": "DLG-1/AJM-1 junctional assembly"
+          },
+          {
+            "symbol": "AJM-1",
+            "role": "DLG-1/AJM-1 junctional assembly"
+          },
+          {
+            "symbol": "HMR-1",
+            "role": "Cadherin/catenin CeAJ assembly: E-cadherin (gene hmr-1)"
+          },
+          {
+            "symbol": "HMP-1",
+            "role": "Cadherin/catenin CeAJ assembly: alpha-catenin (gene hmp-1)"
+          },
+          {
+            "symbol": "HMP-2",
+            "role": "Cadherin/catenin CeAJ assembly: beta-catenin (gene hmp-2)"
+          }
+        ],
+        "note": "The C. elegans apical junction (CeAJ) connects adjacent intestinal cells near their apical border. Cadherin/catenin and DLG-1/AJM-1 assemblies have distinct source-supported roles. This single-cell view shows a schematic neighbouring membrane for context; it does not simulate intercellular transport or permeability.",
+        "scope_notes": [
+          "Not relabelled as a complete mammalian tight-junction/desmosome system.",
+          "Developmental assembly results are not presented as measured adult permeability or kinetics.",
+          "A disturbed endotube need not imply loss of the intestinal barrier (Geisler et al. 2016, SMA-5 mutants); leakiness is not inferred from cytoskeletal shape.",
+          "Drawn as a thin adjoining-cell boundary, not as a free-standing intracellular ring."
+        ],
+        "sources": [
+          {
+            "citation": "Geisler et al. 2016, PMID 27733627",
+            "doi": "10.1091/mbc.E16-02-0099",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5170608/",
+            "note": "DLG-1 immunostaining in isolated adult intestines (Fig. 7); SMA-5 mutant results. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "McMahon et al. 2001, Journal of Cell Science 114(Pt 12):2265-2277. Assembly of C. elegans apical junctions involves positioning and compaction by LET-413 and protein aggregation by the MAGUK protein DLG-1.",
+            "doi": "10.1242/jcs.114.12.2265",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/11493666/",
+            "note": "Distinguishes the DLG-1-associated junctional unit from the cadherin/catenin unit; developmental assembly evidence. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Bernadskaya et al. 2011, Molecular Biology of the Cell 22(16):2886-2899. Arp2/3 promotes junction formation and maintenance in the Caenorhabditis elegans intestine by regulating membrane association of apical proteins.",
+            "doi": "10.1091/mbc.E10-10-0862",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3154884/",
+            "note": "Separates embryonic morphogenesis from adult intestinal endpoints after RNAi begun at L1 (Figs. 2-3); adult endpoints are not adult-only perturbation kinetics or a permeability measurement. Bibliography and assay scope checked by Codex 2026-10-05."
+          },
+          {
+            "citation": "Cordova-Burgos et al. 2021, Journal of Developmental Biology 9(2):19. E-Cadherin/HMR-1 Membrane Enrichment Is Polarized by WAVE-Dependent Branched Actin.",
+            "doi": "10.3390/jdb9020019",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8162361/",
+            "note": "Introduction identifies HMR-1/E-cadherin, HMP-1/alpha-catenin and HMP-2/beta-catenin in the cadherin/catenin complex. Component labels only; no new simulation edge, evidence score or quantitative parameter. Verified by Codex 2026-10-05."
+          }
+        ],
+        "display": "schematic",
+        "simulation_links": [],
+        "added": "2026-10-05",
+        "gaps": "No WBGene/GO identifiers imported; no signed influence edges, permeability constants or neighbour-cell simulation."
+      },
+      {
+        "id": "terminal_web_endotube",
+        "label": "Actin-rich terminal web and associated IF-rich endotube",
+        "kind": "subapical_cytoskeletal_assembly",
+        "parent_compartment": "apical_microvilli",
+        "linked_process_ids": [
+          "mv_actin_core",
+          "cs_actin",
+          "cs_intermediate",
+          "pm_junctions_polarity"
+        ],
+        "distinct_from": [],
+        "proteins": [
+          {
+            "symbol": "IFB-2",
+            "role": "Intermediate-filament protein of the endotube"
+          },
+          {
+            "symbol": "IFC-2",
+            "role": "Intermediate-filament protein of the endotube"
+          },
+          {
+            "symbol": "IFO-1",
+            "role": "Intestinal filament organizer (not a filament subunit)"
+          }
+        ],
+        "note": "The brush border overlies a subapical cytoskeletal assembly. IFB-2 and IFC-2 belong to the intermediate-filament-rich endotube; IFO-1 organizes this network. These layers and their junctional contacts are drawn schematically. No force, turnover rate or mechanical response is simulated.",
+        "scope_notes": [
+          "The actin-rich terminal web is distinguished from the underlying intermediate-filament-rich endotube; some older descriptions include the endotube within the terminal web.",
+          "Adult staining in Geisler et al. 2016 Fig. 7 separates IFB-2/IFC-2, DLG-1 and apical F-actin.",
+          "Does not authorize a microvillar ripple, cytoskeleton cargo motion, an SMA-5 cascade or a mechanical solver."
+        ],
+        "sources": [
+          {
+            "citation": "Bossinger et al. 2004, PMID 15063180",
+            "doi": "10.1016/j.ydbio.2004.01.003",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/15063180/",
+            "note": "Localizes IFB-2 to the subapical endotube, reports persistence into adulthood and continuity with apical junctions. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Carberry et al. 2012, PMID 22510987",
+            "doi": "10.1242/dev.075788",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/22510987/",
+            "note": "Identifies IFO-1 as an intestinal filament organizer; abnormal IFB-2/IFC-2 distribution after its disruption. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Geisler et al. 2016, PMID 27733627",
+            "doi": "10.1091/mbc.E16-02-0099",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5170608/",
+            "note": "Adult intestinal staining (Fig. 7). Verified by Codex 2026-10-04 (18:47)."
+          }
+        ],
+        "display": "schematic",
+        "simulation_links": [],
+        "added": "2026-10-05",
+        "gaps": "No WBGene/GO identifiers imported; no actin terminal-web protein inventory [REF NEEDED]."
       }
     ]
   },
@@ -7846,6 +8070,88 @@
       "pathway_ids": []
     },
     {
+      "key": "anatomy_detail:gut_granules",
+      "type": "anatomy_detail",
+      "id": "gut_granules",
+      "label": "Gut granules (intestinal lysosome-related organelles)",
+      "aliases": [
+        {
+          "text": "GLO-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "PGP-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        }
+      ],
+      "destination": {
+        "scheme": "wholecell_anatomy",
+        "id": "gut_granules",
+        "basis": "schematic atlas detail (display position, not localization evidence)"
+      },
+      "parent_compartment": "cytosol"
+    },
+    {
+      "key": "anatomy_detail:ceaj",
+      "type": "anatomy_detail",
+      "id": "ceaj",
+      "label": "Apical junction (CeAJ)",
+      "aliases": [
+        {
+          "text": "DLG-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "AJM-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "HMR-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "HMP-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "HMP-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        }
+      ],
+      "destination": {
+        "scheme": "wholecell_anatomy",
+        "id": "ceaj",
+        "basis": "schematic atlas detail (display position, not localization evidence)"
+      },
+      "parent_compartment": "plasma_membrane"
+    },
+    {
+      "key": "anatomy_detail:terminal_web_endotube",
+      "type": "anatomy_detail",
+      "id": "terminal_web_endotube",
+      "label": "Actin-rich terminal web and associated IF-rich endotube",
+      "aliases": [
+        {
+          "text": "IFB-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "IFC-2",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        },
+        {
+          "text": "IFO-1",
+          "relation": "protein named in this atlas detail's sources (not a gene or simulation link)"
+        }
+      ],
+      "destination": {
+        "scheme": "wholecell_anatomy",
+        "id": "terminal_web_endotube",
+        "basis": "schematic atlas detail (display position, not localization evidence)"
+      },
+      "parent_compartment": "apical_microvilli"
+    },
+    {
       "key": "atlas_compartment:cell",
       "type": "atlas_compartment",
       "id": "cell",
@@ -9697,7 +10003,7 @@
     lamp2.position.set(-7, 2, -3); lamp2.lookAt(0, 0, 0); env.add(lamp2);
     scene.environment = pmrem.fromScene(env, 0.04).texture;  })();
 
-  scene.add(new THREE.HemisphereLight(0xe6eeff, 0x3a2414, 0.55));
+  const hemi = new THREE.HemisphereLight(0xe6eeff, 0x3a2414, 0.55); scene.add(hemi);
   const key = new THREE.DirectionalLight(0xfff4e6, 2.2); key.position.set(4, 7, 6); scene.add(key);
   const fill = new THREE.DirectionalLight(0x9db8ff, 0.6); fill.position.set(-6, 2, -2); scene.add(fill);
   const inner = new THREE.PointLight(0xffb470, 3, 6, 1.6); inner.position.set(0.2, 0.3, 0.6); scene.add(inner);
@@ -9734,6 +10040,10 @@
     im.instanceMatrix.needsUpdate = true;
     return add(im, comp);
   }
+  // Ordinary display spheres whose segment counts follow the quality tier. Noise-shaped shells, partial spheres
+  // (ER sheets, cutaway caps) and bilayer/crista/pore geometry are never registered.
+  const DSPHERES = [];
+  function dsph(obj, small) { DSPHERES.push({ obj, base: obj.geometry, small: !!small }); return obj; }
   function placeM(pos, scale, quat) {
     return new THREE.Matrix4().compose(pos, quat || new THREE.Quaternion(), typeof scale === "number" ? V(scale, scale, scale) : scale);
   }
@@ -9792,7 +10102,7 @@
       if (!kept(p, 0.04) || p.y / AX.y > 0.8) continue;
       ms.push(placeM(p, 0.035 + r() * 0.035));
     }
-    instanced(new THREE.SphereGeometry(1, 14, 10), mat("plasma_membrane", { color: 0x8f78d8, roughness: 0.35, clearcoat: 0.6, emissive: new THREE.Color(0x000000) }), ms, "plasma_membrane");
+    dsph(instanced(new THREE.SphereGeometry(1, 14, 10), mat("plasma_membrane", { color: 0x8f78d8, roughness: 0.35, clearcoat: 0.6, emissive: new THREE.Color(0x000000) }), ms, "plasma_membrane"), true);
   })();
 
   // apical microvilli (brush border)
@@ -9907,7 +10217,7 @@
       if (!kept(p)) continue;
       ms.push(placeM(p, 0.017));
     }
-    instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes");
+    dsph(instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes"), true);
   })();
 
   // ---------------------------------------------------------------- smooth ER
@@ -9947,7 +10257,7 @@
     const vm = mat("golgi", { color: 0x7fd77a, roughness: 0.3, clearcoat: 0.8, emissive: new THREE.Color(0x000000) });
     for (let i = 0; i < 16; i++) {
       const a = r() * Math.PI * 2, rad = 0.62 + r() * 0.2;
-      const s = pickable(new THREE.Mesh(new THREE.SphereGeometry(0.045 + r() * 0.035, 20, 14), vm), "golgi");
+      const s = pickable(dsph(new THREE.Mesh(new THREE.SphereGeometry(0.045 + r() * 0.035, 20, 14), vm)), "golgi");
       s.position.set(Math.cos(a) * rad * 1.1, 0.15 + r() * 0.45, Math.sin(a) * rad * 0.6);
       group.add(s);
     }
@@ -9992,7 +10302,7 @@
   // ---------------------------------------------------------------- vesicular organelles
   function glassSphere(comp, p, r, color, opacity) {
     const m = mat(comp, { color, roughness: 0.15, clearcoat: 1, transparent: true, opacity: opacity, depthWrite: false, emissive: new THREE.Color(0x000000) });
-    const s = add(new THREE.Mesh(new THREE.SphereGeometry(r, 40, 28), m), comp);
+    const s = add(dsph(new THREE.Mesh(new THREE.SphereGeometry(r, 40, 28), m)), comp);
     s.position.copy(p);
     return s;
   }
@@ -10002,7 +10312,7 @@
       const d = V(rr() - 0.5, rr() - 0.5, rr() - 0.5).normalize().multiplyScalar(Math.cbrt(rr()) * r * 0.7);
       ms.push(placeM(center.clone().add(d), size * (0.6 + rr() * 0.8)));
     }
-    instanced(new THREE.SphereGeometry(1, 10, 8), mat(comp, { color, roughness: 0.5, emissive: new THREE.Color(color), emissiveIntensity: 0.25 }), ms, comp);
+    dsph(instanced(new THREE.SphereGeometry(1, 10, 8), mat(comp, { color, roughness: 0.5, emissive: new THREE.Color(color), emissiveIntensity: 0.25 }), ms, comp), true);
   }
   const LYSO = [V(1.55, -0.15, 0.3), V(1.85, -0.5, -0.35), V(0.95, 0.85, -0.6)];
   LYSO.forEach((p, i) => { const r = [0.17, 0.13, 0.12][i]; glassSphere("lysosomes", p, r, 0xa070e0, 0.6); innerParticles("lysosomes", p, r, 14, 0x5a2a9a, 0.022, 60 + i); });
@@ -10027,7 +10337,7 @@
   const LIPID = [V(0.55, 0.62, -0.75), V(-1.05, -1.0, -0.35), V(1.65, -0.95, -0.2), V(-0.15, -0.3, 0.55)];
   LIPID.forEach((p, i) => {
     const r = [0.16, 0.13, 0.12, 0.1][i];
-    const s = add(new THREE.Mesh(new THREE.SphereGeometry(r, 40, 28), mat("lipid_droplets", { color: 0xf3c64a, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05, emissive: new THREE.Color(0x3a2400), emissiveIntensity: 0.4 })), "lipid_droplets");
+    const s = add(dsph(new THREE.Mesh(new THREE.SphereGeometry(r, 40, 28), mat("lipid_droplets", { color: 0xf3c64a, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05, emissive: new THREE.Color(0x3a2400), emissiveIntensity: 0.4 }))), "lipid_droplets");
     s.position.copy(p);
   });
 
@@ -10046,7 +10356,7 @@
         ms.push(placeM(POLY.clone().add(V(Math.cos(t * 9 + k) * 0.08 + k * 0.12 - 0.12, (t - 0.5) * 0.3, Math.sin(t * 9 + k) * 0.08)), 0.022));
       }
     }
-    instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes");
+    dsph(instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes"), true);
   })();
 
   // cytoskeleton
@@ -10093,6 +10403,237 @@
     lipid_droplets: LIPID[0].clone(),
     ribosomes: POLY.clone(),
   };
+
+  // ---------------------------------------------------------------- illustrative motion
+  // Kyrre 2026-10-04 10:22: only the schematic vesicle stream (ER > Golgi > plasma membrane, Golgi > lysosome) and
+  // autophagosome-lysosome fusion. Paths, vesicle counts and cycle times are display choices, never measured speeds,
+  // rates or sorting data; plasma-membrane arrival points carry no apical/basolateral claim.
+  const motionGroup = new THREE.Group();
+  scene.add(motionGroup);
+  const MOTION = (function () {
+    const sm = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+    const golgiFrame = new THREE.Object3D();
+    golgiFrame.position.copy(GOLGI); golgiFrame.rotation.set(-0.42, -0.3, 0.12); golgiFrame.scale.setScalar(0.9);
+    golgiFrame.updateMatrixWorld(true);
+    const gLocal = (x, y, z) => golgiFrame.localToWorld(V(x, y, z));
+    let erExit = null, best = Infinity;
+    for (let k = 0; k < 6; k++) {
+      const R = NR + 0.12 + k * 0.1;
+      for (let i = 0; i <= 24; i++) for (let j = 0; j <= 24; j++) {
+        const phi = ER_PHI0 + k * 0.05 + (i / 24) * (ER_PHIL - k * 0.12), th = ER_TH0 + k * 0.03 + (j / 24) * (ER_THL - k * 0.07);
+        const p = V(-R * Math.cos(phi) * Math.sin(th), R * Math.cos(th), R * Math.sin(phi) * Math.sin(th)).add(NC);
+        if (!kept(p, 0.12) || !insideCell(p, 0.9)) continue;
+        const d = p.distanceTo(GOLGI);
+        if (d < best) { best = d; erExit = p; }
+      }
+    }
+    erExit.add(erExit.clone().sub(NC).normalize().multiplyScalar(0.04));
+    const faceLo = gLocal(0, -0.07, 0), faceHi = gLocal(0, 5 * 0.085 + 0.16, 0);
+    const cis = faceLo.distanceTo(erExit) <= faceHi.distanceTo(erExit) ? faceLo : faceHi;
+    const trans = cis === faceLo ? faceHi : faceLo;
+    const clearNuc = (p) => { const a = p.clone().sub(NC), d = a.length(); if (d < NR + 0.3) p.copy(NC).addScaledVector(a.normalize(), NR + 0.3); return p; };
+    const via = (a, b, lift) => clearNuc(a.clone().add(b).multiplyScalar(0.5).add(lift));
+    const curve = (a, b, lift) => new THREE.CatmullRomCurve3([a.clone(), via(a, b, lift), b.clone()]);
+    const onPM = (d) => { d = d.clone().normalize(); const s = 1 / Math.sqrt((d.x / AX.x) ** 2 + (d.y / AX.y) ** 2 + (d.z / AX.z) ** 2); return d.multiplyScalar(s * 0.955); };
+    const pmEnds = [V(1, 0.5, -0.35), V(1, -0.4, -0.4), V(0.45, -0.25, -1)].map(onPM).filter((p) => kept(p, 0.08));
+    const lysoEnd = LYSO[0].clone().addScaledVector(trans.clone().sub(LYSO[0]).normalize(), 0.17);
+    const ROUTES = {
+      er_golgi: [curve(erExit, cis, V(0, 0.12, 0))],
+      golgi_pm: pmEnds.map((t) => curve(trans, t, V(0, 0.08, 0))),
+      golgi_lysosome: [curve(trans, lysoEnd, V(0, -0.06, 0.04))],
+    };
+    const vGeo = new THREE.SphereGeometry(1, 16, 12);
+    const vMat = (c) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.25, clearcoat: 0.8, emissive: new THREE.Color(c), emissiveIntensity: 0.35 });
+    const STREAMS = [
+      { id: "er_golgi", n: 5, T: 6.5, r: 0.04, mat: vMat(0x8fb0ff) },
+      { id: "golgi_pm", n: 2, T: 7.5, r: 0.044, mat: vMat(0x7fd77a) },
+      { id: "golgi_lysosome", n: 3, T: 6, r: 0.042, mat: vMat(0xb48ae8) },
+    ];
+    const guideMat = new THREE.LineDashedMaterial({ color: 0xeaf2ff, transparent: true, opacity: 0.22, dashSize: 0.05, gapSize: 0.04, depthWrite: false });
+    const ves = [];
+    STREAMS.forEach((st) => ROUTES[st.id].forEach((c, ci) => {
+      const guide = new THREE.Line(new THREE.BufferGeometry().setFromPoints(c.getPoints(40)), guideMat);
+      guide.computeLineDistances(); motionGroup.add(guide);
+      for (let i = 0; i < st.n; i++) {
+        const m = new THREE.Mesh(vGeo, st.mat); m.visible = false; motionGroup.add(m);
+        ves.push({ m, c, T: st.T, r: st.r, ph: (i / st.n + ci * 0.37) % 1, stream: st.id });
+      }
+    }));
+
+    // Fusion vignette beside one autophagosome: a lysosome approaches, merges, and the vesicle becomes an autolysosome.
+    const A0 = AUTO[0], AR = 0.22, LR = 0.1;
+    const others = LYSO.concat(PEROX, ENDO, LIPID, MITO.map((m) => m.p), [AUTO[1], POLY, CYTOSK]);
+    let fdir = null, fscore = -Infinity;
+    for (let i = 0; i < 96; i++) {
+      const y = 1 - 2 * (i + 0.5) / 96, a = i * 2.399963, s = Math.sqrt(1 - y * y);
+      const d = V(s * Math.cos(a), y, s * Math.sin(a));
+      const S = A0.clone().addScaledVector(d, 0.6), M = A0.clone().addScaledVector(d, 0.4);
+      if (!kept(S, 0.15) || !kept(M, 0.12) || !insideCell(S, 0.85) || S.distanceTo(NC) < NR + 0.25) continue;
+      const score = Math.min(...others.map((o) => Math.min(o.distanceTo(S), o.distanceTo(M))));
+      if (score > fscore) { fscore = score; fdir = d; }
+    }
+    if (!fdir) { fdir = V(0, 1, 0); fscore = 0; }
+    const fStart = A0.clone().addScaledVector(fdir, 0.6), fContact = A0.clone().addScaledVector(fdir, AR + LR * 0.6);
+    const lyMat = new THREE.MeshPhysicalMaterial({ color: 0xa070e0, roughness: 0.15, clearcoat: 1, transparent: true, opacity: 0.75, depthWrite: false, emissive: new THREE.Color(0x2a1050), emissiveIntensity: 0.4 });
+    const ly = dsph(new THREE.Mesh(new THREE.SphereGeometry(LR, 32, 22), lyMat));
+    ly.visible = false; motionGroup.add(ly);
+    const tintMat = new THREE.MeshPhysicalMaterial({ color: 0x9a78d8, roughness: 0.2, clearcoat: 1, transparent: true, opacity: 0, depthWrite: false });
+    const tint = dsph(new THREE.Mesh(new THREE.SphereGeometry(AR * 1.04, 40, 28), tintMat));
+    tint.position.copy(A0); tint.visible = false; motionGroup.add(tint);
+    const FT = 11;
+    let phase = "approach";
+
+    function update(t) {
+      ves.forEach((v) => {
+        const u = (t / v.T + v.ph) % 1;
+        const env = Math.min(1, u / 0.12, (1 - u) / 0.12);
+        v.m.visible = v.on !== false && env > 0.02;
+        v.m.position.copy(v.c.getPointAt(sm(u)));
+        v.m.scale.setScalar(v.r * Math.max(0.02, env));
+      });
+      const f = (t / FT) % 1;
+      let ls = 0.001, op = 0;
+      if (f < 0.45) { phase = "approach"; ly.position.lerpVectors(fStart, fContact, sm(f / 0.45)); ls = Math.max(0.001, sm(f / 0.08)); }
+      else if (f < 0.62) { phase = "fusion"; const a = sm((f - 0.45) / 0.17); ly.position.lerpVectors(fContact, A0, a); ls = Math.max(0.001, 1 - a); op = 0.38 * a; }
+      else if (f < 0.88) { phase = "autolysosome"; op = 0.38; }
+      else { phase = "restart"; op = 0.38 * (1 - sm((f - 0.88) / 0.12)); }
+      ly.scale.setScalar(ls); ly.visible = ls > 0.01;
+      tintMat.opacity = op; tint.visible = op > 0.005;
+    }
+    function check() {
+      const pts = [];
+      Object.keys(ROUTES).forEach((k) => ROUTES[k].forEach((c) => c.getSpacedPoints(60).forEach((p) => pts.push(p))));
+      for (let i = 0; i <= 20; i++) pts.push(fStart.clone().lerp(A0, i / 20));
+      return {
+        routes: Object.fromEntries(Object.keys(ROUTES).map((k) => [k, ROUTES[k].length])),
+        vesicles: ves.length,
+        samples: pts.length,
+        allBehindCut: pts.every((p) => kept(p, 0.04)),
+        allInsideCell: pts.every((p) => insideCell(p, 0.985)),
+        minNucleusClearance: +Math.min(...pts.map((p) => p.distanceTo(NC) - NR)).toFixed(3),
+        cisNearerEr: cis.distanceTo(erExit) < trans.distanceTo(erExit),
+        fusionClearance: +fscore.toFixed(3),
+      };
+    }
+    return { update, check, ves, phase: () => phase };
+  })();
+
+  // ---------------------------------------------------------------- atlas anatomy details (schematic)
+  // Kyrre 2026-10-04 19:16: atlas-only gut granules, CeAJ and terminal web/endotube. Counts, sizes, colours and
+  // positions are display choices; nothing here is simulated, measured or linked to a simulation edge.
+  const ANAT = {};
+  (WC.anatomy_details || []).forEach((d) => { ANAT[d.id] = d; });
+  const anatGroup = new THREE.Group();
+  scene.add(anatGroup);
+  const anatMats = {};
+  function anatMat(id, params, Type) {
+    const m = new (Type || THREE.MeshPhysicalMaterial)(params);
+    m.userData.baseEmissive = m.emissive ? m.emissive.clone() : null;
+    m.userData.baseEI = m.emissiveIntensity != null ? m.emissiveIntensity : 1;
+    (anatMats[id] = anatMats[id] || []).push(m);
+    return m;
+  }
+  function anatAdd(obj, id) { obj.userData.anat = id; anatGroup.add(obj); pickables.push(obj); return obj; }
+  const onShell = (th, ph, s) => V(AX.x * Math.sin(th) * Math.cos(ph) * s, AX.y * Math.cos(th) * s, AX.z * Math.sin(th) * Math.sin(ph) * s);
+  const APICAL_TH = Math.acos(0.8);
+  const ANAT_POS = {};
+  const ANAT_INFO = {};
+  const ANAT_LBL = {};
+  if (ANAT.gut_granules) {
+    const r = rng(211), occupied = [];
+    LYSO.forEach((p) => occupied.push([p, 0.17])); PEROX.forEach((p) => occupied.push([p, 0.13])); ENDO.forEach((p) => occupied.push([p, 0.15]));
+    AUTO.forEach((p) => occupied.push([p, 0.6])); LIPID.forEach((p) => occupied.push([p, 0.16])); MITO.forEach((m) => occupied.push([m.p, 0.35]));
+    occupied.push([GOLGI, 0.55], [SER, 0.45], [POLY, 0.25], [CYTOSK, 0.2]);
+    const routePts = [];
+    new Set(MOTION.ves.map((v) => v.c)).forEach((c) => c.getSpacedPoints(30).forEach((p) => routePts.push(p)));
+    const gr = [];
+    for (let tries = 0; gr.length < 9 && tries < 4000; tries++) {
+      const p = V((r() * 2 - 1) * AX.x, (r() * 2 - 1) * AX.y * 0.75, (r() * 2 - 1) * AX.z);
+      const rad = 0.06 + r() * 0.025;
+      if (!insideCell(p, 0.82) || !kept(p, rad + 0.08) || p.distanceTo(NC) < NR + 0.3) continue;
+      if (occupied.some(([q, qr]) => p.distanceTo(q) < qr + rad + 0.08)) continue;
+      if (routePts.some((q) => p.distanceTo(q) < rad + 0.1)) continue;
+      if (gr.some((g) => p.distanceTo(g.p) < g.r + rad + 0.25)) continue;
+      gr.push({ p, r: rad });
+    }
+    const shellM = anatMat("gut_granules", { color: 0x36aeb4, roughness: 0.2, clearcoat: 1, transparent: true, opacity: 0.6, depthWrite: false, emissive: new THREE.Color(0x0c3044), emissiveIntensity: 0.6 });
+    const coreM = anatMat("gut_granules", { color: 0x9fe0f0, roughness: 0.4, emissive: new THREE.Color(0x4fb0d0), emissiveIntensity: 0.45 });
+    const sg = new THREE.SphereGeometry(1, 28, 20), cg = new THREE.IcosahedronGeometry(1, 1);
+    gr.forEach((g, i) => {
+      const s = anatAdd(dsph(new THREE.Mesh(sg, shellM)), "gut_granules"); s.position.copy(g.p); s.scale.setScalar(g.r);
+      const c = anatAdd(new THREE.Mesh(cg, coreM), "gut_granules"); c.position.copy(g.p).add(V(0.01 * (i % 3 - 1), 0.008, 0)); c.scale.setScalar(g.r * 0.48);
+    });
+    ANAT_POS.gut_granules = gr.length ? gr[0].p.clone() : V(0, 0, 0);
+    ANAT_INFO.gut_granules = { count: gr.length, granules: gr.map((g) => ({ p: g.p.toArray().map((x) => +x.toFixed(3)), r: +g.r.toFixed(3) })), routePts: routePts.length };
+  }
+  if (ANAT.ceaj) {
+    // A lateral contact face with a neighbouring intestinal cell on the +x side; the CeAJ band runs along its apical edge.
+    const PH = 0.62, TH0 = APICAL_TH + 0.03, TH1 = Math.acos(-0.55);
+    const W = 40, Hs = 28, pos = [], idx = [];
+    for (let j = 0; j <= Hs; j++) for (let i = 0; i <= W; i++) {
+      const p = onShell(TH0 + (j / Hs) * (TH1 - TH0), -PH + (i / W) * 2 * PH, 1.035);
+      pos.push(p.x, p.y, p.z);
+    }
+    for (let j = 0; j < Hs; j++) for (let i = 0; i < W; i++) { const a = j * (W + 1) + i, b = a + 1, c = a + W + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+    const ng = new THREE.BufferGeometry(); ng.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); ng.setIndex(idx); ng.computeVertexNormals();
+    anatAdd(new THREE.Mesh(ng, anatMat("ceaj", { color: 0xc9b2a0, roughness: 0.7, transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x000000) })), "ceaj");
+    const bandPts = [];
+    for (let i = 0; i <= 60; i++) bandPts.push(onShell(TH0 + 0.025, -PH + (i / 60) * 2 * PH, 1.018));
+    const bandCurve = new THREE.CatmullRomCurve3(bandPts);
+    anatAdd(new THREE.Mesh(new THREE.TubeGeometry(bandCurve, 120, 0.035, 10, false), anatMat("ceaj", { color: 0x2fbf9a, roughness: 0.35, clearcoat: 0.6, emissive: new THREE.Color(0x0a3a2c), emissiveIntensity: 0.6, clippingPlanes: [cut] })), "ceaj");
+    const keptBand = bandPts.filter((p) => kept(p, 0.02));
+    ANAT_POS.ceaj = (keptBand.length ? keptBand[Math.floor(keptBand.length / 2)] : bandPts[30]).clone();
+    ANAT_INFO.ceaj = { contactFacePhi: PH, bandTheta: +(TH0 + 0.025).toFixed(3), bandPoints: bandPts.length, bandPointsKept: keptBand.length, apicalLimitY: +(0.8 * AX.y).toFixed(3), bandMaxY: +Math.max(...bandPts.map((p) => p.y)).toFixed(3) };
+  }
+  if (ANAT.terminal_web_endotube) {
+    // Two thin subapical shells under the brush border: the actin-rich terminal web above the IF-rich endotube.
+    const cap = (s, th) => { const g = new THREE.SphereGeometry(1, 96, 14, 0, Math.PI * 2, 0.02, th); g.scale(AX.x * s, AX.y * s, AX.z * s); return g; };
+    anatAdd(new THREE.Mesh(cap(0.955, APICAL_TH), anatMat("terminal_web_endotube", { color: 0xf2d36b, roughness: 0.6, transparent: true, opacity: 0.75, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x2a2000), emissiveIntensity: 0.4 })), "terminal_web_endotube");
+    anatAdd(new THREE.Mesh(cap(0.915, APICAL_TH - 0.02), anatMat("terminal_web_endotube", { color: 0xff9ec0, roughness: 0.55, transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x3a1020), emissiveIntensity: 0.4 })), "terminal_web_endotube");
+    const r = rng(223), seg = [];
+    for (let i = 0; i < 420; i++) {
+      const th = 0.04 + r() * (APICAL_TH - 0.08), ph = r() * Math.PI * 2, s = 0.9 + r() * 0.03;
+      const a = onShell(th, ph, s), b = onShell(th + (r() - 0.5) * 0.08, ph + (r() - 0.5) * 0.12, s + (r() - 0.5) * 0.01);
+      if (!kept(a, 0.01) || !kept(b, 0.01)) continue;
+      seg.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    }
+    // Cross-section strips where the cutaway slices through the two layers, so they read in the open view.
+    const arcAt = (k) => {
+      const n = cut.normal, p0 = n.clone().multiplyScalar(-cut.constant);
+      const u = new THREE.Vector3().crossVectors(n, Math.abs(n.y) < 0.9 ? UP : V(1, 0, 0)).normalize();
+      const v = new THREE.Vector3().crossVectors(n, u).normalize();
+      const pts = [];
+      for (let i = 0; i < 360; i++) {
+        const a = (i / 360) * Math.PI * 2, d = u.clone().multiplyScalar(Math.cos(a)).addScaledVector(v, Math.sin(a));
+        const ax = AX.x * k, ay = AX.y * k, az = AX.z * k;
+        const A = (d.x / ax) ** 2 + (d.y / ay) ** 2 + (d.z / az) ** 2;
+        const B = 2 * (p0.x * d.x / ax ** 2 + p0.y * d.y / ay ** 2 + p0.z * d.z / az ** 2);
+        const C = (p0.x / ax) ** 2 + (p0.y / ay) ** 2 + (p0.z / az) ** 2 - 1;
+        pts.push(p0.clone().addScaledVector(d, (-B + Math.sqrt(B * B - 4 * A * C)) / (2 * A)));
+      }
+      const yMin = 0.8 * AX.y * k, inArc = pts.map((p) => p.y > yMin);
+      const start = inArc.findIndex((x, i) => x && !inArc[(i + pts.length - 1) % pts.length]);
+      if (start < 0) return [];
+      const arc = [];
+      for (let i = 0; i < pts.length && inArc[(start + i) % pts.length]; i++) arc.push(pts[(start + i) % pts.length]);
+      return arc;
+    };
+    const twArc = arcAt(0.96), etArc = arcAt(0.92);
+    if (twArc.length > 3) anatAdd(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(twArc), 120, 0.022, 8, false), anatMat("terminal_web_endotube", { color: 0xf2d36b, roughness: 0.5, emissive: new THREE.Color(0x3a2c00), emissiveIntensity: 0.5 })), "terminal_web_endotube");
+    if (etArc.length > 3) anatAdd(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(etArc), 120, 0.032, 8, false), anatMat("terminal_web_endotube", { color: 0xff9ec0, roughness: 0.5, emissive: new THREE.Color(0x4a1428), emissiveIntensity: 0.5 })), "terminal_web_endotube");
+    const lg = new THREE.BufferGeometry(); lg.setAttribute("position", new THREE.Float32BufferAttribute(seg, 3));
+    anatAdd(new THREE.LineSegments(lg, anatMat("terminal_web_endotube", { color: 0xd8608c, transparent: true, opacity: 0.95, depthWrite: false }, THREE.LineBasicMaterial)), "terminal_web_endotube");
+    let tw = null;
+    for (let k = 0; k < 64 && !tw; k++) { const p = onShell(APICAL_TH * 0.6, (k / 64) * Math.PI * 2, 0.935); if (kept(p, 0.15)) tw = p; }
+    ANAT_POS.terminal_web_endotube = tw || V(0, AX.y * 0.93, 0);
+    if (twArc.length > 3 && etArc.length > 3) {
+      const twMid = twArc[Math.floor(twArc.length / 2)], etMid = etArc[Math.floor(etArc.length / 2)];
+      ANAT_LBL.terminal_web_endotube = { bb: twMid.clone().multiplyScalar(1.1), tw: twMid.clone(), et: etMid.clone(), target: twMid.clone().lerp(etMid, 0.5) };
+    }
+    ANAT_INFO.terminal_web_endotube = { terminalWebScale: 0.955, endotubeScale: 0.915, ifSegments: seg.length / 6, capTheta: +APICAL_TH.toFixed(3), sectionPoints: [twArc.length, etArc.length],
+      sectionMinY: [twArc, etArc].map((a) => (a.length ? +Math.min(...a.map((p) => p.y)).toFixed(3) : null)) };
+  }
+  const anatCheck = () => ({ ids: Object.keys(ANAT), drawn: Object.keys(ANAT_POS), info: ANAT_INFO, meshes: anatGroup.children.length, visible: anatGroup.visible });
 
   // ---------------------------------------------------------------- pathway layer
   const LAYOUT_COMP = { membrane: "plasma_membrane", cytoplasm: "cytosol", nucleus: "nucleus", mitochondrion: "mitochondria", autophagosome: "autophagosomes", lysosome: "lysosomes" };
@@ -10166,6 +10707,7 @@
     const geo = isProc ? new THREE.CapsuleGeometry(0.045, 0.12, 6, 14) : n.role === "complex" ? new THREE.IcosahedronGeometry(0.075, 0) : new THREE.SphereGeometry(0.065, 28, 20);
     const m = new THREE.MeshPhysicalMaterial({ color: col, emissive: col, emissiveIntensity: 0.55, roughness: 0.25, clearcoat: 1, transparent: true, opacity: 1 });
     const mesh = new THREE.Mesh(geo, m);
+    if (geo.isSphereGeometry) dsph(mesh);
     mesh.position.copy(nodePos[n.id]);
     if (isProc) mesh.rotation.z = Math.PI / 2;
     mesh.userData.node = n.id;
@@ -10248,6 +10790,8 @@
   let showLabels = true, showGenes = false, ambient = true, spin = false;
   const nodeState = {};
   let simRunning = false;
+  let tourCur = null;
+  const reducedMotion = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   const nodeVisible = (id) => { const n = NODE[id]; return n && (n.pathways || [n.pathway_id]).some((p) => pwVisible[p]); };
   const edgeVisible = (e) => pwVisible[e.pathway_id] && nodeVisible(e.source) && nodeVisible(e.target);
@@ -10293,6 +10837,294 @@
   document.getElementById("t-labels").onchange = (e) => { showLabels = e.target.checked; resize(); };
   document.getElementById("t-genes").onchange = (e) => { showGenes = e.target.checked; };
   document.getElementById("t-flow").onchange = (e) => { ambient = e.target.checked; };
+  document.getElementById("t-anatomy").onchange = (e) => {
+    anatGroup.visible = e.target.checked;
+    if (!anatGroup.visible && ((hover && hover.anat) || (selected && selected.anat))) { hover = null; showOverview(); }
+  };
+  let motionOn = true, motionClock = 0;
+  const motionBox = document.getElementById("t-motion"), motionNote = document.getElementById("motion-note");
+  const MOTION_NOTE = motionNote.textContent;
+  function motionSync() {
+    const rm = reducedMotion();
+    motionBox.disabled = rm;
+    motionBox.checked = motionOn && !rm;
+    motionGroup.visible = motionOn && !rm;
+    motionNote.textContent = (rm ? "Off because your browser asks for reduced motion. " : "") + MOTION_NOTE;
+  }
+  motionBox.onchange = (e) => { motionOn = e.target.checked; motionSync(); };
+  if (window.matchMedia) {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mq.addEventListener) mq.addEventListener("change", motionSync);
+  }
+  motionSync();
+
+  // ---------------------------------------------------------------- graphics look presets (Stage A)
+  // A look sets only base appearance of compartment display materials (compMats) and scene lighting.
+  // Opacity, emissive and emissiveIntensity are runtime state (selection, focus, highlights) and are never part of a look.
+  const LOOK_MAT_KEYS = ["color", "roughness", "metalness", "clearcoat", "clearcoatRoughness", "sheen", "sheenColor", "sheenRoughness", "envMapIntensity", "transmission", "thickness", "ior"];
+  const LOOK_LIGHTS = [hemi, key, fill, inner];
+  function captureLook() {
+    const mats = {};
+    Object.keys(compMats).sort().forEach((c) => {
+      mats[c] = compMats[c].map((m) => {
+        const o = {};
+        LOOK_MAT_KEYS.forEach((k) => { if (m[k] !== undefined) o[k] = m[k] && m[k].isColor ? m[k].toArray() : m[k]; });
+        return o;
+      });
+    });
+    return {
+      exposure: renderer.toneMappingExposure,
+      lights: LOOK_LIGHTS.map((l) => ({ color: l.color.toArray(), ground: l.groundColor ? l.groundColor.toArray() : null, intensity: l.intensity })),
+      mats,
+    };
+  }
+  function applyLook(look) {
+    let changed = 0;
+    renderer.toneMappingExposure = look.exposure;
+    LOOK_LIGHTS.forEach((l, i) => {
+      const s = look.lights[i];
+      l.color.fromArray(s.color); if (s.ground) l.groundColor.fromArray(s.ground); l.intensity = s.intensity;
+    });
+    Object.keys(look.mats).forEach((c) => (compMats[c] || []).forEach((m, i) => {
+      const s = look.mats[c][i];
+      if (!s) return;
+      Object.keys(s).forEach((k) => {
+        if (m[k] && m[k].isColor) { if (!m[k].equals(new THREE.Color().fromArray(s[k]))) { m[k].fromArray(s[k]); changed++; } }
+        else if (m[k] !== s[k]) {
+          if ((k === "clearcoat" || k === "sheen" || k === "transmission") && (m[k] > 0) !== (s[k] > 0)) m.needsUpdate = true;
+          m[k] = s[k]; changed++;
+        }
+      });
+    }));
+    return changed;
+  }
+  function lookHash(look) {
+    const str = JSON.stringify(look);
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    return h.toString(16).padStart(8, "0");
+  }
+  const LOOKS = { standard: captureLook() };
+  let lookCur = "standard";
+  window.__look = () => ({
+    current: lookCur, presets: Object.keys(LOOKS), hash: lookHash(captureLook()), standardHash: lookHash(LOOKS.standard),
+    compartments: Object.keys(LOOKS.standard.mats).length, materials: Object.values(LOOKS.standard.mats).reduce((n, a) => n + a.length, 0),
+  });
+  window.__applyLook = (name) => { if (!LOOKS[name]) return null; const n = applyLook(LOOKS[name]); lookCur = name; QUALITY.applyMaterials(); QUALITY.applyGeometry(); return n; };
+  window.__renderDataURL = () => { renderer.render(scene, camera); return canvas.toDataURL("image/png"); };
+
+  // ---------------------------------------------------------------- rendering quality tiers (Stage A)
+  // Budgets and adaptation thresholds from codex_inputs/visual_spec_2026-10-04/visual_spec_v1.json (tiers, adaptation):
+  // engineering settings, not measurements.
+  // Light switches clearcoat off for every look, on compartment and on pathway/motion/anatomy/interior materials;
+  // the Balanced/High clearcoat caps bound the Advanced look only, so Standard stays the existing look at those
+  // tiers (a Standard exception: it does not meet a 0.2/0.3 ceiling).
+  // Sphere budgets follow the same rule: Light caps every registered display sphere (never raising a count);
+  // Balanced/High bound the Advanced look, and Standard keeps its existing segments (up to 40x28, the High budget).
+  // The 15 s cooldown gates upgrades only; ordinary and severe downgrades are not held by it.
+  const QTIERS = [
+    { id: "light", prCap: 1, pxCap: 1500000, clearcoatCap: 0, movingCap: 8, sphere: [16, 12], smallSphere: [8, 6] },
+    { id: "balanced", prCap: 1.5, pxCap: 2500000, clearcoatCap: 0.2, movingCap: 16, sphere: [24, 16], smallSphere: [8, 6] },
+    { id: "high", prCap: 2, pxCap: 4000000, clearcoatCap: 0.3, movingCap: 24, sphere: [40, 28], smallSphere: [10, 8] },
+  ];
+  const QA = { warmup: 5000, window: 2000, settle: 1000, cooldown: 15000, upHold: 15000, trial: 5000,
+    downMed: 18.5, downP95: 22, downRuns: 3, severeMed: 33.3, upMed: 17.5, upP95: 18.5, targetMed: 17.5, targetP95: 20, stall: 100 };
+  const QUALITY = (function () {
+    let mode = "auto", tier = 1, lastT = null, win = [], winStart = 0, ignoreUntil = performance.now() + QA.warmup;
+    let cooldownUntil = 0, bad = 0, goodMs = 0, trial = null, sim = false, simT = 0, ceiling = null, pool = null, nWin = 0;
+    const blocked = new Set(), history = [], transitions = [], stalls = { steady: 0, settling: 0, recent: [] };
+    const pct = (a, q) => { const s = a.slice().sort((x, y) => x - y); return s[Math.max(0, Math.ceil(q * s.length) - 1)]; };
+    const r2 = (x) => Math.round(x * 100) / 100;
+    function pixelRatio(w, h) {
+      const T = QTIERS[tier];
+      return Math.min(window.devicePixelRatio || 1, T.prCap, Math.sqrt(T.pxCap / Math.max(1, w * h)));
+    }
+    function applyMaterials() {
+      const T = QTIERS[tier], look = LOOKS[lookCur];
+      let changed = 0;
+      Object.keys(compMats).forEach((c) => compMats[c].forEach((m, i) => {
+        const s = look.mats[c] && look.mats[c][i];
+        if (!s || s.clearcoat === undefined) return;
+        const want = T.id === "light" ? 0 : lookCur === "standard" ? s.clearcoat : Math.min(s.clearcoat, T.clearcoatCap);
+        if (m.clearcoat !== want) { m.clearcoat = want; changed++; }
+      }));
+      return changed;
+    }
+    function applyExtraMaterials(root) {
+      const light = QTIERS[tier].id === "light", comp = new Set(Object.values(compMats).flat());
+      let changed = 0;
+      root.traverse((o) => (Array.isArray(o.material) ? o.material : o.material ? [o.material] : []).forEach((m) => {
+        if (m.clearcoat === undefined || comp.has(m)) return;
+        if (m.userData.ccBase === undefined) m.userData.ccBase = m.clearcoat;
+        const want = light ? 0 : m.userData.ccBase;
+        if (m.clearcoat !== want) { m.clearcoat = want; changed++; }
+      }));
+      return changed;
+    }
+    function applyAllExtra() {
+      let n = applyExtraMaterials(scene);
+      Object.values(interiorCache).forEach((it) => { if (it && it.s) n += applyExtraMaterials(it.s); });
+      return n;
+    }
+    // Variants are cached per base geometry (at most one per tier budget); unused variants and bases release their GPU buffers.
+    const sphereVariants = new Map();
+    function sphereFor(base, budget) {
+      const p = base.parameters, w = Math.min(p.widthSegments, budget[0]), h = Math.min(p.heightSegments, budget[1]);
+      if (w === p.widthSegments && h === p.heightSegments) return base;
+      if (!sphereVariants.has(base)) sphereVariants.set(base, new Map());
+      const vs = sphereVariants.get(base), k = w + "x" + h;
+      if (!vs.has(k)) vs.set(k, new THREE.SphereGeometry(p.radius, w, h));
+      return vs.get(k);
+    }
+    function applyGeometry() {
+      const T = QTIERS[tier], capped = T.id === "light" || lookCur !== "standard";
+      let changed = 0;
+      DSPHERES.forEach((d) => {
+        const want = capped ? sphereFor(d.base, d.small ? T.smallSphere : T.sphere) : d.base;
+        if (d.obj.geometry !== want) { d.obj.geometry = want; changed++; }
+      });
+      const used = new Set(DSPHERES.map((d) => d.obj.geometry));
+      DSPHERES.forEach((d) => { if (!used.has(d.base)) d.base.dispose(); });
+      sphereVariants.forEach((vs) => vs.forEach((g) => { if (!used.has(g)) g.dispose(); }));
+      return changed;
+    }
+    function sphereState() {
+      const segs = {};
+      DSPHERES.forEach((d) => { const p = d.obj.geometry.parameters, k = (d.small ? "small " : "") + p.widthSegments + "x" + p.heightSegments; segs[k] = (segs[k] || 0) + 1; });
+      return { registered: DSPHERES.length, segments: segs, variants: [...sphereVariants.values()].reduce((n, vs) => n + vs.size, 0) };
+    }
+    // Total pool across the approved routes; one object stays reserved for the fusion vignette and every route curve keeps a carrier.
+    function applyPool() {
+      const free = QTIERS[tier].movingCap - 1, byCurve = new Map();
+      MOTION.ves.forEach((v) => { if (!byCurve.has(v.c)) byCurve.set(v.c, []); byCurve.get(v.c).push(v); });
+      const groups = [...byCurve.values()], keep = groups.map(() => 1);
+      let left = free - groups.length;
+      while (left > 0) {
+        let bi = -1, bs = 0;
+        groups.forEach((g, i) => { const s = (g.length - keep[i]) / g.length; if (s > bs) { bs = s; bi = i; } });
+        if (bi < 0) break;
+        keep[bi]++; left--;
+      }
+      groups.forEach((g, i) => {
+        const on = new Set(Array.from({ length: keep[i] }, (_, k) => Math.floor((k * g.length) / keep[i])));
+        g.forEach((v, j) => { v.on = on.has(j); });
+      });
+      MOTION.update(motionClock);
+      pool = { cap: QTIERS[tier].movingCap, carriers: keep.reduce((a, b) => a + b, 0), fusion: 1, perRoute: keep };
+    }
+    function setTier(i, reason, now) {
+      const from = tier;
+      tier = Math.max(0, Math.min(QTIERS.length - 1, i));
+      resize(); applyMaterials(); applyAllExtra(); applyGeometry(); applyPool();
+      transitions.push({ at_s: r2(now / 1000), from: QTIERS[from].id, to: QTIERS[tier].id, reason });
+      if (transitions.length > 50) transitions.shift();
+      bad = 0; goodMs = 0; win = []; lastT = null;
+      ignoreUntil = Math.max(ignoreUntil, now + QA.settle);
+    }
+    function evaluate(now) {
+      if (!win.length) return;
+      const med = pct(win, 0.5), p95 = pct(win, 0.95), span = now - winStart;
+      ceiling = ceiling === null ? med : Math.min(ceiling, med);
+      history.push({ at_s: r2(now / 1000), tier: QTIERS[tier].id, median_ms: r2(med), p95_ms: r2(p95), frames: win.length });
+      if (history.length > 40) history.shift();
+      nWin++;
+      if (mode !== "auto") return;
+      const isBad = med > QA.downMed || p95 > QA.downP95, severe = med > QA.severeMed, good = med <= QA.upMed && p95 <= QA.upP95;
+      if (trial) {
+        if (isBad) { const back = trial.from; blocked.add(tier); trial = null; cooldownUntil = now + QA.cooldown; setTier(back, "upgrade trial failed", now); return; }
+        trial.eligibleMs += span;
+        if (trial.eligibleMs >= QA.trial) trial = null;
+      }
+      bad = isBad ? bad + 1 : 0;
+      goodMs = good ? goodMs + span : 0;
+      if (tier > 0 && (severe || bad >= QA.downRuns)) {
+        cooldownUntil = now + QA.cooldown;
+        setTier(tier - 1, severe ? "severe slowdown: window median > 33.3 ms" : "3 slow windows (median > 18.5 ms or p95 > 22 ms)", now);
+        return;
+      }
+      if (tier < QTIERS.length - 1 && goodMs >= QA.upHold && now >= cooldownUntil && !blocked.has(tier + 1)) {
+        const from = tier;
+        cooldownUntil = now + QA.cooldown;
+        setTier(tier + 1, "15 s headroom (5 s trial)", now);
+        trial = { from, eligibleMs: 0 };
+      }
+    }
+    function sample(now) {
+      if (document.hidden) { lastT = null; win = []; return; }
+      if (lastT === null) { lastT = now; winStart = now; return; }
+      const intervalStart = lastT;
+      const dt = now - intervalStart;
+      lastT = now;
+      const settling = intervalStart < ignoreUntil;
+      if (dt > QA.stall) {
+        stalls[settling ? "settling" : "steady"]++;
+        stalls.recent.push({ at_s: r2(now / 1000), ms: r2(dt), settling });
+        if (stalls.recent.length > 20) stalls.recent.shift();
+      }
+      if (settling) { win = []; winStart = now; return; }
+      win.push(dt);
+      if (now - winStart >= QA.window) { evaluate(now); win = []; winStart = now; }
+    }
+    function settle(now) { lastT = null; win = []; ignoreUntil = Math.max(ignoreUntil, now + QA.settle); }
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) settle(sim ? simT : performance.now()); });
+    function setMode(m) {
+      const now = sim ? simT : performance.now();
+      trial = null; bad = 0; goodMs = 0; blocked.clear();
+      if (m === "auto") { mode = "auto"; transitions.push({ at_s: r2(now / 1000), from: QTIERS[tier].id, to: QTIERS[tier].id, reason: "Auto selected" }); return true; }
+      const i = QTIERS.findIndex((t) => t.id === m);
+      if (i < 0) return false;
+      mode = "manual";
+      setTier(i, "manual choice", now);
+      return true;
+    }
+    function state() {
+      const last = history[history.length - 1] || null;
+      return {
+        mode, tier: QTIERS[tier].id, budget: QTIERS[tier],
+        pixelRatio: r2(renderer.getPixelRatio()), buffer: [canvas.width, canvas.height], css: [window.innerWidth, window.innerHeight],
+        clearcoatOn: Object.values(compMats).reduce((n, a) => n + a.filter((m) => m.clearcoat > 0).length, 0),
+        extraClearcoatOn: (() => { const s = new Set(), comp = new Set(Object.values(compMats).flat()); const scan = (r) => r.traverse((o) => (Array.isArray(o.material) ? o.material : o.material ? [o.material] : []).forEach((m) => { if (!comp.has(m) && m.clearcoat > 0) s.add(m); })); scan(scene); Object.values(interiorCache).forEach((it) => it && it.s && scan(it.s)); return s.size; })(),
+        spheres: sphereState(),
+        pool, trial: trial ? { from: QTIERS[trial.from].id, eligible_ms: r2(trial.eligibleMs) } : null, blocked: [...blocked].map((i) => QTIERS[i].id),
+        lastWindow: last, windows: history.length, windowsTotal: nWin, transitions: transitions.slice(), stalls: JSON.parse(JSON.stringify(stalls)),
+        belowTarget: !!last && (last.median_ms > QA.targetMed || last.p95_ms > QA.targetP95),
+        cadenceBelow60: ceiling !== null && history.length >= 3 && ceiling > QA.downMed,
+        bestWindowMedian_ms: ceiling === null ? null : r2(ceiling), sim,
+        memory: { geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: (renderer.info.programs || []).length },
+      };
+    }
+    return {
+      pixelRatio, applyMaterials, applyExtraMaterials, applyGeometry, applyPool, setMode, state, settle,
+      frame: (now) => { if (!sim) sample(now); },
+      init: () => { applyMaterials(); applyAllExtra(); applyGeometry(); applyPool(); },
+      // Synthetic samples share controller state with live sampling: reload the page before recording live evidence.
+      simulate: (on) => {
+        sim = !!on; lastT = null; win = [];
+        if (sim) { simT = Math.max(simT, performance.now()); ignoreUntil = simT + QA.warmup; } else ignoreUntil = performance.now() + QA.settle;
+        return sim;
+      },
+      feed: (dts) => { dts.forEach((d) => { simT += d; sample(simT); }); return state(); },
+    };
+  })();
+  window.__quality = () => QUALITY.state();
+  window.__setQuality = (m) => { const ok = QUALITY.setMode(m); return ok ? QUALITY.state() : null; };
+  window.__qualitySim = (on) => QUALITY.simulate(on);
+  window.__qualityFeed = (dts) => QUALITY.feed(dts);
+
+  window.__motionSync = motionSync;
+  window.__motionAt = (t) => { motionClock = t; MOTION.update(t); return MOTION.phase(); };
+  window.__drawCalls = () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles });
+  window.__motionState = () => Object.assign({ on: motionOn, reduced: reducedMotion(), visible: motionGroup.visible, clock: +motionClock.toFixed(2),
+    shown: MOTION.ves.filter((v) => v.m.visible).length, phase: MOTION.phase() }, MOTION.check());
+  window.__anatState = anatCheck;
+  window.__anatSelect = (id) => { selectAnat(id, true); return { selected: selected && selected.anat, html: detail.innerHTML }; };
+  window.__anatLabels = () => {
+    const L = ANAT_LBL.terminal_web_endotube, scr = {};
+    if (L) ["bb", "tw", "et"].forEach((k) => { const p = proj(L[k]); scr[k] = { x: Math.round(p.x), y: Math.round(p.y), ok: p.ok }; });
+    return { shown: anatLabelsShown.slice(), anchors: Object.keys(ANAT_LBL), screen: scr, selected: selected && selected.anat, cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: camGoal.dist } };
+  };
+  window.__anatHit = (x, y) => { const h = hitTest({ clientX: x, clientY: y }); return h ? (h.anat ? "anat:" + h.anat : h.comp ? "comp:" + h.comp : "node:" + h.node) : null; };
+  window.__anatScreen = (id) => { const p = ANAT_POS[id] && proj(ANAT_POS[id]); return p ? { x: p.x, y: p.y, ok: p.ok } : null; };
   document.getElementById("t-spin").onchange = (e) => { spin = e.target.checked; };
 
   const PRESETS = [
@@ -10326,6 +11158,7 @@
     document.getElementById("status-pill").textContent = "qualitative signal flow · idle";
   }
   function runCascade(rootId, dir) {
+    if (tourCur) tourClose(true);
     resetCascade();
     simRunning = true;
     lastCascade = { root: rootId, dir, t: performance.now() };
@@ -10425,7 +11258,45 @@
       "<span>Source annotation attached</span>" + yes(cov.source_annotation_attached) +
       "<span>Adult-intestine evidence checked</span>" + yes(cov.adult_intestinal_evidence_checked) +
       "<span>Simulation</span><span class=\"" + (cov.simulation_implemented !== "none" ? "y" : "n") + "\">" + esc(cov.simulation_implemented.replace(/_/g, " ")) + "</span></div>" +
+      (anatIn(id).length ? "<h3>Atlas details drawn here (schematic)</h3><div>" + anatIn(id).map((d) => '<button class="chip" data-anat="' + esc(d.id) + '">' + esc(d.label) + "</button>").join("") + "</div>" : "") +
       '<p class="note">GO term: ' + esc(c.go_term_label) + (c.go_id_candidate ? " (" + esc(c.go_id_candidate) + ", [VERIFY])" : "") + "<br/>Gaps: " + esc(c.gaps) + "</p>";
+  }
+
+  const anatIn = (compId) => Object.values(ANAT).filter((d) => d.parent_compartment === compId);
+  function anatHtml(id) {
+    const d = ANAT[id];
+    if (!d) return overviewHtml();
+    const pc = COMP[d.parent_compartment];
+    const procs = {};
+    WC.compartments.forEach((c) => c.core_processes.forEach((p) => { procs[p.id] = { comp: c.viewer_id, label: p.label }; }));
+    return '<span class="tag">Atlas detail · schematic · not simulated</span><h2>' + esc(d.label) + "</h2>" +
+      '<div class="row" style="margin:4px 0 8px">' + (pc ? '<button class="b" data-comp="' + esc(d.parent_compartment) + '">‹ ' + esc(pc.label) + "</button>" : "") + '<button class="b" data-overview>All compartments</button></div>' +
+      "<p>" + esc(d.note) + "</p>" +
+      '<p class="warnbox">Drawn schematically: number, size, colour and position are display choices, not measurements. Atlas-only record with no evidence score and no simulation link; perturbations do not reach it.</p>' +
+      (ANAT_LBL[id] && !inside ? '<div class="row" style="margin:0 0 8px"><button class="b" data-anatframe="' + esc(id) + '">Frame the layered section view</button></div>' : "") +
+      (d.proteins.length ? "<h3>Proteins named in the sources</h3><ul>" + d.proteins.map((p) => "<li><b>" + esc(p.symbol) + "</b>: " + esc(p.role) + "</li>").join("") + "</ul>" : "") +
+      (d.scope_notes.length ? "<h3>Scope and cautions</h3><ul>" + d.scope_notes.map((s) => "<li>" + esc(s) + "</li>").join("") + "</ul>" : "") +
+      (d.distinct_from.length ? '<p class="note">Kept distinct from: ' + d.distinct_from.map((c) => '<a href="#" data-comp="' + esc(c) + '">' + esc((COMP[c] || {}).label || c) + "</a>").join(", ") + "</p>" : "") +
+      (d.linked_process_ids.length ? '<p class="note">Related core processes: ' + d.linked_process_ids.map((p) => procs[p] ? '<a href="#" data-ip="' + ipAttr({ t: "proc", comp: procs[p].comp, id: p }) + '">' + esc(procs[p].label) + "</a>" : esc(p)).join(", ") + "</p>" : "") +
+      "<h3>Sources (" + d.sources.length + ")</h3><p class=\"note\">" + (srcHtml(d.sources) || "[REF NEEDED]") + "</p>" +
+      '<p class="note">Gaps: ' + esc(d.gaps) + "<br/>Added " + esc(d.added) + "</p>";
+  }
+  function selectAnat(id, fly) {
+    if (!ANAT[id]) return;
+    selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail();
+    if (fly && !inside && ANAT_LBL[id]) frameAnatSection(id);
+    else if (fly && !inside && ANAT_POS[id]) flyTo(ANAT_POS[id], 0.8);
+  }
+  // Face-on view of the cutaway at the apical cap, so the layered section reads under the brush border.
+  function frameAnatSection(id) {
+    const L = ANAT_LBL[id];
+    if (!L || inside) return;
+    const d = cut.normal.clone().negate();
+    userZoomed = true;
+    camGoal.yaw = Math.atan2(d.x, d.z);
+    camGoal.pitch = Math.asin(d.y) + 0.12;
+    camGoal.dist = 3.1;
+    camGoal.target.copy(L.target);
   }
 
   function nodeHtml(id) {
@@ -10486,7 +11357,9 @@
     if (interiorClick(ev)) return;
     const t = ev.target;
     const nd = t.closest("[data-node]"); if (nd) { ev.preventDefault(); selectNode(nd.getAttribute("data-node"), true); return; }
-    const cp = t.closest("[data-comp]"); if (cp) { selectComp(cp.getAttribute("data-comp"), true); return; }
+    const af = t.closest("[data-anatframe]"); if (af) { ev.preventDefault(); frameAnatSection(af.getAttribute("data-anatframe")); return; }
+    const an = t.closest("[data-anat]"); if (an) { ev.preventDefault(); if (inside) exitInterior(() => selectAnat(an.getAttribute("data-anat"), true)); else selectAnat(an.getAttribute("data-anat"), true); return; }
+    const cp = t.closest("[data-comp]"); if (cp) { ev.preventDefault(); selectComp(cp.getAttribute("data-comp"), true); return; }
     const fp = t.closest("[data-focus-pw]"); if (fp) { focusPathway(fp.getAttribute("data-focus-pw")); return; }
     const pl = t.closest("[data-play]"); if (pl) { if (inside) exitInterior(() => playPathway(pl.getAttribute("data-play"))); else playPathway(pl.getAttribute("data-play")); return; }
     if (t.closest("[data-overview]")) { showOverview(); return; }
@@ -10628,12 +11501,13 @@
     ray.setFromCamera(ndc, camera);
     const nh = ray.intersectObjects(nodeMeshes.filter((m) => m.visible), false);
     if (nh.length) return { node: nh[0].object.userData.node };
-    const hits = ray.intersectObjects(pickables, false).filter((h) =>
+    const hits = ray.intersectObjects(pickables.filter((o) => !o.userData.anat || anatGroup.visible), false).filter((h) =>
       !(h.object.material && h.object.material.clippingPlanes && h.object.material.clippingPlanes.some((pl) => pl.distanceToPoint(h.point) < 0)));
     if (!hits.length) return null;
     // thin filaments criss-cross the whole cytoplasm; a solid organelle just behind one should win
     const solid = hits.find((h) => !h.object.isLine);
     const pick = hits[0].object.isLine && solid && solid.distance - hits[0].distance < 0.6 ? solid : hits[0];
+    if (pick.object.userData.anat) return { anat: pick.object.userData.anat };
     return { comp: pick.object.userData.comp };
   }
   const tip = document.getElementById("tooltip");
@@ -10647,6 +11521,8 @@
     if (h.node) {
       const n = NODE[h.node];
       tip.innerHTML = esc(n.label) + "<small>" + esc(PW[n.pathway_id] ? PW[n.pathway_id].name : "") + " · click for arrows and sources</small>";
+    } else if (h.anat) {
+      tip.innerHTML = esc(ANAT[h.anat] ? ANAT[h.anat].label : h.anat) + "<small>schematic atlas detail · click for sources</small>";
     } else {
       const c = COMP[h.comp];
       tip.innerHTML = esc(c ? c.label : h.comp) + "<small>" + (BUILD[h.comp] ? "click to read · double-click to go inside" : "click to read what it does") + "</small>";
@@ -10658,7 +11534,7 @@
     if (inside) { onClickInside(e); return; }
     const h = hitTest(e);
     if (!h) { showOverview(); return; }
-    if (h.node) selectNode(h.node, false); else selectComp(h.comp, false);
+    if (h.node) selectNode(h.node, false); else if (h.anat) selectAnat(h.anat, false); else selectComp(h.comp, false);
   }
 
   // ---------------------------------------------------------------- overlay labels
@@ -10679,6 +11555,33 @@
     octx.fillText(text, bx + 8, y + 4);
     return { x: bx, y: y - h / 2, w, h };
   }
+  const ANAT_SECTION_TEXT = [
+    ["bb", "Brush border (microvilli)", "rgba(235,242,246,0.7)"],
+    ["tw", "Actin-rich terminal web (yellow)", "rgba(242,211,107,0.95)"],
+    ["et", "IF-rich endotube, IFB-2/IFC-2 meshwork (pink)", "rgba(255,158,192,0.95)"],
+  ];
+  let anatLabelsShown = [];
+  function drawAnatSectionLabels(leftEdge, rightEdge) {
+    anatLabelsShown = [];
+    const id = selected && selected.anat, L = id && ANAT_LBL[id];
+    if (!L || !anatGroup.visible || tourCur) return;
+    const pts = ANAT_SECTION_TEXT.map(([k, text, col]) => ({ k, text, col, p: proj(L[k]) })).filter((i) => i.p.ok);
+    if (!pts.length) return;
+    const leftX = Math.min(...pts.map((i) => i.p.x)) - 70;
+    const onLeft = leftX - 320 > leftEdge;
+    const x0 = onLeft ? leftX : Math.min(rightEdge - 330, Math.max(...pts.map((i) => i.p.x)) + 70);
+    let prev = -Infinity;
+    pts.forEach((it, j) => {
+      const ly = Math.max(it.p.y - 40 + j * 40, prev + 30);
+      prev = ly;
+      octx.strokeStyle = it.col; octx.lineWidth = 1.4;
+      octx.beginPath(); octx.moveTo(it.p.x, it.p.y); octx.lineTo(x0 + (onLeft ? 10 : -10), ly); octx.lineTo(x0, ly); octx.stroke();
+      octx.fillStyle = it.col; octx.beginPath(); octx.arc(it.p.x, it.p.y, 3.2, 0, Math.PI * 2); octx.fill();
+      pill(it.text, x0, ly, false, it.col, onLeft ? "right" : "left");
+      anatLabelsShown.push(it.k);
+    });
+    pill("Schematic section: layer thickness, spacing and colours are display choices, not measurements", (leftEdge + rightEdge) / 2, 88, false, null, "center");
+  }
   function drawOverlay() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const W = window.innerWidth, H = window.innerHeight;
@@ -10689,6 +11592,8 @@
     const edges = panelEdges();
     const leftEdge = edges.L, rightEdge = W - edges.R;
     if (inside) { drawInteriorOverlay(W, H, leftEdge, rightEdge); return; }
+    if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, 62, false, null, "center");
+    drawAnatSectionLabels(leftEdge, rightEdge);
     if (showLabels) {
       const c0 = proj(V(0, 0, 0));
       const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: c.label.replace(/\s*\(.*\)$/, ""), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
@@ -10735,10 +11640,12 @@
   const HL = new THREE.Color(0x6fd6c8);
   let lastHL = null;
   function applyHighlight() {
-    const id = (hover && hover.comp) || (selected && selected.comp) || null;
+    const a = (hover && hover.anat) || (selected && selected.anat);
+    const id = a ? "anat:" + a : (hover && hover.comp) || (selected && selected.comp) || null;
     if (id === lastHL) return;
-    if (lastHL && compMats[lastHL]) compMats[lastHL].forEach((m) => { if (m.emissive) { m.emissive.copy(m.userData.baseEmissive); m.emissiveIntensity = m.userData.baseEI; } });
-    if (id && compMats[id]) compMats[id].forEach((m) => { if (m.emissive) { m.emissive.copy(HL); m.emissiveIntensity = 0.35; } });
+    const matsOf = (k) => (k && k.startsWith("anat:") ? anatMats[k.slice(5)] : compMats[k]);
+    if (lastHL && matsOf(lastHL)) matsOf(lastHL).forEach((m) => { if (m.emissive) { m.emissive.copy(m.userData.baseEmissive); m.emissiveIntensity = m.userData.baseEI; } });
+    if (id && matsOf(id)) matsOf(id).forEach((m) => { if (m.emissive) { m.emissive.copy(HL); m.emissiveIntensity = 0.35; } });
     lastHL = id;
   }
   let ambientClock = 0;
@@ -10751,12 +11658,13 @@
       let scale = sel || hov ? 1.35 : 1, ei = 0.55, op = o.dim ? 0.18 : 1, haloOp = o.dim ? 0.08 : 0.5, haloScale = 0.32;
       if (st) {
         const age = (now - st.t) / 1000;
-        const kick = Math.max(0, 1 - age / 0.8);
+        const kick = reducedMotion() ? 0 : Math.max(0, 1 - age / 0.8);
         if (st.s > 0) { ei = 1.4; scale *= 1.25 + 0.3 * kick; haloOp = 0.95; haloScale = 0.55 + 0.1 * pulse; o.halo.material.color.set(0xffffff); }
         else if (st.s < 0) { ei = 0.15; scale *= 0.8 + 0.3 * kick; haloOp = 0.55; haloScale = 0.42; o.halo.material.color.set(0x5d8cff); }
         else { ei = 0.9; scale *= 1.1 + 0.3 * kick; haloOp = 0.75; haloScale = 0.48; o.halo.material.color.set(0xf2c46d); }
         op = 1;
       } else o.halo.material.color.copy(o.color);
+      if (tourCur && tourCur.hl.has(n.id)) { scale *= 1.3; op = 1; haloOp = Math.max(haloOp, 0.9); haloScale *= 1.3; }
       o.mesh.scale.setScalar(scale);
       o.mat.emissiveIntensity = ei; o.mat.opacity = op;
       o.halo.material.opacity = haloOp; o.halo.scale.setScalar(haloScale * (sel ? 1.4 : 1));
@@ -10766,7 +11674,7 @@
       const base = eo.edge.interaction === "part_of" ? 0.3 : 0.3 + 0.35 * conf;
       eo.mat.opacity = eo.dim ? 0.05 : focusPw || simRunning ? Math.min(1, base + 0.3) : base;
     });
-    if (ambient && !simRunning) {
+    if (ambient && !simRunning && !tourCur) {
       ambientClock += dt;
       if (ambientClock > 0.16) {
         ambientClock = 0;
@@ -12915,6 +13823,7 @@
   function enterInterior(id, after) {
     if (transition || !BUILD[id]) return;
     if (inside && inside.id === id) { if (after) after(); return; }
+    if (tourCur) tourClose(true);
     transition = true;
     hideTip();
     if (!inside) {
@@ -12926,6 +13835,7 @@
       clearInteriorHighlight();
       try {
         inside = interiorCache[id] || (interiorCache[id] = buildInterior(id));
+        QUALITY.applyExtraMaterials(inside.s);
       } catch (err) {
         console.error(err);
         transition = false; fadeEl.classList.remove("on");
@@ -13512,6 +14422,7 @@
     pathway_node: "Genes and model nodes", protein: "Atlas proteins", complex: "Complexes", carrier: "Carriers",
     pathway: "Pathways", compartment: "Compartments", atlas_compartment: "Atlas compartments",
     overview_process: "Processes (overview)", atlas_process: "Atlas processes",
+    anatomy_detail: "Atlas anatomy details (schematic)",
   };
   const srchNorm = (s) => String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9æø]+/g, " ").trim();
   function srchDist(a, b, max) {
@@ -13606,6 +14517,8 @@
       outside(() => selectComp(d.id, true));
     } else if (e.type === "overview_process") {
       outside(() => { selectComp(d.id, true); detail.innerHTML = procHtml(d.id, e.id); });
+    } else if (e.type === "anatomy_detail") {
+      outside(() => selectAnat(e.id, true));
     } else if (SEARCH_IP[e.type]) {
       const ip = { t: SEARCH_IP[e.type], id: e.id };
       const room = d && ATLAS_INTERIOR[d.id];
@@ -13660,10 +14573,218 @@
     document.getElementById("cap-speed").addEventListener("change", (ev) => { const a = api(); if (a) a.speed(Number(ev.target.value)); });
   })();
 
+  // ---------------------------------------------------------------- narrated tours (precomputed cascade)
+  // Node states come only from the saved Python history; spoken text is the script's "say" field, nothing else.
+  const TOURS_DATA = (() => { const el = document.getElementById("tours-data"); try { return el ? JSON.parse(el.textContent) : null; } catch (e) { return null; } })();
+  const TOUR_LIST = (TOURS_DATA && TOURS_DATA.tours) || [];
+  const TSYN = "speechSynthesis" in window ? window.speechSynthesis : null;
+  const TOUR_VERIFY_NOTE = "A [VERIFY] flag marks an unresolved qualification. Read the source note for tissue, stage, assay and model limits; it does not mean that intestinal evidence is absent.";
+  const TOUR_SOURCE_SUMMARY = {
+    skn_e1: "Intestinal SKN-1 nuclear accumulation was observed under the tested oxidative challenges; the model combines stressors and supplies no measured response strength or timing.",
+    skn_e2: "Intestinal gcs-1 reporter regulation and SKN-1 binding-site experiments support one detoxification target example; the aggregate program is not a complete target list.",
+  };
+  const TOUR_SUMMARY_SOURCE = { citation: "An JH, Blackwell TK (2003). Genes & Development. DOI 10.1101/gad.1107803; PMID 12869585.", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC196237/" };
+  const TOUR_FEMALE = /female|zira|aria|jenny|samantha|susan|hazel|libby|sonia|karen|moira|tessa|serena|fiona|victoria|allison|emma|natasha|clara|ava\b/i;
+  let tourVoice = null;
+  function tourPickVoice() {
+    if (!TSYN) { tourVoice = null; return; }
+    const en = TSYN.getVoices().filter((v) => /^en([-_]|$)/i.test(v.lang || ""));
+    const score = (v) => (v.localService ? 4 : 0) + (TOUR_FEMALE.test(v.name) ? 3 : 0) + (/^en[-_](GB|US)/i.test(v.lang) ? 1 : 0);
+    tourVoice = en.sort((a, b) => score(b) - score(a))[0] || null;
+    if (tourCur) tourVoiceNote();
+  }
+  if (TSYN) {
+    tourPickVoice();
+    if (TSYN.addEventListener) TSYN.addEventListener("voiceschanged", tourPickVoice); else TSYN.onvoiceschanged = tourPickVoice;
+  }
+  const tourEl = (id) => document.getElementById(id);
+  const tourSign = (v) => (v > 1e-9 ? 1 : v < -1e-9 ? -1 : 0);
+  const tourLabel = (t, id) => (t.labels && t.labels[id]) || (NODE[id] ? NODE[id].label : id);
+  const tourLimText = (lims) => lims.map((l) => esc(l.edge_id) + " (" + esc(l.reasons.join("; ")) + ")").join(", ");
+
+  (function buildTourList() {
+    const host = tourEl("tour-list");
+    if (!TOUR_LIST.length) { tourEl("tours-sec-note").textContent = "No tour report is embedded in this build."; return; }
+    TOUR_LIST.forEach((t) => {
+      const b = document.createElement("button");
+      b.className = "b"; b.textContent = t.label; b.setAttribute("data-tour", t.id);
+      b.title = t.pathway_name + ": " + tourLabel(t, t.input) + " " + t.direction + " (" + t.script.length + " parts)";
+      b.onclick = () => { if (inside) exitInterior(() => tourOpen(t.id)); else tourOpen(t.id); };
+      host.appendChild(b);
+    });
+  })();
+
+  function tourVoiceNote() {
+    const n = tourEl("tp-voice-note");
+    if (!TSYN) n.textContent = "This browser has no speech synthesis: read the subtitles and step with Back/Next.";
+    else if (!tourVoice) n.textContent = "No English voice is installed in this browser: read the subtitles and step with Back/Next.";
+    else n.textContent = "Voice: " + tourVoice.name + " (" + tourVoice.lang + ", " + (tourVoice.localService ? "on this device" : "online browser voice") + "). Subtitles always show the spoken text." +
+      (reducedMotion() ? " Reduced motion: camera moves and signal particles are off." : "");
+  }
+  function tourCancelSpeech() {
+    if (!tourCur) return;
+    tourCur.tok++;
+    tourCur.timers.forEach(clearTimeout); tourCur.timers = [];
+    if (TSYN) TSYN.cancel();
+  }
+  function tourOpen(id) {
+    const t = TOUR_LIST.find((x) => x.id === id);
+    if (!t) return;
+    if (tourCur) tourClose();
+    resetCascade();
+    tourCur = { t, i: 0, playing: false, tok: 0, timers: [], hl: new Set(), prevFocus: focusPw, rate: Number(tourEl("tp-rate").value) || 1 };
+    focusPw = t.pathway_id; pwVisible[t.pathway_id] = true;
+    renderPwList(); refreshPathwayStyles();
+    document.body.classList.add("touring");
+    tourEl("tp-title").textContent = t.label;
+    tourVoiceNote();
+    tourShow(0, true);
+  }
+  function tourClose(keepDetail) {
+    if (!tourCur) return;
+    tourCancelSpeech();
+    const prev = tourCur.prevFocus;
+    tourCur = null;
+    document.body.classList.remove("touring");
+    Object.keys(nodeState).forEach((k) => delete nodeState[k]);
+    focusPw = prev; renderPwList(); refreshPathwayStyles();
+    document.getElementById("status-pill").textContent = "qualitative signal flow · idle";
+    if (!keepDetail) showOverview();
+  }
+  function tourShow(i, autoplay) {
+    const c = tourCur; if (!c) return;
+    tourCancelSpeech();
+    const t = c.t, lines = t.script;
+    c.i = Math.max(0, Math.min(lines.length - 1, i));
+    const line = lines[c.i];
+    const h = t.history[Math.min(line.step, t.history.length - 1)] || { activities: {} };
+    Object.keys(nodeState).forEach((k) => delete nodeState[k]);
+    const now = performance.now();
+    Object.keys(h.activities).forEach((id) => { const s = tourSign(h.activities[id]); if (s && NODE[id]) nodeState[id] = { s, t: now, root: id === t.input }; });
+    c.hl = new Set(line.highlight_nodes || []);
+    c.hl.forEach((id) => { const n = NODE[id]; if (n && !nodeVisible(id)) (n.pathways || [n.pathway_id]).forEach((p) => { pwVisible[p] = true; }); });
+    renderPwList(); refreshPathwayStyles();
+    if (!reducedMotion()) {
+      const pts = [...c.hl].map((id) => nodePos[id]).filter(Boolean);
+      if (pts.length && line.kind !== "off_route") flyTo(pts.reduce((a, p) => a.add(p), V(0, 0, 0)).multiplyScalar(1 / pts.length), 0.85);
+      if (line.edge_id && edgeObj[line.edge_id] && edgeVisible(edgeObj[line.edge_id].edge)) emit(line.edge_id, 1400, true);
+    }
+    tourEl("tp-step").textContent = "Part " + (c.i + 1) + " of " + lines.length + " · model step " + line.step + " of " + (TOURS_DATA.steps || 6);
+    tourEl("tp-sub").textContent = line.say;
+    tourEl("tp-prog").style.width = ((c.i + 1) / lines.length * 100) + "%";
+    tourEl("tp-prev").disabled = c.i === 0;
+    tourEl("tp-next").disabled = c.i === lines.length - 1;
+    document.getElementById("status-pill").textContent = "tour · " + t.label + " · step " + line.step;
+    tourCards();
+    if (autoplay !== undefined) c.playing = !!autoplay && !!(TSYN && tourVoice && tourEl("tp-voice").checked);
+    tourPlayButton();
+    if (c.playing) tourSpeak();
+  }
+  function tourPlayButton() { tourEl("tp-play").textContent = tourCur && tourCur.playing ? "❚❚ Pause" : "▶ Play"; }
+  function tourSpeak(once) {
+    const c = tourCur; if (!c) return;
+    tourCancelSpeech();
+    const tok = c.tok, text = c.t.script[c.i].say;
+    const done = () => {
+      if (!tourCur || tourCur !== c || tok !== c.tok || !c.playing) return;
+      if (once) { c.playing = false; tourPlayButton(); return; }
+      tourAfterLine();
+    };
+    if (TSYN && tourVoice && tourEl("tp-voice").checked) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = tourVoice.lang || "en-GB"; u.rate = c.rate; u.pitch = 1;
+      try { u.voice = tourVoice; } catch (e) { /* keep lang only */ }
+      u.onend = done;
+      u.onerror = (ev) => {
+        if (!tourCur || tourCur !== c || tok !== c.tok || !c.playing) return;
+        if (ev && (ev.error === "interrupted" || ev.error === "canceled")) return;
+        tourEl("tp-voice-note").textContent = "Speech failed in this browser; continuing with subtitles.";
+        c.timers.push(setTimeout(done, tourReadMs(text, c.rate)));
+      };
+      TSYN.speak(u);
+    } else c.timers.push(setTimeout(done, tourReadMs(text, c.rate)));
+  }
+  const tourReadMs = (text, rate) => Math.max(4000, text.split(/\s+/).length * 380) / (rate || 1);
+  function tourAfterLine() {
+    const c = tourCur;
+    if (c.i >= c.t.script.length - 1) { c.playing = false; tourPlayButton(); tourEl("tp-step").textContent += " · tour finished"; return; }
+    const tok = c.tok;
+    c.timers.push(setTimeout(() => { if (tourCur === c && tok === c.tok && c.playing) tourShow(c.i + 1); }, 700));
+  }
+  function tourCards() {
+    const c = tourCur, t = c.t, line = t.script[c.i], os = line.on_screen || {};
+    const h = t.history[Math.min(line.step, t.history.length - 1)] || { activities: {}, contributions: [] };
+    const routeSet = new Set(t.route_nodes || []);
+    const offMap = {}; (t.off_route || []).forEach((o) => { offMap[o.node] = o; });
+    const limIds = new Set((t.route_nodes_also_reached_via_limited_edges || []).map((l) => l.edge_id));
+    let html = '<span class="tag" style="color:' + pwColor(t.pathway_id) + '">Narrated tour · ' + esc(t.pathway_name) + "</span><h2>" + esc(t.label) + "</h2>" +
+      '<div class="warnbox"><b>Caveats for this tour</b><ul style="margin:4px 0 0;padding-left:18px">' + (t.caveats || []).map((x) => "<li>" + esc(x) + "</li>").join("") +
+      "<li>Qualitative educational cascade: values are relative model activities, not concentrations, rates or timings.</li></ul></div>";
+    if (line.kind === "intro") {
+      html += "<h3>How the tour was computed</h3><p class=\"note\">" + esc(os.semantics || TOURS_DATA.semantics || "") + "</p><p class=\"note\">" + esc(TOURS_DATA.narration_rule || "") + "</p>";
+    } else if (line.kind === "route") {
+      const e = (t.route || []).find((r) => r.edge_id === line.edge_id) || {};
+      html += "<h3>This step: " + esc(tourLabel(t, e.source)) + " " + esc(VERB[e.interaction] || e.interaction) + " " + esc(tourLabel(t, e.target)) + "</h3>" +
+        '<p class="note">Edge ' + esc(line.edge_id) + " · first acts at model step " + esc(line.step) + " · " + scoreText(os.evidence_level, os.confidence) + "</p>" +
+        '<span class="src">' + (srcHtml(os.sources) || "[REF NEEDED]") + "</span>" +
+        (TOUR_SOURCE_SUMMARY[line.edge_id] ? '<p class="note"><b>Source summary:</b> ' + esc(TOUR_SOURCE_SUMMARY[line.edge_id]) + ' <a href="' + esc(TOUR_SUMMARY_SOURCE.url) + '" target="_blank" rel="noopener">' + esc(TOUR_SUMMARY_SOURCE.citation) + "</a></p>" : "") +
+        (os.evidence_notes ? '<p class="note">' + esc(os.evidence_notes) + "</p>" : "") +
+        (os.sign_note ? '<p class="warnbox">' + esc(os.sign_note) + "</p>" : "") +
+        ((os.source_flags || []).length ? '<p class="note"><span class="tour-flag">' + esc(os.source_flags.join(" ")) + "</span> " + esc(TOUR_VERIFY_NOTE) + "</p>" : "");
+      const limHere = (h.contributions || []).filter((x) => limIds.has(x.edge_id) && routeSet.has(x.target));
+      if (limIds.size) html += '<h3>Route-wide limitation</h3><p class="warnbox">Route nodes in this tour are also reached through limited edges: ' + tourLimText(t.route_nodes_also_reached_via_limited_edges) + ". Their values include these influences." +
+        (limHere.length ? "<br/>At this step: " + limHere.map((x) => esc(tourLabel(t, x.target)) + " receives " + esc(x.edge_id) + " from " + esc(tourLabel(t, x.source))).join("; ") + "." : "") + "</p>";
+      const extra = Object.keys(h.activities).filter((id) => !routeSet.has(id) && id !== t.input && tourSign(h.activities[id]));
+      if (extra.length) html += "<h3>Also changed at this step (off-route, not narrated)</h3><ul>" + extra.map((id) => {
+        const o = offMap[id], lims = (o && o.limited_by) || [];
+        return "<li>" + esc(tourLabel(t, id)) + (tourSign(h.activities[id]) > 0 ? " ↑" : " ↓") + '<br/><span class="muted" style="font-size:0.7rem">' +
+          (lims.length ? "Limited by " + tourLimText(lims) : "No recorded limitation on its paths; outside this tour's pathway, so not narrated.") + "</span></li>";
+      }).join("") + "</ul>";
+    } else {
+      html += "<h3>Other model nodes that change (not narrated)</h3><ul>" + (os.off_route || []).map((o) =>
+        "<li>" + esc(o.label) + (tourSign(o.final) > 0 ? " ↑" : tourSign(o.final) < 0 ? " ↓" : "") + ' <span class="muted">(' + esc((PW[o.pathway_id] || {}).name || o.pathway_id) + ")</span>" +
+        '<br/><span class="muted" style="font-size:0.7rem">' + (o.limited_by.length ? "Limited by " + tourLimText(o.limited_by) : "No recorded limitation on its paths; an empty list is not adult-intestinal validation.") + "</span></li>").join("") + "</ul>" +
+        ((os.route_limited_edges || []).length ? '<p class="warnbox">Route nodes are also reached through limited edges: ' + tourLimText(os.route_limited_edges) + ".</p>" : "");
+    }
+    const rows = (t.route_nodes || []).filter((id) => id in h.activities).map((id) => "<tr><td>" + esc(tourLabel(t, id)) + "</td><td>" + Number(h.activities[id]).toFixed(3) + "</td></tr>").join("");
+    if (rows) html += "<h3>Route activities at model step " + esc(line.step) + '</h3><table class="tour-act">' + rows + '</table><p class="note">Relative model activity (seed ' + esc(tourLabel(t, t.input)) + " = " + esc(t.delta) + "); not a concentration or rate.</p>";
+    html += '<p class="note">' + esc((TOURS_DATA.narration || {}).voice || "") + " " + esc((TOURS_DATA.narration || {}).script_rule || "") + "</p>";
+    selected = null; setPerturbButtons();
+    detail.innerHTML = html; openDetail();
+  }
+  tourEl("tp-prev").onclick = () => { if (tourCur) tourShow(tourCur.i - 1); };
+  tourEl("tp-next").onclick = () => { if (tourCur) tourShow(tourCur.i + 1); };
+  tourEl("tp-replay").onclick = () => {
+    const c = tourCur; if (!c) return;
+    c.playing = false;
+    tourShow(c.i, false);
+    if (TSYN && tourVoice && tourEl("tp-voice").checked) { c.playing = true; tourPlayButton(); tourSpeak(true); }
+  };
+  tourEl("tp-play").onclick = () => {
+    const c = tourCur; if (!c) return;
+    if (c.playing) { c.playing = false; tourCancelSpeech(); }
+    else { c.playing = true; if (c.i >= c.t.script.length - 1 && c.t.script.length > 1) tourShow(0); else tourSpeak(); }
+    tourPlayButton();
+  };
+  tourEl("tp-rate").onchange = (ev) => { if (tourCur) { tourCur.rate = Number(ev.target.value) || 1; if (tourCur.playing) tourSpeak(); } };
+  tourEl("tp-voice").onchange = () => { if (tourCur && tourCur.playing) tourSpeak(); };
+  tourEl("tp-cards").onclick = () => { if (tourCur) tourCards(); };
+  tourEl("tp-close").onclick = () => tourClose();
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && tourCur && !inside) tourClose(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); } });
+  window.addEventListener("pagehide", () => {
+    if (tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); }
+    else if (TSYN) TSYN.cancel();
+  });
+  window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
+  window.__insideId = () => (inside ? inside.id : null);
+  window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
+
   // ---------------------------------------------------------------- loop
   let lastCapH = 0;
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
+    renderer.setPixelRatio(QUALITY.pixelRatio(w, h));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     const { L, R } = panelEdges();
@@ -13697,15 +14818,18 @@
   if (window.innerWidth < 1280) setPanel("right", false);
   if (window.innerWidth < 900) setPanel("left", false);
   resize();
+  QUALITY.init();
   cam.dist = camGoal.dist;
   renderPwList();
   refreshPathwayStyles();
   showOverview();
   resetCascade();
 
-  let last = performance.now();
+  let last = performance.now(), qInside = null;
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (inside !== qInside) { qInside = inside; QUALITY.settle(now); }
+    QUALITY.frame(now);
     updateCamera(dt);
     if (inside) {
       inside.updaters.forEach((f) => f(now, dt));
@@ -13715,6 +14839,7 @@
     } else {
       applyHighlight();
       animateLayer(now, dt);
+      if (motionGroup.visible && !tourCur) { motionClock += dt; MOTION.update(motionClock); }
       renderer.render(scene, camera);
     }
     drawOverlay();
