@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T12:00:03+02:00",
+    "generated_at":  "2026-10-05T12:10:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage A step 4: look/quality UI",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "Stage A UI: blocked-storage notice fix + 11:47 opinion",
+                                  "status":  "done",
+                                  "step":  5,
+                                  "total":  5,
+                                  "percent":  100,
+                                  "step_title":  "Opinion on 11:47 idea and finish entry",
                                   "steps":  [
-
+                                                "Apply Codex\u0027s exact statusText fix",
+                                                "Behavioural test for blocked storage",
+                                                "Re-export and pytest",
+                                                "Browser check with panel screenshots",
+                                                "Opinion on 11:47 idea and finish entry"
                                             ],
-                                  "eta_seconds":  688,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T11:15:47+02:00",
+                                  "updated":  "2026-10-05T12:09:35+02:00",
                                   "last_run":  "2026-10-05T11:59:31+02:00",
                                   "next_run":  "2026-10-05T12:15:00+02:00"
                               },
@@ -44,11 +48,16 @@
                      "agent":  "cursor",
                      "time":  "2026-10-05T12:15:00+02:00"
                  },
-    "today_runs":  29,
+    "today_runs":  30,
     "queue":  [
 
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Stage A UI: blocked-storage notice fix + 11:47 opinion",
+                       "finished":  "2026-10-05T12:09:35+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review graphics settings UI",
@@ -73,11 +82,6 @@
                        "agent":  "codex",
                        "task":  "Review palette anchors and shell opacity",
                        "finished":  "2026-10-05T10:33:48+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Stage A step 3: palette anchors, shell opacity, depth cues",
-                       "finished":  "2026-10-05T10:22:17+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
