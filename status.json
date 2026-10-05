@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T18:30:03+02:00",
+    "generated_at":  "2026-10-05T18:35:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Aging correction review and source curation",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  22.5,
-                                 "step_title":  "Review validator corrections",
+                                 "percent":  55.3,
+                                 "step_title":  "Verify Sun study context",
                                  "steps":  [
                                                "Review validator corrections",
                                                "Verify Ezcurra study context",
                                                "Verify Sun study context",
                                                "Write findings and handoff"
                                            ],
-                                 "eta_seconds":  524,
+                                 "eta_seconds":  497,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T18:26:51+02:00",
+                                 "updated":  "2026-10-05T18:34:04+02:00",
                                  "last_run":  "2026-10-05T18:24:48+02:00",
                                  "next_run":  "2026-10-05T18:45:00+02:00"
                              }
