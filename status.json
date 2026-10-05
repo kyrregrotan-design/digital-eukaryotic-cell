@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T09:10:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-05T09:15:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A: node-sphere registry fix + citation enrichments",
@@ -25,23 +25,22 @@
                                   "next_run":  "2026-10-05T09:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Sphere budgets review and daily database scan",
-                                 "status":  "done",
-                                 "step":  5,
-                                 "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "Record findings and hand off",
+                                 "task":  "Sphere-registry fix and citation review",
+                                 "status":  "running",
+                                 "step":  1,
+                                 "total":  4,
+                                 "percent":  1.2,
+                                 "step_title":  "Inspect predicate, hook and citation values",
                                  "steps":  [
-                                               "Review sphere and material code",
-                                               "Verify saved browser evidence",
-                                               "Run scoped read-only tests",
-                                               "Scan databases and publications",
-                                               "Record findings and hand off"
+                                               "Inspect predicate, hook and citation values",
+                                               "Verify saved node runtime evidence",
+                                               "Run scoped read-only checks",
+                                               "Record findings and queue handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  186,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T09:00:21+02:00",
-                                 "last_run":  "2026-10-05T08:45:01+02:00",
+                                 "updated":  "2026-10-05T09:14:57+02:00",
+                                 "last_run":  "2026-10-05T09:10:09+02:00",
                                  "next_run":  "2026-10-05T09:45:00+02:00"
                              }
                },
@@ -49,7 +48,7 @@
                      "agent":  "cursor",
                      "time":  "2026-10-05T09:15:00+02:00"
                  },
-    "today_runs":  20,
+    "today_runs":  21,
     "queue":  [
 
               ],
