@@ -95,6 +95,11 @@
   #caption { left: 50%; transform: translateX(-50%); bottom: 16px; width: min(760px, calc(100vw - 32px)); padding: 10px 14px; display: none; }
   body.inside.story #caption { display: block; }
   body.cramped #status-pill, body.cramped #inside-bar, body.cramped #caption { visibility: hidden; }
+  @media (max-width: 900px) {
+    #inside-bar { top: 64px; max-width: calc(100vw - 32px); white-space: normal; }
+    #inside-bar [data-exit] { flex-shrink: 0; }
+    #crumb { min-width: 0; overflow-wrap: anywhere; }
+  }
   #cap-step { display: block; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); }
   #cap-title { display: block; font-size: 0.95rem; margin: 2px 0 4px; }
   #cap-text { font-size: 0.78rem; line-height: 1.5; color: #d8e2ea; max-height: 6em; overflow-y: auto; }
@@ -291,7 +296,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 14:32 (Europe/Oslo)",
+  "generated_at": "2026-10-05 14:58 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
