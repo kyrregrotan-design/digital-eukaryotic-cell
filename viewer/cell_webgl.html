@@ -290,7 +290,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 11:10 (Europe/Oslo)",
+  "generated_at": "2026-10-05 12:02 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -11316,7 +11316,8 @@
     function statusText() {
       const p = QUALITY.perf(), w = p.lastWindow, here = w && w.tier === p.tier;
       const head = (p.mode === "auto" ? "Auto: current tier " : "Manual: ") + tierName(p.tier) + ". ";
-      if (!here) return { text: head + "Measuring frame intervals at this tier…", short: false };
+      if (!here) return { text: head + "Measuring frame intervals at this tier…" +
+        (storage === "unavailable" ? " Settings cannot be saved in this browser; they apply to this visit only." : ""), short: false };
       let text = head + "Last 2 s: median " + w.median_ms.toFixed(1) + " ms, p95 " + w.p95_ms.toFixed(1) + " ms per frame.";
       const short = p.belowTarget || p.cadenceBelow60;
       if (p.belowTarget) {
