@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T18:00:03+02:00",
+    "generated_at":  "2026-10-05T18:05:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  "2026-10-05T18:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Stage A motion and state review",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Aging observations curation and validator review",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  30.6,
+                                 "step_title":  "Verify primary study contexts",
                                  "steps":  [
-
+                                               "Inspect candidates and approval",
+                                               "Verify primary study contexts",
+                                               "Check validator boundaries",
+                                               "Record exact findings and handoff"
                                            ],
-                                 "eta_seconds":  345,
+                                 "eta_seconds":  1257,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T15:54:46+02:00",
+                                 "updated":  "2026-10-05T18:03:21+02:00",
                                  "last_run":  "2026-10-05T17:55:48+02:00",
                                  "next_run":  "2026-10-05T18:45:00+02:00"
                              }
@@ -44,7 +47,7 @@
                      "agent":  "cursor",
                      "time":  "2026-10-05T18:15:00+02:00"
                  },
-    "today_runs":  40,
+    "today_runs":  41,
     "queue":  [
 
               ],
