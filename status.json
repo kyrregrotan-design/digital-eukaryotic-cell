@@ -1,26 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T21:35:03+02:00",
+    "generated_at":  "2026-10-05T21:40:53+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Tours 2D view: tour-player height fix + accessibility checks",
+                                  "task":  "Tours 2D view: finish short-screen and accessibility evidence",
                                   "status":  "running",
-                                  "step":  3,
-                                  "total":  5,
-                                  "percent":  58,
-                                  "step_title":  "SVG keyboard/screen-reader pass",
+                                  "step":  2,
+                                  "total":  4,
+                                  "percent":  47.5,
+                                  "step_title":  "Bottom-scroll and keyboard evidence",
                                   "steps":  [
-                                                "Apply CSS height cap",
-                                                "Short-screen browser evidence",
-                                                "SVG keyboard/screen-reader pass",
-                                                "Visual check",
+                                                "Review state left by 20:51 run",
+                                                "Bottom-scroll and keyboard evidence",
+                                                "screenshots",
                                                 "Tests and finish log entry"
                                             ],
-                                  "eta_seconds":  79,
+                                  "eta_seconds":  298,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T21:08:29+02:00",
-                                  "last_run":  "2026-10-05T21:15:01+02:00",
+                                  "updated":  "2026-10-05T21:37:46+02:00",
+                                  "last_run":  "2026-10-05T21:35:05+02:00",
                                   "next_run":  "2026-10-05T22:15:00+02:00"
                               },
                    "codex":  {
