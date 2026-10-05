@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T10:35:03+02:00",
+    "generated_at":  "2026-10-05T10:40:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage A step 3: palette anchors, shell opacity, depth cues",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "Stage A step 3: cheap depth cues (Advanced look)",
+                                  "status":  "running",
+                                  "step":  1,
+                                  "total":  5,
+                                  "percent":  2.5,
+                                  "step_title":  "Read spec and code",
                                   "steps":  [
-
+                                                "Read spec and code",
+                                                "Implement depth cues",
+                                                "Tests and re-export",
+                                                "Browser check",
+                                                "Log and handoff"
                                             ],
-                                  "eta_seconds":  655,
+                                  "eta_seconds":  834,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T10:22:17+02:00",
+                                  "updated":  "2026-10-05T10:39:33+02:00",
                                   "last_run":  "2026-10-05T10:33:58+02:00",
                                   "next_run":  "2026-10-05T11:15:00+02:00"
                               },
@@ -44,7 +48,7 @@
                      "agent":  "codex",
                      "time":  "2026-10-05T10:45:00+02:00"
                  },
-    "today_runs":  25,
+    "today_runs":  26,
     "queue":  [
 
               ],
