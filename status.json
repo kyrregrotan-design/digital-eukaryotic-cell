@@ -1,26 +1,23 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T13:30:03+02:00",
+    "generated_at":  "2026-10-05T13:35:03+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage A step 5: acceptance matrix (part 1)",
+                                  "task":  "Review-only: QC response to fil",
                                   "status":  "done",
-                                  "step":  6,
-                                  "total":  6,
+                                  "step":  3,
+                                  "total":  3,
                                   "percent":  100,
-                                  "step_title":  "Finish entry",
+                                  "step_title":  "Append QC RESPONSE entry",
                                   "steps":  [
-                                                "Map viewer hooks for acceptance",
-                                                "Write matrix steps (2 looks x 3 tiers)",
-                                                "Run desktop 1440x900",
-                                                "Run narrow 390x844",
-                                                "Inspect screenshots and summarise",
-                                                "Finish entry"
+                                                "Read QC report",
+                                                "Check facts against log and data",
+                                                "Append QC RESPONSE entry"
                                             ],
                                   "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T12:34:27+02:00",
+                                  "updated":  "2026-10-05T13:30:35+02:00",
                                   "last_run":  "2026-10-05T13:15:01+02:00",
                                   "next_run":  "2026-10-05T14:15:00+02:00"
                               },
@@ -55,6 +52,11 @@
     "recent":  [
                    {
                        "agent":  "cursor",
+                       "task":  "Review-only: QC response to fil",
+                       "finished":  "2026-10-05T13:30:35+02:00"
+                   },
+                   {
+                       "agent":  "cursor",
                        "task":  "Stage A step 5: acceptance matrix (part 1)",
                        "finished":  "2026-10-05T12:34:27+02:00"
                    },
@@ -77,11 +79,6 @@
                        "agent":  "cursor",
                        "task":  "Stage A step 4: look/quality UI",
                        "finished":  "2026-10-05T11:15:47+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Stage A depth-cue review",
-                       "finished":  "2026-10-05T11:04:52+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
