@@ -94,6 +94,7 @@
   body.inside .inside-only { display: block; }
   #caption { left: 50%; transform: translateX(-50%); bottom: 16px; width: min(760px, calc(100vw - 32px)); padding: 10px 14px; display: none; }
   body.inside.story #caption { display: block; }
+  body.cramped #status-pill, body.cramped #inside-bar, body.cramped #caption { visibility: hidden; }
   #cap-step { display: block; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); }
   #cap-title { display: block; font-size: 0.95rem; margin: 2px 0 4px; }
   #cap-text { font-size: 0.78rem; line-height: 1.5; color: #d8e2ea; max-height: 6em; overflow-y: auto; }
@@ -290,7 +291,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 12:02 (Europe/Oslo)",
+  "generated_at": "2026-10-05 14:32 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -11791,9 +11792,12 @@
   const overlay = document.getElementById("overlay");
   const octx = overlay.getContext("2d");
   const proj = (p) => { const v = p.clone().project(camera); return { x: (v.x * 0.5 + 0.5) * window.innerWidth, y: (-v.y * 0.5 + 0.5) * window.innerHeight, ok: v.z < 1 }; };
-  function pill(text, x, y, active, color, align) {
+  function pillWidth(text, active) {
     octx.font = (active ? "600 " : "500 ") + "12px " + getComputedStyle(document.body).fontFamily;
-    const w = octx.measureText(text).width + 16, h = 20;
+    return octx.measureText(text).width + 16;
+  }
+  function pill(text, x, y, active, color, align) {
+    const w = pillWidth(text, active), h = 20;
     const bx = align === "right" ? x - w : align === "center" ? x - w / 2 : x;
     octx.fillStyle = active ? "rgba(20,40,44,0.92)" : "rgba(10,14,20,0.78)";
     octx.strokeStyle = active ? "rgba(111,214,200,0.95)" : (color || "rgba(255,255,255,0.14)");
@@ -11844,7 +11848,7 @@
     if (inside) { drawInteriorOverlay(W, H, leftEdge, rightEdge); return; }
     if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, 62, false, null, "center");
     drawAnatSectionLabels(leftEdge, rightEdge);
-    if (showLabels) {
+    if (showLabels && !document.body.classList.contains("cramped")) {
       const c0 = proj(V(0, 0, 0));
       const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: c.label.replace(/\s*\(.*\)$/, ""), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
       const sorted = items.slice().sort((a, b) => a.p.x - b.p.x);
@@ -11857,7 +11861,8 @@
         for (let i = list.length - 1; i >= 0; i--) { list[i].ly = Math.min(list[i].ly, next - 24, H - 60); next = list[i].ly; }
         list.forEach((it) => {
           const active = (hover && hover.comp === it.id) || (selected && selected.comp === it.id);
-          const colX = side === "L" ? Math.max(leftEdge + 10, Math.min(c0.x - 200, it.p.x - 120)) : Math.min(rightEdge - 10, Math.max(c0.x + 200, it.p.x + 120));
+          const pw = pillWidth(it.text, active);
+          const colX = side === "L" ? Math.max(leftEdge + 10 + pw, Math.min(c0.x - 200, it.p.x - 120)) : Math.min(rightEdge - 10 - pw, Math.max(c0.x + 200, it.p.x + 120));
           octx.strokeStyle = active ? "rgba(111,214,200,0.95)" : "rgba(235,242,246,0.45)";
           octx.lineWidth = active ? 1.5 : 1;
           octx.beginPath(); octx.moveTo(it.p.x, it.p.y); octx.lineTo(colX + (side === "L" ? 12 : -12), it.ly); octx.lineTo(colX, it.ly); octx.stroke();
@@ -15028,6 +15033,7 @@
   });
   window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
   window.__insideId = () => (inside ? inside.id : null);
+  window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w) }));
   window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
 
   // ---------------------------------------------------------------- loop
@@ -15038,6 +15044,10 @@
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     const { L, R } = panelEdges();
+    const freeMid = (L + (w - L - R) / 2) + "px";
+    document.body.classList.toggle("cramped", L + R > 32 && w - L - R < 360);
+    document.getElementById("status-pill").style.left = freeMid;
+    document.getElementById("inside-bar").style.left = freeMid;
     const capOn = !!(inside && inside.api);
     if (capOn) {
       captionEl.style.left = (L + (w - L - R) / 2) + "px";
