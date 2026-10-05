@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T21:55:03+02:00",
+    "generated_at":  "2026-10-05T22:00:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,19 +25,19 @@
                    "codex":  {
                                  "task":  "SVG tour height and accessibility acceptance",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  72.5,
-                                 "step_title":  "Check keyboard and narrow controls",
+                                 "percent":  77.7,
+                                 "step_title":  "Record verdict and handoff",
                                  "steps":  [
                                                "Verify scoped CSS and baseline",
                                                "Inspect saved browser evidence",
                                                "Check keyboard and narrow controls",
                                                "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  173,
+                                 "eta_seconds":  250,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T21:51:44+02:00",
+                                 "updated":  "2026-10-05T21:59:33+02:00",
                                  "last_run":  "2026-10-05T21:45:32+02:00",
                                  "next_run":  "2026-10-05T22:45:00+02:00"
                              }
