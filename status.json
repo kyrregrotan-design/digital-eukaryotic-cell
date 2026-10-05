@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T07:30:03+02:00",
+    "generated_at":  "2026-10-05T07:35:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,18 +25,21 @@
                                   "next_run":  "2026-10-05T08:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Stage A Standard look review",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Stage A tiers and Auto review",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  36.6,
+                                 "step_title":  "Exercise adaptation and budgets",
                                  "steps":  [
-
+                                               "Check spec and tier code",
+                                               "Exercise adaptation and budgets",
+                                               "Verify browser evidence and tests",
+                                               "Record findings and handoff"
                                            ],
-                                 "eta_seconds":  438,
+                                 "eta_seconds":  696,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T06:58:25+02:00",
+                                 "updated":  "2026-10-05T07:32:55+02:00",
                                  "last_run":  "2026-10-05T07:28:21+02:00",
                                  "next_run":  "2026-10-05T07:45:00+02:00"
                              }
@@ -45,7 +48,7 @@
                      "agent":  "codex",
                      "time":  "2026-10-05T07:45:00+02:00"
                  },
-    "today_runs":  14,
+    "today_runs":  15,
     "queue":  [
 
               ],
