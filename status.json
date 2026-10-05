@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T15:35:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-05T15:40:03+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A step 5: reduced motion, hidden tab, tour exit, what-if acceptance",
