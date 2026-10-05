@@ -266,7 +266,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 09:04 (Europe/Oslo)",
+  "generated_at": "2026-10-05 09:30 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -10911,10 +10911,64 @@
     return h.toString(16).padStart(8, "0");
   }
   const LOOKS = { standard: captureLook() };
+  // Advanced look: palette and material_presets of codex_inputs/visual_spec_2026-10-04/visual_spec_v1.json
+  // (art-direction settings, not measurements). Each compartment's primary material (the one on most of its pickable
+  // meshes) takes the palette colour; its other materials keep their Standard hue/saturation/lightness offsets from
+  // that primary, so internal distinctions (pores, chromatin, cisterna gradients, studs) survive. Lights, exposure,
+  // sheen strength, envMapIntensity and clearcoatRoughness stay Standard; "background" keeps Standard roughness/clearcoat.
+  const ADV_SPEC = {
+    palette: {
+      plasma_membrane: ["#DC946F", "membrane"], apical_microvilli: ["#E7AD87", "satin"], cytosol: ["#E9CBB4", "background"],
+      cytoskeleton: ["#9EB2B7", "matte"], nucleus: ["#8965BE", "satin"], nucleolus: ["#684783", "matte"],
+      nuclear_envelope: ["#B299D3", "membrane"], rough_er: ["#627FC2", "satin"], smooth_er: ["#94B7DA", "satin"],
+      golgi: ["#7CB78C", "satin"], mitochondria: ["#DE885F", "membrane"], lysosomes: ["#A28CC9", "vesicle"],
+      autophagosomes: ["#74B698", "vesicle"], endosomes: ["#CA93B1", "vesicle"], peroxisomes: ["#81B4C9", "vesicle"],
+      lipid_droplets: ["#DAB965", "lipid"], ribosomes: ["#B76B7E", "matte"],
+    },
+    presets: {
+      matte: { roughness: 0.75, clearcoat: 0 }, satin: { roughness: 0.55, clearcoat: 0.2 }, membrane: { roughness: 0.55, clearcoat: 0.15 },
+      vesicle: { roughness: 0.5, clearcoat: 0.15 }, lipid: { roughness: 0.35, clearcoat: 0.3 }, background: {},
+    },
+    metalness: 0,
+  };
+  const LOOK_PRIMARY = {};
+  Object.keys(compMats).forEach((c) => {
+    const n = compMats[c].map((m) => pickables.filter((o) => o.userData.comp === c && o.material === m).length);
+    LOOK_PRIMARY[c] = n.reduce((bi, v, i) => (v > n[bi] ? i : bi), 0);
+  });
+  function buildAdvanced(std) {
+    // Saturation and lightness offsets are scaled into the room left above or below the palette value, so they never clip.
+    const S = THREE.SRGBColorSpace, wrap = (x) => x - Math.floor(x);
+    const rel = (q, c, p) => (c >= p ? q + ((c - p) * (1 - q)) / Math.max(1e-6, 1 - p) : (q * c) / Math.max(1e-6, p));
+    const hsl = (arr) => new THREE.Color().fromArray(arr).getHSL({}, S);
+    const look = JSON.parse(JSON.stringify(std));
+    Object.keys(look.mats).forEach((c) => {
+      const spec = ADV_SPEC.palette[c];
+      if (!spec) return;
+      const P = hsl(std.mats[c][LOOK_PRIMARY[c]].color), Q = new THREE.Color(spec[0]).getHSL({}, S), pre = ADV_SPEC.presets[spec[1]];
+      const shift = (arr) => { const C = hsl(arr); return new THREE.Color().setHSL(wrap(Q.h + C.h - P.h), rel(Q.s, C.s, P.s), rel(Q.l, C.l, P.l), S).toArray(); };
+      look.mats[c].forEach((o, i) => {
+        if (o.color) o.color = i === LOOK_PRIMARY[c] ? new THREE.Color(spec[0]).toArray() : shift(o.color);
+        if (o.sheenColor) o.sheenColor = shift(o.sheenColor);
+        if (o.metalness !== undefined) o.metalness = ADV_SPEC.metalness;
+        if (o.roughness !== undefined && pre.roughness !== undefined) o.roughness = pre.roughness;
+        if (o.clearcoat !== undefined && pre.clearcoat !== undefined) o.clearcoat = pre.clearcoat;
+        if (o.transmission !== undefined) o.transmission = 0;
+      });
+    });
+    return look;
+  }
+  LOOKS.advanced = buildAdvanced(LOOKS.standard);
   let lookCur = "standard";
   window.__look = () => ({
-    current: lookCur, presets: Object.keys(LOOKS), hash: lookHash(captureLook()), standardHash: lookHash(LOOKS.standard),
+    current: lookCur, presets: Object.keys(LOOKS), hash: lookHash(captureLook()), standardHash: lookHash(LOOKS.standard), advancedHash: lookHash(LOOKS.advanced),
     compartments: Object.keys(LOOKS.standard.mats).length, materials: Object.values(LOOKS.standard.mats).reduce((n, a) => n + a.length, 0),
+  });
+  window.__lookDetail = () => Object.keys(compMats).sort().map((c) => {
+    const p = LOOK_PRIMARY[c], m = compMats[c][p];
+    return { c, materials: compMats[c].length, primary: p, preset: ADV_SPEC.palette[c] && ADV_SPEC.palette[c][1], palette: ADV_SPEC.palette[c] && ADV_SPEC.palette[c][0],
+      primaryNow: "#" + m.color.getHexString(), roughness: compMats[c].map((x) => x.roughness), metalness: compMats[c].map((x) => x.metalness), clearcoat: compMats[c].map((x) => x.clearcoat),
+      colours: compMats[c].map((x) => "#" + x.color.getHexString()) };
   });
   window.__applyLook = (name) => { if (!LOOKS[name]) return null; const n = applyLook(LOOKS[name]); lookCur = name; QUALITY.applyMaterials(); QUALITY.applyGeometry(); return n; };
   window.__renderDataURL = () => { renderer.render(scene, camera); return canvas.toDataURL("image/png"); };
