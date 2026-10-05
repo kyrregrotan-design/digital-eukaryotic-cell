@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T07:50:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-05T07:55:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A: Auto controller corrections from Codex",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  65,
-                                  "step_title":  "Export and tests",
+                                  "percent":  100,
+                                  "step_title":  "Log and handoff",
                                   "steps":  [
                                                 "Apply three controller corrections",
                                                 "Document cooldown and clearcoat scope",
@@ -18,9 +18,9 @@
                                                 "Browser checks (synthetic and real separated)",
                                                 "Log and handoff"
                                             ],
-                                  "eta_seconds":  6,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T07:45:24+02:00",
+                                  "updated":  "2026-10-05T07:52:27+02:00",
                                   "last_run":  "2026-10-05T07:43:31+02:00",
                                   "next_run":  "2026-10-05T08:15:00+02:00"
                               },
@@ -34,10 +34,10 @@
                                  "steps":  [
 
                                            ],
-                                 "eta_seconds":  238,
+                                 "eta_seconds":  446,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-05T07:43:16+02:00",
-                                 "last_run":  "2026-10-05T07:45:01+02:00",
+                                 "last_run":  "2026-10-05T07:53:29+02:00",
                                  "next_run":  "2026-10-05T08:45:00+02:00"
                              }
                },
@@ -50,6 +50,11 @@
 
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Stage A: Auto controller corrections from Codex",
+                       "finished":  "2026-10-05T07:52:27+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Stage A tiers and Auto review",
@@ -74,11 +79,6 @@
                        "agent":  "cursor",
                        "task":  "Tours part 2: narration scripts + export embedding",
                        "finished":  "2026-10-04T23:20:08+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review tour precompute",
-                       "finished":  "2026-10-04T22:29:59+02:00"
                    }
                ],
     "update_window":  "07:00-23:30"
