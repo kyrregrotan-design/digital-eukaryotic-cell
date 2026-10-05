@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T21:50:03+02:00",
+    "generated_at":  "2026-10-05T21:55:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -23,18 +23,21 @@
                                   "next_run":  "2026-10-05T22:15:00+02:00"
                               },
                    "codex":  {
-                                 "task":  "Review SVG tour view",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "SVG tour height and accessibility acceptance",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  72.5,
+                                 "step_title":  "Check keyboard and narrow controls",
                                  "steps":  [
-
+                                               "Verify scoped CSS and baseline",
+                                               "Inspect saved browser evidence",
+                                               "Check keyboard and narrow controls",
+                                               "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  328,
+                                 "eta_seconds":  173,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T20:50:44+02:00",
+                                 "updated":  "2026-10-05T21:51:44+02:00",
                                  "last_run":  "2026-10-05T21:45:32+02:00",
                                  "next_run":  "2026-10-05T22:45:00+02:00"
                              }
@@ -43,7 +46,7 @@
                      "agent":  "cursor",
                      "time":  "2026-10-05T22:15:00+02:00"
                  },
-    "today_runs":  52,
+    "today_runs":  53,
     "queue":  [
 
               ],
