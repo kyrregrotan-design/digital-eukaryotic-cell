@@ -266,7 +266,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 09:30 (Europe/Oslo)",
+  "generated_at": "2026-10-05 10:45 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -10866,7 +10866,8 @@
 
   // ---------------------------------------------------------------- graphics look presets (Stage A)
   // A look sets only base appearance of compartment display materials (compMats) and scene lighting.
-  // Opacity, emissive and emissiveIntensity are runtime state (selection, focus, highlights) and are never part of a look.
+  // Opacity, emissive and emissiveIntensity are runtime state (selection, focus, highlights) and are never part of a look;
+  // the one opacity the graphics settings set is the Advanced per-tier shell opacity (SHELLS, QUALITY.applyMaterials).
   const LOOK_MAT_KEYS = ["color", "roughness", "metalness", "clearcoat", "clearcoatRoughness", "sheen", "sheenColor", "sheenRoughness", "envMapIntensity", "transmission", "thickness", "ior"];
   const LOOK_LIGHTS = [hemi, key, fill, inner];
   function captureLook() {
@@ -10936,6 +10937,18 @@
     const n = compMats[c].map((m) => pickables.filter((o) => o.userData.comp === c && o.material === m).length);
     LOOK_PRIMARY[c] = n.reduce((bi, v, i) => (v > n[bi] ? i : bi), 0);
   });
+  // Palette anchors on the identifying parts: v1's sage Golgi stacks and terracotta mitochondrial boundary.
+  LOOK_PRIMARY.golgi = 0;
+  LOOK_PRIMARY.mitochondria = 0;
+  // Translucent enclosing shells (mitochondrial outer membrane; lysosome, peroxisome, endosome and autophagosome shells).
+  // Under Advanced each compartment's most opaque shell takes the tier's shell_opacity and its other shells keep their
+  // Standard ratio to it (autophagosome inner/outer); Standard keeps its own values at every tier.
+  const SHELLS = [];
+  Object.keys(compMats).sort().forEach((c) => {
+    const ms = compMats[c].filter((m) => m.isMeshPhysicalMaterial && m.transparent);
+    const top = Math.max(0, ...ms.map((m) => m.opacity));
+    ms.forEach((m) => SHELLS.push({ c, m, base: m.opacity, ratio: m.opacity / top }));
+  });
   function buildAdvanced(std) {
     // Saturation and lightness offsets are scaled into the room left above or below the palette value, so they never clip.
     const S = THREE.SRGBColorSpace, wrap = (x) => x - Math.floor(x);
@@ -10970,8 +10983,52 @@
       primaryNow: "#" + m.color.getHexString(), roughness: compMats[c].map((x) => x.roughness), metalness: compMats[c].map((x) => x.metalness), clearcoat: compMats[c].map((x) => x.clearcoat),
       colours: compMats[c].map((x) => "#" + x.color.getHexString()) };
   });
+  window.__shells = () => SHELLS.map((s) => ({ c: s.c, uuid: s.m.uuid, base: s.base, ratio: +s.ratio.toFixed(4), opacity: s.m.opacity, transparent: s.m.transparent, depthWrite: s.m.depthWrite }));
   window.__applyLook = (name) => { if (!LOOKS[name]) return null; const n = applyLook(LOOKS[name]); lookCur = name; QUALITY.applyMaterials(); QUALITY.applyGeometry(); return n; };
   window.__renderDataURL = () => { renderer.render(scene, camera); return canvas.toDataURL("image/png"); };
+
+  // ---------------------------------------------------------------- cheap depth cues (Stage A, Advanced look only)
+  // visual spec v1 tiers.depth_cue: Light "subtle vertex-colour underside/rim contrast only"; Balanced/High "modest
+  // procedural underside shading" in the same single scene, with no screen-space, shadow or post-processing pass.
+  // One factor darkens downward-facing surfaces and silhouettes of compartment mesh materials (not the cytosol
+  // background); Light evaluates it per vertex, Balanced/High per pixel. Strengths are display choices, not measurements.
+  // Under Standard the materials fall back to their stock shaders and program keys.
+  const DC_U = { dcUnder: { value: 0 }, dcRim: { value: 0 } };
+  const DC_MATS = Object.keys(compMats).sort().filter((c) => !ADV_SPEC.palette[c] || ADV_SPEC.palette[c][1] !== "background")
+    .flatMap((c) => compMats[c].filter((m) => m.isMeshStandardMaterial));
+  const DC_UP = "normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz)";
+  const DC_FN = "uniform float dcUnder;\nuniform float dcRim;\n" +
+    "float dcFactor(vec3 n, vec3 v, vec3 up) { float d = 0.5 - 0.5 * dot(n, up); float r = 1.0 - abs(dot(n, v)); return (1.0 - dcUnder * d * d) * (1.0 - dcRim * r * r * r); }\n";
+  let depthMode = "off", dcScale = 1;
+  function dcCompile(sh) {
+    const frag = depthMode === "fragment", head = DC_FN + (frag ? "varying vec3 vDcN;\nvarying vec3 vDcV;\n" : "varying float vDc;\n");
+    Object.assign(sh.uniforms, DC_U);
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\n" + head).replace("#include <project_vertex>", "#include <project_vertex>\n" +
+      (frag ? "vDcN = transformedNormal; vDcV = -mvPosition.xyz;" : "vDc = dcFactor(normalize(transformedNormal), normalize(-mvPosition.xyz), " + DC_UP + ");"));
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\n" + head).replace("#include <color_fragment>", "#include <color_fragment>\n" +
+      (frag ? "{ vec3 dn = normalize(vDcN); if (!gl_FrontFacing) dn = -dn; diffuseColor.rgb *= dcFactor(dn, normalize(vDcV), " + DC_UP + "); }" : "diffuseColor.rgb *= vDc;"));
+  }
+  function dcKey() { return "depthcue-" + depthMode; }
+  function applyDepthCues(T) {
+    const mode = lookCur === "standard" ? "off" : T.depthCue.mode;
+    DC_U.dcUnder.value = mode === "off" ? 0 : T.depthCue.under * dcScale;
+    DC_U.dcRim.value = mode === "off" ? 0 : T.depthCue.rim * dcScale;
+    if (mode === depthMode) return 0;
+    depthMode = mode;
+    DC_MATS.forEach((m) => {
+      if (mode === "off") { delete m.onBeforeCompile; delete m.customProgramCacheKey; }
+      else { m.onBeforeCompile = dcCompile; m.customProgramCacheKey = dcKey; }
+      m.needsUpdate = true;
+    });
+    return DC_MATS.length;
+  }
+  window.__depthCues = () => ({
+    mode: depthMode, under: DC_U.dcUnder.value, rim: DC_U.dcRim.value, materials: DC_MATS.length,
+    patched: DC_MATS.filter((m) => Object.prototype.hasOwnProperty.call(m, "onBeforeCompile")).length,
+    compartments: [...new Set(Object.keys(compMats).filter((c) => compMats[c].some((m) => DC_MATS.includes(m))))].sort(),
+  });
+  // Test hook: scales the cue strength (0 = same shaders with a neutral factor) to isolate the cue in renders.
+  window.__depthCueScale = (k) => { dcScale = Math.max(0, Math.min(1, +k || 0)); QUALITY.applyMaterials(); return window.__depthCues(); };
 
   // ---------------------------------------------------------------- rendering quality tiers (Stage A)
   // Budgets and adaptation thresholds from codex_inputs/visual_spec_2026-10-04/visual_spec_v1.json (tiers, adaptation):
@@ -10983,9 +11040,9 @@
   // Balanced/High bound the Advanced look, and Standard keeps its existing segments (up to 40x28, the High budget).
   // The 15 s cooldown gates upgrades only; ordinary and severe downgrades are not held by it.
   const QTIERS = [
-    { id: "light", prCap: 1, pxCap: 1500000, clearcoatCap: 0, movingCap: 8, sphere: [16, 12], smallSphere: [8, 6] },
-    { id: "balanced", prCap: 1.5, pxCap: 2500000, clearcoatCap: 0.2, movingCap: 16, sphere: [24, 16], smallSphere: [8, 6] },
-    { id: "high", prCap: 2, pxCap: 4000000, clearcoatCap: 0.3, movingCap: 24, sphere: [40, 28], smallSphere: [10, 8] },
+    { id: "light", prCap: 1, pxCap: 1500000, clearcoatCap: 0, movingCap: 8, shellOpacity: 0.4, sphere: [16, 12], smallSphere: [8, 6], depthCue: { mode: "vertex", under: 0.08, rim: 0.06 } },
+    { id: "balanced", prCap: 1.5, pxCap: 2500000, clearcoatCap: 0.2, movingCap: 16, shellOpacity: 0.45, sphere: [24, 16], smallSphere: [8, 6], depthCue: { mode: "fragment", under: 0.14, rim: 0.08 } },
+    { id: "high", prCap: 2, pxCap: 4000000, clearcoatCap: 0.3, movingCap: 24, shellOpacity: 0.5, sphere: [40, 28], smallSphere: [10, 8], depthCue: { mode: "fragment", under: 0.14, rim: 0.08 } },
   ];
   const QA = { warmup: 5000, window: 2000, settle: 1000, cooldown: 15000, upHold: 15000, trial: 5000,
     downMed: 18.5, downP95: 22, downRuns: 3, severeMed: 33.3, upMed: 17.5, upP95: 18.5, targetMed: 17.5, targetP95: 20, stall: 100 };
@@ -11008,7 +11065,11 @@
         const want = T.id === "light" ? 0 : lookCur === "standard" ? s.clearcoat : Math.min(s.clearcoat, T.clearcoatCap);
         if (m.clearcoat !== want) { m.clearcoat = want; changed++; }
       }));
-      return changed;
+      SHELLS.forEach((s) => {
+        const want = lookCur === "standard" ? s.base : Math.round(T.shellOpacity * s.ratio * 1e4) / 1e4;
+        if (s.m.opacity !== want) { s.m.opacity = want; changed++; }
+      });
+      return changed + applyDepthCues(T);
     }
     function applyExtraMaterials(root) {
       const light = QTIERS[tier].id === "light", comp = new Set(Object.values(compMats).flat());
