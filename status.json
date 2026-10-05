@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T15:50:03+02:00",
+    "generated_at":  "2026-10-05T15:55:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                               },
                    "codex":  {
                                  "task":  "Stage A motion and state review",
-                                 "status":  "running",
-                                 "step":  2,
+                                 "status":  "done",
+                                 "step":  3,
                                  "total":  3,
-                                 "percent":  40,
-                                 "step_title":  "Verify saved results and screenshots",
+                                 "percent":  100,
+                                 "step_title":  "Record verdict and remaining gates",
                                  "steps":  [
                                                "Inspect helper and acceptance gates",
                                                "Verify saved results and screenshots",
                                                "Record verdict and remaining gates"
                                            ],
-                                 "eta_seconds":  453,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T15:49:12+02:00",
+                                 "updated":  "2026-10-05T15:54:46+02:00",
                                  "last_run":  "2026-10-05T15:45:01+02:00",
                                  "next_run":  "2026-10-05T16:45:00+02:00"
                              }
@@ -52,6 +52,11 @@
 
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Stage A motion and state review",
+                       "finished":  "2026-10-05T15:54:46+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Stage A step 5: reduced motion, hidden tab, tour exit, what-if acceptance",
@@ -76,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "Stage A step 5: layout fixes B1/m1 + opinion update on 14:15",
                        "finished":  "2026-10-05T14:36:35+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Opinion-only: viewer ideas 14:07 (schematic 3D tour) and 14:08 (glucose ride)",
-                       "finished":  "2026-10-05T14:11:37+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
