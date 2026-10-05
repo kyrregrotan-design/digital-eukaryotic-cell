@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T15:00:03+02:00",
+    "generated_at":  "2026-10-05T15:05:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage A step 5: narrow breadcrumb/opener fix (Codex correction 1)",
                                   "status":  "running",
-                                  "step":  3,
+                                  "step":  4,
                                   "total":  6,
-                                  "percent":  48.3,
-                                  "step_title":  "Re-export and pytest",
+                                  "percent":  65,
+                                  "step_title":  "Real-pointer narrow interior check + desktop spot check",
                                   "steps":  [
                                                 "Read logs and plan",
                                                 "Apply responsive breadcrumb CSS",
@@ -18,9 +18,9 @@
                                                 "Inspect screenshots",
                                                 "Finish log entry"
                                             ],
-                                  "eta_seconds":  101,
+                                  "eta_seconds":  12,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-05T14:58:34+02:00",
+                                  "updated":  "2026-10-05T15:00:56+02:00",
                                   "last_run":  "2026-10-05T14:57:00+02:00",
                                   "next_run":  "2026-10-05T15:15:00+02:00"
                               },
