@@ -28,6 +28,7 @@
   #left { left: 16px; top: 16px; bottom: 16px; width: 290px; padding: 14px; overflow-y: auto; }
   #right { right: 16px; top: 16px; bottom: 16px; width: 340px; padding: 16px; overflow-y: auto; }
   #left.hidden, #right.hidden { display: none; }
+  #right.tour-source-front { z-index: 6; }
   .closer { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04); color: var(--muted); cursor: pointer; font-size: 0.9rem; line-height: 1; z-index: 2; }
   .closer:hover { color: var(--text); background: var(--accent-dim); }
   #right .closer { position: sticky; float: right; top: 0; margin: -6px -6px 0 0; }
@@ -15043,6 +15044,7 @@
     tourCancelSpeech();
     const prev = tourCur.prevFocus;
     tourCur = null;
+    document.getElementById("right").classList.remove("tour-source-front");
     document.body.classList.remove("touring");
     Object.keys(nodeState).forEach((k) => delete nodeState[k]);
     focusPw = prev; renderPwList(); refreshPathwayStyles();
@@ -15232,9 +15234,18 @@
   };
   tourEl("tp-rate").onchange = (ev) => { if (tourCur) { tourCur.rate = Number(ev.target.value) || 1; if (tourCur.playing) tourSpeak(); } };
   tourEl("tp-voice").onchange = () => { if (tourCur && tourCur.playing) tourSpeak(); };
-  tourEl("tp-cards").onclick = () => { if (tourCur) tourCards(); };
+  tourEl("tp-cards").onclick = () => {
+    if (!tourCur) return;
+    tourCards();
+    document.getElementById("right").classList.add("tour-source-front");
+    document.getElementById("close-right").focus();
+  };
   tourEl("tp-close").onclick = () => tourClose();
-  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && tourCur && !inside) tourClose(); });
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !tourCur || inside) return;
+    if (document.getElementById("right").classList.contains("tour-source-front")) setPanel("right", false);
+    else tourClose();
+  });
   document.addEventListener("visibilitychange", () => { if (document.hidden && tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); } });
   window.addEventListener("pagehide", () => {
     if (tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); }
@@ -15275,9 +15286,12 @@
     }
   }
   function setPanel(which, open) {
+    const wasFront = which === "right" && !open && rightP.classList.contains("tour-source-front");
+    if (wasFront) rightP.classList.remove("tour-source-front");
     (which === "left" ? leftP : rightP).classList.toggle("hidden", !open);
     document.getElementById("open-" + which).classList.toggle("on", !open);
     resize();
+    if (wasFront && tourCur) tourEl("tp-cards").focus();
   }
   document.getElementById("close-left").onclick = () => setPanel("left", false);
   document.getElementById("close-right").onclick = () => setPanel("right", false);
