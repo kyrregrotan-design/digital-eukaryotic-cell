@@ -266,7 +266,7 @@
 <script src="vendor/three.min.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 08:13 (Europe/Oslo)",
+  "generated_at": "2026-10-05 09:04 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -3993,7 +3993,7 @@
             "label": "Cytosolic translation",
             "pathway_ids": [],
             "atlas_process_ids": [],
-            "note": ""
+            "note": "Lee et al. (2026), DOI 10.1038/s41586-025-10058-2: NAC-selective profiling in C. elegans links translation with nascent-chain folding and handling of ER and mitochondrial precursors. The study includes whole-worm profiling, L4-stage profiling and muscle-cell imaging; it does not establish adult-intestinal rates. No NAC mechanism is simulated here. Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC13043293/"
           },
           {
             "id": "rb_er_bound",
@@ -4065,6 +4065,12 @@
             "doi": "10.1016/j.cmet.2009.10.002",
             "url": "https://pubmed.ncbi.nlm.nih.gov/19883620/",
             "note": "Experimentally distinguishes the major neutral-fat stores from the lysosome-related organelles labelled by vital dyes. Verified by Codex 2026-10-04 (18:47)."
+          },
+          {
+            "citation": "Daniel et al. 2026, Biology Open 15(9):bio062526. The de novo formation and maintenance of C. elegans lysosome-related organelles.",
+            "doi": "10.1242/bio.062526",
+            "url": "https://journals.biologists.com/bio/article/15/9/bio062526/372904/The-de-novo-formation-and-maintenance-of-C-elegans",
+            "note": "Embryonic intestinal gut-granule formation and maintenance; Fig. 4F,G documents CCZ-1 loss from gut granules at E16. This does not establish adult-intestinal turnover or measured biogenesis rates. Verified by Codex 2026-10-05; article CC-BY-4.0."
           }
         ],
         "display": "schematic",
@@ -10707,7 +10713,7 @@
     const geo = isProc ? new THREE.CapsuleGeometry(0.045, 0.12, 6, 14) : n.role === "complex" ? new THREE.IcosahedronGeometry(0.075, 0) : new THREE.SphereGeometry(0.065, 28, 20);
     const m = new THREE.MeshPhysicalMaterial({ color: col, emissive: col, emissiveIntensity: 0.55, roughness: 0.25, clearcoat: 1, transparent: true, opacity: 1 });
     const mesh = new THREE.Mesh(geo, m);
-    if (geo.isSphereGeometry) dsph(mesh);
+    if (geo.type === "SphereGeometry") dsph(mesh);
     mesh.position.copy(nodePos[n.id]);
     if (isProc) mesh.rotation.z = Math.PI / 2;
     mesh.userData.node = n.id;
@@ -11125,6 +11131,17 @@
   };
   window.__anatHit = (x, y) => { const h = hitTest({ clientX: x, clientY: y }); return h ? (h.anat ? "anat:" + h.anat : h.comp ? "comp:" + h.comp : "node:" + h.node) : null; };
   window.__anatScreen = (id) => { const p = ANAT_POS[id] && proj(ANAT_POS[id]); return p ? { x: p.x, y: p.y, ok: p.ok } : null; };
+  window.__nodeSpheres = () => {
+    const rc = new THREE.Raycaster();
+    return DSPHERES.filter((d) => d.obj.userData.node).map((d) => {
+      const m = d.obj, g = m.geometry.parameters, w = m.getWorldPosition(new THREE.Vector3()), v = w.clone().project(camera);
+      rc.setFromCamera(new THREE.Vector2(v.x, v.y), camera);
+      return { id: m.userData.node, uuid: m.uuid, segs: g.widthSegments + "x" + g.heightSegments, radius: g.radius, pos: m.position.toArray().map((c) => +c.toFixed(5)),
+        scale: +m.scale.x.toFixed(5), mat: m.material.uuid, color: m.material.color.getHexString(), emissive: +m.material.emissiveIntensity.toFixed(3),
+        opacity: +m.material.opacity.toFixed(3), visible: m.visible, pickList: nodeMeshes.includes(m), sameObj: nodeObj[m.userData.node].mesh === m,
+        rayHit: rc.intersectObject(m, false).length > 0 };
+    });
+  };
   document.getElementById("t-spin").onchange = (e) => { spin = e.target.checked; };
 
   const PRESETS = [
