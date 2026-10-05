@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-05T20:40:03+02:00",
+    "generated_at":  "2026-10-05T20:45:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Review SVG tour view",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  30.7,
-                                 "step_title":  "Verify state and route rendering",
+                                 "percent":  50.1,
+                                 "step_title":  "Check browser evidence and tests",
                                  "steps":  [
                                                "Inspect route and player code",
                                                "Verify state and route rendering",
                                                "Check browser evidence and tests",
                                                "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  1091,
+                                 "eta_seconds":  778,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-05T20:38:34+02:00",
+                                 "updated":  "2026-10-05T20:45:01+02:00",
                                  "last_run":  "2026-10-05T20:32:01+02:00",
                                  "next_run":  "2026-10-05T20:45:00+02:00"
                              }
