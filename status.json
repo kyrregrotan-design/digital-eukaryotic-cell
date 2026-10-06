@@ -1,26 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T07:30:03+02:00",
+    "generated_at":  "2026-10-06T07:35:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Viewer QA slice 1 (items 1-7) + opinions A-J",
                                   "status":  "running",
-                                  "step":  2,
+                                  "step":  5,
                                   "total":  6,
-                                  "percent":  31.7,
-                                  "step_title":  "Learner-facing text (item 1)",
+                                  "percent":  75.5,
+                                  "step_title":  "Tests and browser check",
                                   "steps":  [
                                                 "Read QA list",
                                                 "Learner-facing text (item 1)",
                                                 "Ctrl+K and redirects (items 4, 7)",
-                                                "Nav pill, feedback, chips, dblclick (2, 3, 5, 6)",
+                                                "Pressed feedback (item 3)",
                                                 "Tests and browser check",
                                                 "Opinions A-J and finish log"
                                             ],
-                                  "eta_seconds":  213,
+                                  "eta_seconds":  137,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T07:28:56+02:00",
+                                  "updated":  "2026-10-06T07:34:13+02:00",
                                   "last_run":  "2026-10-06T07:28:00+02:00",
                                   "next_run":  "2026-10-06T08:15:00+02:00"
                               },
