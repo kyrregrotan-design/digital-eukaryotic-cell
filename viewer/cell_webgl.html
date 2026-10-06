@@ -120,6 +120,37 @@
   #cap-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 7px; font-size: 0.68rem; color: var(--muted); }
   #cap-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; box-shadow: 0 0 6px currentColor; }
   .sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+  body #caption, body #tour-player { bottom: max(16px, calc(env(safe-area-inset-bottom) + 8px)); }
+  #caption { max-height: calc(100vh - 32px); max-height: calc(100svh - 32px); overflow-y: auto; }
+  #cap-more, #tp-more { display: none; }
+  body.cap-small #cap-more, body.cap-small #tp-more { display: inline-block; }
+  body.cap-small #cap-text { max-height: 4.5em; }
+  body.inside.story.cap-small.cap-compact #caption { display: flex; align-items: center; gap: 8px; padding: 6px 10px; }
+  body.cap-small.cap-compact #cap-step, body.cap-small.cap-compact #cap-text, body.cap-small.cap-compact #cap-bar,
+  body.cap-small.cap-compact #cap-in, body.cap-small.cap-compact #cap-kd, body.cap-small.cap-compact #cap-legend,
+  body.cap-small.cap-compact #cap-mode-tour, body.cap-small.cap-compact #cap-mode-flow,
+  body.cap-small.cap-compact #cap-ctrl .sep, body.cap-small.cap-compact #cap-speed { display: none; }
+  body.cap-small.cap-compact #cap-title { flex: 1 1 auto; min-width: 0; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.85rem; }
+  body.cap-small.cap-compact #cap-ctrl { flex: none; flex-wrap: nowrap; }
+  body.cap-small.tp-compact #tp-step, body.cap-small.tp-compact #tp-voice-note, body.cap-small.tp-compact #tp-replay,
+  body.cap-small.tp-compact #tp-view, body.cap-small.tp-compact #tp-rate, body.cap-small.tp-compact #tp-ctrl label,
+  body.cap-small.tp-compact #tp-cards, body.cap-small.tp-compact #tp-ctrl .sep { display: none; }
+  body.cap-small.tp-compact #tp-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 2px; }
+  body.cap-small.tp-compact #tp-sub { max-height: 3em; font-size: 0.78rem; }
+  body.cap-small.tp-compact #tour-player { padding: 6px 10px; }
+  body.cap-small.tp-compact #tp-bar { margin: 4px 0; }
+  body.cap-small.tp-compact #tp-2d { margin: 2px 0 4px; }
+  body.cap-small.tp-compact #tp-2d-head { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.cap-small.tp-compact #tp-2d-foot { display: none; }
+  body.cap-small.tp-compact #tp-svg { max-height: 26vh; max-height: 26svh; }
+  body.cap-small.tp-compact.tour-2d #tp-title { display: none; }
+  body.cap-small.tp-compact #tour-player { width: min(640px, calc(100vw - 32px)); }
+  body.cap-small #tour-player { max-height: calc(100vh - 74px); max-height: calc(100svh - 74px); }
+  #open-right.ready { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 600px) {
+    #status-pill { top: 60px; max-width: calc(100vw - 32px); }
+    body.cap-small #tour-player { max-height: calc(100vh - 130px); max-height: calc(100svh - 130px); }
+  }
   #right ol { margin: 0 0 8px; padding-left: 18px; font-size: 0.77rem; line-height: 1.5; }
   .wi-ranges { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; }
   .wi-ranges th:first-child { width: 55%; }
@@ -294,6 +325,7 @@
     <button class="b" id="cap-play">❚❚ Pause</button>
     <button class="b" id="cap-next" title="Next step">›</button>
     <select id="cap-speed" title="Animation speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+    <button class="b" id="cap-more" aria-controls="caption" title="Show the explanation, mode and speed, knock-down chips and legend">▴ More</button>
   </div>
   <div class="row" id="cap-in"></div>
   <div class="row" id="cap-kd"></div>
@@ -318,6 +350,7 @@
     <label><input type="checkbox" id="tp-voice" checked /> Voice</label>
     <button class="b" id="tp-cards" title="Show this part's sources, caveats and limitations in the detail panel">Sources</button>
     <span class="sep"></span>
+    <button class="b" id="tp-more" aria-controls="tour-player" title="Show replay, view, speed, voice and sources">▴ More</button>
     <button class="b" id="tp-close" title="Close the tour (Esc)">✕ Close</button>
   </div>
   <div id="tp-voice-note"></div>
@@ -11733,7 +11766,21 @@
       ? "Selected: " + NODE[selected.node].label + ". Activate or knock it down to watch the signal travel."
       : "Click a gene in the cell, then activate or knock it down. The signal travels along the model's influence arrows step by step.";
   }
-  const openDetail = () => { if (rightP.classList.contains("hidden")) setPanel("right", true); rightP.scrollTop = 0; };
+  // On small screens with a caption or tour active, automatic opens (guided steps, tour parts, scene taps) only mark the
+  // Details button as ready, so the drawer never covers the animation unless the learner asks for it.
+  const detailPeek = () => document.body.classList.contains("cap-small") && rightP.classList.contains("hidden") &&
+    (document.body.classList.contains("touring") || !!(inside && inside.api));
+  function detailReady(on) {
+    const b = document.getElementById("open-right"), h = on ? detail.querySelector("h2") : null, name = h ? h.textContent.trim() : "";
+    b.classList.toggle("ready", !!on);
+    b.textContent = on ? "● Details" : "Details ☰";
+    b.title = on ? "Open the detail panel" + (name ? ": " + name : "") + " (explanation, values, sources and caveats)" : "Show the detail panel";
+    if (on) b.setAttribute("aria-label", b.title); else b.removeAttribute("aria-label");
+  }
+  const openDetail = (auto) => {
+    if (auto && detailPeek()) { detailReady(true); return; }
+    if (rightP.classList.contains("hidden")) setPanel("right", true); rightP.scrollTop = 0;
+  };
   function showOverview() { selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
   function selectComp(id, fly) {
     selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons(); openDetail();
@@ -12670,7 +12717,7 @@
       const S = tour.steps[si];
       shown = S.st; fired = S.fired;
       ifocus = S.ref ? { t: "node", id: S.ref } : null;
-      if (S.ref) { isel = null; selected = { node: S.ref }; detail.innerHTML = nodeHtml(S.ref); setPerturbButtons(); if (si === 0) openDetail(); }
+      if (S.ref) { isel = null; selected = { node: S.ref }; detail.innerHTML = nodeHtml(S.ref); setPerturbButtons(); if (si === 0) openDetail(true); }
       const pts = S.focus.map((id) => (N[id] ? N[id].home : null)).filter(Boolean);
       if (pts.length) {
         const c = pts.reduce((a, p) => a.add(p), V(0, 0, 0)).multiplyScalar(1 / pts.length);
@@ -12938,7 +12985,7 @@
         isel = null;
         if (S.ref.t === "node") { selected = { node: S.ref.id }; detail.innerHTML = nodeHtml(S.ref.id); } else { selected = null; detail.innerHTML = ipHtml(S.ref); }
         setPerturbButtons();
-        if (K.si === 0) openDetail();
+        if (K.si === 0) openDetail(true);
       }
       if (S.cam) { camGoal.target.set(S.cam[0], S.cam[1], S.cam[2]); camGoal.dist = ctx.home.dist * (S.cam[3] || 1); }
       else { camGoal.target.copy(ctx.home.target); camGoal.dist = ctx.home.dist; }
@@ -14222,7 +14269,7 @@
             return ev ? '<h3>Step mechanism sources</h3><p class="note">' + srcHtml(ev.sources) + (ev.notes ? "<br/>" + esc(ev.notes) : "") + "</p>" : "";
           }).join("");
         }
-        if (si === 0) openDetail();
+        if (si === 0) openDetail(true);
       }
       if (S.cam) { camGoal.target.set(S.cam[0] * 0.75, S.cam[1] * 0.6 - 0.1, 0.4); camGoal.dist = ctx.home.dist * Math.min(1, S.cam[2] * 1.45); }
       caption();
@@ -14477,7 +14524,7 @@
   function onClickInside(e) {
     const h = hitInterior(e);
     if (!h) { showInteriorOverview(); return; }
-    selectIp(h.ip);
+    selectIp(h.ip, true);
   }
   function applyInteriorHighlight() {
     const keys = [ihover, isel, ifocus].filter(Boolean).map(ipKey);
@@ -14863,12 +14910,12 @@
     }
     return "";
   }
-  function selectIp(ip) {
+  function selectIp(ip, auto) {
     if (ip.t === "node") { selectNode(ip.id, false); return; }
     if (ip.t === "comp" && !inside) { selectComp(ip.id, true); return; }
-    if (["cx", "cr", "ap", "ac", "prot", "tca", "tcastep"].includes(ip.t) && !(inside && inside.mito)) { enterInterior("mitochondria", () => selectIp(ip)); return; }
+    if (["cx", "cr", "ap", "ac", "prot", "tca", "tcastep"].includes(ip.t) && !(inside && inside.mito)) { enterInterior("mitochondria", () => selectIp(ip, auto)); return; }
     isel = inside ? ip : null; selected = null;
-    detail.innerHTML = ipHtml(ip); setPerturbButtons(); openDetail();
+    detail.innerHTML = ipHtml(ip); setPerturbButtons(); openDetail(auto);
     if (ip.t === "aging") agRender();
   }
   function mitoOverviewHtml() {
@@ -15152,6 +15199,7 @@
       else if (b.id === "cap-prev") a.prev();
       else if (b.id === "cap-mode-tour") a.modeTour();
       else if (b.id === "cap-mode-flow") a.setFlow();
+      else if (b.id === "cap-more") { compactUser.cap = !document.body.classList.contains("cap-compact"); resize(); }
     });
     document.getElementById("cap-speed").addEventListener("change", (ev) => { const a = api(); if (a) a.speed(Number(ev.target.value)); });
   })();
@@ -15230,7 +15278,7 @@
     const prev = tourCur.prevFocus, vis = tourCur.prevVisible, pc = tourCur.prevCam;
     tourCur = null;
     document.getElementById("right").classList.remove("tour-source-front");
-    document.body.classList.remove("touring");
+    document.body.classList.remove("touring", "tour-2d");
     Object.keys(nodeState).forEach((k) => delete nodeState[k]);
     Object.keys(pwVisible).forEach((k) => { pwVisible[k] = !!vis[k]; });
     focusPw = prev; renderPwList(); refreshPathwayStyles();
@@ -15300,7 +15348,7 @@
     const tok = c.tok;
     c.timers.push(setTimeout(() => { if (tourCur === c && tok === c.tok && c.playing) tourShow(c.i + 1); }, 700));
   }
-  function tourCards() {
+  function tourCards(explicit) {
     const c = tourCur, t = c.t, line = t.script[c.i], os = line.on_screen || {};
     const h = t.history[Math.min(line.step, t.history.length - 1)] || { activities: {}, contributions: [] };
     const routeSet = new Set(t.route_nodes || []);
@@ -15342,7 +15390,7 @@
     if (rows) html += "<h3>Route activities at model step " + esc(line.step) + '</h3><table class="tour-act">' + rows + '</table><p class="note">Relative model activity (seed ' + esc(tourLabel(t, t.input)) + " = " + esc(t.delta) + "); not a concentration or rate.</p>";
     html += '<p class="note">' + esc((TOURS_DATA.narration || {}).voice || "") + " " + esc((TOURS_DATA.narration || {}).script_rule || "") + "</p>";
     selected = null; setPerturbButtons();
-    detail.innerHTML = html; openDetail();
+    detail.innerHTML = html; openDetail(!explicit);
   }
   let tourView = "3d";
   const TOUR_GLYPH = { activates: "act", inhibits: "inh", transcriptionally_regulates: "tx", part_of: "mem", component_transfer: "mem" };
@@ -15374,6 +15422,7 @@
   function tour2dRender() {
     const c = tourCur, box = tourEl("tp-2d");
     box.hidden = !c || tourView !== "2d";
+    document.body.classList.toggle("tour-2d", !box.hidden);
     if (box.hidden) return;
     const t = c.t, line = t.script[c.i], L = c.L || (c.L = tour2dLayout(t));
     const h = t.history[Math.min(line.step, t.history.length - 1)] || { activities: {} };
@@ -15437,10 +15486,11 @@
   tourEl("tp-voice").onchange = () => { if (tourCur && tourCur.playing) tourSpeak(); };
   tourEl("tp-cards").onclick = () => {
     if (!tourCur) return;
-    tourCards();
+    tourCards(true);
     document.getElementById("right").classList.add("tour-source-front");
     document.getElementById("close-right").focus();
   };
+  tourEl("tp-more").onclick = () => { compactUser.tp = !document.body.classList.contains("tp-compact"); compactSync(); };
   tourEl("tp-close").onclick = () => tourClose();
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || !tourCur || inside) return;
@@ -15452,6 +15502,7 @@
     else if (TSYN) TSYN.cancel();
   });
   window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
+  window.__tapIp = (t, id) => { selectIp({ t, id }, true); return true; };
   window.__insideId = () => (inside ? inside.id : null);
   window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
   window.__geneLabels = () => JSON.parse(JSON.stringify(geneLabelState));
@@ -15463,8 +15514,24 @@
 
   // ---------------------------------------------------------------- loop
   let lastCapH = 0;
+  // Short landscape or narrow portrait phones: the caption and tour player start as a one-line bar so the animation stays visible.
+  const compactUser = { cap: null, tp: null };
+  function compactSync() {
+    const small = window.innerHeight <= 500 || window.innerWidth <= 600;
+    document.body.classList.toggle("cap-small", small);
+    for (const [k, cls, id] of [["cap", "cap-compact", "cap-more"], ["tp", "tp-compact", "tp-more"]]) {
+      const on = small && compactUser[k] !== false;
+      document.body.classList.toggle(cls, on);
+      const b = document.getElementById(id);
+      b.textContent = on ? "▴ More" : "▾ Less";
+      b.setAttribute("aria-expanded", String(!on));
+    }
+  }
+  window.__compactState = () => ({ small: document.body.classList.contains("cap-small"), cap: document.body.classList.contains("cap-compact"), tp: document.body.classList.contains("tp-compact"), user: { ...compactUser },
+    drawer: !rightP.classList.contains("hidden"), ready: document.getElementById("open-right").classList.contains("ready"), readyLabel: document.getElementById("open-right").textContent });
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
+    compactSync();
     renderer.setPixelRatio(QUALITY.pixelRatio(w, h));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
@@ -15495,6 +15562,7 @@
     const wasFront = which === "right" && !open && rightP.classList.contains("tour-source-front");
     if (wasFront) rightP.classList.remove("tour-source-front");
     (which === "left" ? leftP : rightP).classList.toggle("hidden", !open);
+    if (which === "right" && open) detailReady(false);
     document.getElementById("open-" + which).classList.toggle("on", !open);
     const other = which === "left" ? "right" : "left";
     if (open && window.innerWidth < 900 && !(other === "left" ? leftP : rightP).classList.contains("hidden")) setPanel(other, false);
