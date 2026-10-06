@@ -12546,10 +12546,46 @@
     return enterTarget(currentScene(), { kind: atlasHover.slice(0, i), id: atlasHover.slice(i + 1) });
   }
 
+  // Organelle under the pointer (label first, then body), ignoring pathway nodes and edges drawn in front of it.
+  function organelleAt(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left, y = clientY - rect.top;
+    const lh = labelHits.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+    if (lh) return lh.id;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const sRef = viewScale(w, h) / 4.2;
+    let best = null, bestD = Infinity;
+    for (const o of ORGANELLE_PICKS) {
+      const pr = project(v3(o.c[0], o.c[1], o.c[2]), w, h);
+      if (!pr) continue;
+      const d = Math.hypot(pr.x - x, pr.y - y);
+      const limit = o.px * Math.max(1, pr.s / sRef * 0.8) + (highlightedOrganelle === o.id ? 6 : 0);
+      if (d < limit && d < bestD) { bestD = d; best = o.id; }
+    }
+    return best;
+  }
+  window.__sceneStack = () => sceneStack.slice();
+  window.__organelleLabels = () => { const r = canvas.getBoundingClientRect(); return labelHits.map((b) => ({ id: b.id, x: Math.round(r.left + b.x + b.w / 2), y: Math.round(r.top + b.y + b.h / 2) })); };
+  // The first click of a double-click refocuses the camera, so the double-click uses the organelle under the first click.
+  let lastTap = null;
+  function recordTap(e) {
+    const now = performance.now();
+    const tap = { t: now, x: e.clientX, y: e.clientY, org: atlasActive() ? null : organelleAt(e.clientX, e.clientY) };
+    const p = lastTap;
+    tap.first = p && !p.first && now - p.t < 600 && Math.hypot(tap.x - p.x, tap.y - p.y) < 12 ? p : null;
+    lastTap = tap;
+  }
   canvas.addEventListener("dblclick", (e) => {
     if (atlasActive()) {
       const t = hoverEnterTarget();
       if (t) enterScene(t);
+      return;
+    }
+    const tap = lastTap && performance.now() - lastTap.t < 600 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 12 ? (lastTap.first || lastTap) : null;
+    const org = tap ? tap.org : organelleAt(e.clientX, e.clientY);
+    if (org && ORGANELLE_SCENE[org]) {
+      if (highlightedOrganelle !== org) showOrganelleDetail(org);
+      enterScene(ORGANELLE_SCENE[org]);
       return;
     }
     pick(e.clientX, e.clientY, true);
@@ -12587,12 +12623,16 @@
     dist += (camTarget.dist - dist) * t;
   }
 
+  // A press only becomes a rotation after the pointer moves a few pixels; the click that ends a drag selects nothing.
+  let downX = 0, downY = 0, dragMoved = false;
   canvas.addEventListener("pointerdown", (e) => {
-    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    dragging = true; lastX = downX = e.clientX; lastY = downY = e.clientY; dragMoved = false;
     canvas.setPointerCapture(e.pointerId);
   });
   canvas.addEventListener("pointerup", () => { dragging = false; });
   canvas.addEventListener("pointermove", (e) => {
+    if (dragging && !dragMoved && Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY) > 5) dragMoved = true;
+    if (dragging && !dragMoved) return;
     if (dragging && !atlasActive()) {
       yaw += (e.clientX - lastX) * 0.005;
       pitch += (e.clientY - lastY) * 0.005;
@@ -12626,7 +12666,11 @@
     dist = Math.max(2.2, Math.min(9, dist));
     camTarget.dist = dist;
   }, { passive: false });
-  canvas.addEventListener("click", (e) => pick(e.clientX, e.clientY, true));
+  canvas.addEventListener("click", (e) => {
+    if (dragMoved) return;
+    recordTap(e);
+    pick(e.clientX, e.clientY, true);
+  });
 
   function camPos() {
     return v3(
