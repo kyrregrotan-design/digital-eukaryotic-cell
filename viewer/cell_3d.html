@@ -10232,7 +10232,7 @@
       return "<li>" + esc(p.label) +
         (mods.length ? ' <span class="ev">· modules: ' + esc(mods.join(", ")) + "</span>" : "") +
         (p.atlas_process_ids.length ? ' <span class="ev">· atlas: ' + esc(p.atlas_process_ids.join(", ")) + "</span>" : "") +
-        (p.note ? '<br/><span class="ev">' + esc(p.note) + "</span>" : "") + "</li>";
+        (p.note ? '<br/><span class="ev">' + escL(p.note) + "</span>" : "") + "</li>";
     }).join("");
     const nodes = c.layout_anchor
       ? MODEL.nodes.filter((n) => n.illustrative_compartment === c.layout_anchor).map((n) => n.label)
@@ -10521,7 +10521,7 @@
   function learnerText(s) {
     if (s == null) return "";
     let t = String(s)
-      .replace(/\s*\([^()]*(?:Kyrre|decision \d|policy 20\d\d|option S\d)[^()]*\)/gi, "")
+      .replace(/\s*\([^()]*(?:Kyrre|decision \d|policy 20\d\d|option S\d|\bWave [AB]\d?\b)[^()]*\)/gi, "")
       .replace(/,?\s*migrated to TORC1\/TORC2 on 20\d\d-\d\d-\d\d/g, "")
       .replace(/until Kyrre approves a transfer rule/g, "until a transfer rule is added")
       .replace(/^Kyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?(?:, decision \d[a-z]?)?:\s*/, "");
@@ -10529,9 +10529,13 @@
     t = t.split(/(?<=[.!?])\s+(?=[A-Z\[])/).map((x) => {
       if (!DEV_SENTENCE.test(x)) return x;
       const y = x
+        .replace(/^On 20\d\d-\d\d-\d\d,?\s+/, "")
         .replace(/,?\s*\bKyrre(?: \d{4}-\d\d-\d\d)?(?: \d\d:\d\d)?,?\s+(?:approval(?: \d\d:\d\d)?|decision \d[a-z]?)(?:,? 20\d\d-\d\d-\d\d)?/gi, "")
+        .replace(/,?\s*\bKyrre-approved\b/gi, "")
+        .replace(/,?\s*\bKyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?/g, "")
         .replace(/,?\s*\bdecision \d[a-z]?(?:,? 20\d\d-\d\d-\d\d)?/gi, "")
-        .replace(/\(\s*\)/g, "").replace(/\s+([,;:.!?])/g, "$1").replace(/([,;:])(?=[.!?]?$)/, "").replace(/^[\s,;:]+/, "").trim();
+        .replace(/\(\s*\)/g, "").replace(/\s+([,;:.!?])/g, "$1").replace(/([,;:])(?=[.!?]?$)/, "").replace(/^[\s,;:]+/, "").trim()
+        .replace(/^(?:the|a|an|this|these|it)\b/, (w) => w.charAt(0).toUpperCase() + w.slice(1));
       return DEV_SENTENCE.test(y) || !/[a-z]{3}/i.test(y) ? "" : y;
     }).filter(Boolean).join(" ").trim();
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";

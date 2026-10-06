@@ -10004,7 +10004,7 @@
   function learnerText(s) {
     if (s == null) return "";
     let t = String(s)
-      .replace(/\s*\([^()]*(?:Kyrre|decision \d|policy 20\d\d|option S\d)[^()]*\)/gi, "")
+      .replace(/\s*\([^()]*(?:Kyrre|decision \d|policy 20\d\d|option S\d|\bWave [AB]\d?\b)[^()]*\)/gi, "")
       .replace(/,?\s*migrated to TORC1\/TORC2 on 20\d\d-\d\d-\d\d/g, "")
       .replace(/until Kyrre approves a transfer rule/g, "until a transfer rule is added")
       .replace(/^Kyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?(?:, decision \d[a-z]?)?:\s*/, "");
@@ -10012,9 +10012,13 @@
     t = t.split(/(?<=[.!?])\s+(?=[A-Z\[])/).map((x) => {
       if (!DEV_SENTENCE.test(x)) return x;
       const y = x
+        .replace(/^On 20\d\d-\d\d-\d\d,?\s+/, "")
         .replace(/,?\s*\bKyrre(?: \d{4}-\d\d-\d\d)?(?: \d\d:\d\d)?,?\s+(?:approval(?: \d\d:\d\d)?|decision \d[a-z]?)(?:,? 20\d\d-\d\d-\d\d)?/gi, "")
+        .replace(/,?\s*\bKyrre-approved\b/gi, "")
+        .replace(/,?\s*\bKyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?/g, "")
         .replace(/,?\s*\bdecision \d[a-z]?(?:,? 20\d\d-\d\d-\d\d)?/gi, "")
-        .replace(/\(\s*\)/g, "").replace(/\s+([,;:.!?])/g, "$1").replace(/([,;:])(?=[.!?]?$)/, "").replace(/^[\s,;:]+/, "").trim();
+        .replace(/\(\s*\)/g, "").replace(/\s+([,;:.!?])/g, "$1").replace(/([,;:])(?=[.!?]?$)/, "").replace(/^[\s,;:]+/, "").trim()
+        .replace(/^(?:the|a|an|this|these|it)\b/, (w) => w.charAt(0).toUpperCase() + w.slice(1));
       return DEV_SENTENCE.test(y) || !/[a-z]{3}/i.test(y) ? "" : y;
     }).filter(Boolean).join(" ").trim();
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -11569,7 +11573,7 @@
       (inside ? "" : '<button class="b" data-overview>‹ All compartments</button>') + "</div>" +
       "<h3>What it does</h3><p>" + esc(c.blurb) + "</p>" +
       "<h3>Core processes</h3><ul>" + c.core_processes.map((p) =>
-        '<li><a href="#" data-ip="' + ipAttr({ t: "proc", comp: id, id: p.id }) + '">' + esc(p.label) + "</a>" + (p.note ? '<br/><span class="muted" style="font-size:0.7rem">' + esc(p.note) + "</span>" : "") + "</li>").join("") + "</ul>" +
+        '<li><a href="#" data-ip="' + ipAttr({ t: "proc", comp: id, id: p.id }) + '">' + esc(p.label) + "</a>" + (p.note ? '<br/><span class="muted" style="font-size:0.7rem">' + escL(p.note) + "</span>" : "") + "</li>").join("") + "</ul>" +
       (pws.size ? "<h3>Signalling pathways involved</h3><div>" + [...pws].filter((x) => PW[x]).map(pwChip).join("") + "</div>" : "") +
       (here.length ? "<h3>Genes drawn here (illustrative placement)</h3><div>" + here.map((n) => '<button class="chip" data-node="' + esc(n.id) + '"><i style="background:' + nodeColor(n) + '"></i>' + esc(n.label) + "</button>").join("") + "</div>" : "") +
       "<h3>How well this part is modelled</h3><div class=\"cov\">" +
@@ -14737,7 +14741,7 @@
     const genes = MODEL.nodes.filter((n) => pws.includes(n.pathway_id) && n.illustrative_compartment === LAYOUT_OF[compId]);
     const aps = p.atlas_process_ids.filter((x) => APR[x]);
     return '<span class="tag">Process · ' + esc(c.label) + "</span><h2>" + esc(p.label) + "</h2>" +
-      (p.note ? "<p>" + esc(p.note) + "</p>" : "") +
+      (p.note ? "<p>" + escL(p.note) + "</p>" : "") +
       (pws.length ? "<h3>Signalling pathways involved</h3><div>" + pws.map(pwChip).join("") + "</div>" : "") +
       (genes.length ? "<h3>Model genes drawn here</h3><div>" + genes.map(nodeChip).join("") + "</div>" : "") +
       (aps.length ? "<h3>Explore in detail</h3>" + aps.map((x) => '<div class="step"><a href="#" data-ip="' + ipAttr({ t: "ap", id: x }) + '">' + esc(APR[x].label) + '</a> <button class="chip" data-mtour="' + esc(x) + '">▶ play</button></div>').join("") : "") +
