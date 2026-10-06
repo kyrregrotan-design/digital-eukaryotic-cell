@@ -269,6 +269,7 @@
     </label>
     <div class="note" id="g-status" aria-live="polite"></div>
     <div class="row" style="margin-top:6px"><button class="b" id="g-reset" title="Back to Advanced look and Auto quality, and forget the saved choice">Reset graphics settings</button></div>
+    <div class="note" id="g-saved" aria-live="polite" hidden></div>
     <div class="note" id="g-note">Both looks show the same model, data and controls; colours and shading are teaching conventions, not measurements. Auto picks Light, Balanced or High from measured frame intervals (not GPU timings). Choices are saved in this browser only.</div>
   </div>
   <div class="section">
@@ -11349,7 +11350,8 @@
   const GFX_QUALITY = ["auto"].concat(QTIERS.map((t) => t.id));
   const GRAPHICS = (function () {
     const lookSel = document.getElementById("g-look"), qSel = document.getElementById("g-quality"), statusEl = document.getElementById("g-status");
-    let storage = "unused", loaded = null;
+    const savedEl = document.getElementById("g-saved");
+    let storage = "unused", loaded = null, saved = null;
     const tierName = (id) => id.charAt(0).toUpperCase() + id.slice(1);
     function read() {
       try {
@@ -11366,10 +11368,20 @@
       };
     }
     function save() {
-      try { window.localStorage.setItem(GFX_KEY, JSON.stringify({ look: lookCur, quality: qSel.value })); storage = "ok"; } catch (e) { storage = "unavailable"; }
+      try { window.localStorage.setItem(GFX_KEY, JSON.stringify({ look: lookCur, quality: qSel.value })); storage = "ok"; saved = { look: lookCur, quality: qSel.value }; } catch (e) { storage = "unavailable"; saved = null; }
     }
     function forget() {
+      saved = null;
       try { window.localStorage.removeItem(GFX_KEY); storage = "ok"; } catch (e) { storage = "unavailable"; }
+    }
+    // A remembered non-default choice is named next to Reset, so it is not mistaken for the default.
+    function savedText() {
+      if (!saved) return "";
+      const parts = [];
+      if (saved.look !== GFX_DEFAULT.look) parts.push((lookSel.querySelector('option[value="' + saved.look + '"]') || { textContent: saved.look }).textContent.split(" (")[0] + " look");
+      if (saved.quality !== GFX_DEFAULT.quality) parts.push(tierName(saved.quality) + " quality");
+      if (!parts.length) return "";
+      return "Your saved choice in this browser: " + parts.join(", ") + ". New visitors get Advanced look with Auto quality; Reset graphics settings goes back to that.";
     }
     function setLook(name) {
       if (!LOOKS[name] || name === lookCur) return 0;
@@ -11387,6 +11399,8 @@
       const p = QUALITY.perf();
       lookSel.value = lookCur;
       qSel.value = p.mode === "auto" ? "auto" : p.tier;
+      const t = savedText();
+      savedEl.textContent = t; savedEl.hidden = !t;
     }
     function statusText() {
       const p = QUALITY.perf(), w = p.lastWindow, here = w && w.tier === p.tier;
@@ -11413,12 +11427,13 @@
     qSel.onchange = () => { setQuality(qSel.value); save(); sync(); update(); };
     document.getElementById("g-reset").onclick = () => { forget(); apply(GFX_DEFAULT); };
     return {
-      init: () => { loaded = read(); apply(valid(loaded)); setInterval(update, 1000); },
+      init: () => { loaded = read(); saved = Object.keys(loaded).length ? valid(loaded) : null; apply(valid(loaded)); setInterval(update, 1000); },
       state: () => {
         let raw = null;
         try { raw = window.localStorage.getItem(GFX_KEY); } catch (e) { raw = "(unavailable)"; }
         return { look: lookCur, quality: QUALITY.perf().mode === "auto" ? "auto" : QUALITY.perf().tier, tier: QUALITY.perf().tier,
-          selects: { look: lookSel.value, quality: qSel.value }, stored: raw, storage, loaded, defaults: GFX_DEFAULT,
+          selects: { look: lookSel.value, quality: qSel.value }, selectLabel: lookSel.selectedOptions[0] ? lookSel.selectedOptions[0].textContent : null,
+          stored: raw, storage, loaded, saved, savedHint: savedEl.hidden ? "" : savedEl.textContent, defaults: GFX_DEFAULT,
           status: statusEl.textContent, short: statusEl.classList.contains("short") };
       },
     };
