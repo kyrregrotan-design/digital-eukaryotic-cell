@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T21:15:04+02:00",
+    "generated_at":  "2026-10-06T21:20:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "QA15 mobile compact panels review",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  70.7,
-                                 "step_title":  "Run read-only behavior checks",
+                                 "percent":  95.6,
+                                 "step_title":  "Record verdict and Cursor handoff",
                                  "steps":  [
                                                "Confirm scope and standing decisions",
                                                "Inspect compact controls and saved evidence",
                                                "Run read-only behavior checks",
                                                "Record verdict and Cursor handoff"
                                            ],
-                                 "eta_seconds":  109,
+                                 "eta_seconds":  26,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-06T21:13:46+02:00",
+                                 "updated":  "2026-10-06T21:18:02+02:00",
                                  "last_run":  "2026-10-06T21:10:40+02:00",
                                  "next_run":  null
                              }
