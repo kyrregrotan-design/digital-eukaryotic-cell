@@ -14264,7 +14264,7 @@
     inside._hlMats = []; inside._hl = null;
   }
   // A request made while a fade is running is kept (latest wins) and run when the fade ends, instead of being dropped.
-  let pendingNav = null;
+  let pendingNav = null, navTiming = null;
   function runPendingNav() {
     const p = pendingNav; pendingNav = null;
     if (p) p();
@@ -14284,8 +14284,11 @@
     setTimeout(() => {
       clearInteriorHighlight();
       try {
+        const t0 = performance.now(), cached = !!interiorCache[id];
         inside = interiorCache[id] || (interiorCache[id] = buildInterior(id));
+        const t1 = performance.now();
         QUALITY.applyExtraMaterials(inside.s);
+        navTiming = { id, cached, build_ms: Math.round(t1 - t0), materials_ms: Math.round(performance.now() - t1) };
       } catch (err) {
         console.error(err);
         transition = false; fadeEl.classList.remove("on"); pendingNav = null;
@@ -14318,20 +14321,29 @@
     transition = true;
     hideTip();
     fadeEl.classList.add("on");
+    document.getElementById("crumb").textContent = "";
     setTimeout(() => {
       const id = inside.id;
-      if (inside.onExit) inside.onExit();
-      clearInteriorHighlight();
+      try {
+        if (inside.onExit) inside.onExit();
+        clearInteriorHighlight();
+      } catch (err) { console.error(err); }
       inside = null; ihover = isel = ifocus = null;
       document.body.classList.remove("inside", "mito", "story");
-      renderInsideSec();
-      const o = outerCam || { yaw: HOME.yaw, pitch: HOME.pitch, dist: HOME.dist, target: HOME.target.clone(), userZoomed: false };
-      cam.yaw = camGoal.yaw = o.yaw; cam.pitch = camGoal.pitch = o.pitch;
-      cam.target.copy(ANCHOR[id] || o.target); cam.dist = Math.max(1.0, o.dist * 0.2);
-      camGoal.target.copy(o.target); camGoal.dist = o.dist;
-      userZoomed = o.userZoomed;
-      resize();
-      selectComp(id, false);
+      try {
+        renderInsideSec();
+        const o = outerCam || { yaw: HOME.yaw, pitch: HOME.pitch, dist: HOME.dist, target: HOME.target.clone(), userZoomed: false };
+        cam.yaw = camGoal.yaw = o.yaw; cam.pitch = camGoal.pitch = o.pitch;
+        cam.target.copy(ANCHOR[id] || o.target); cam.dist = Math.max(1.0, o.dist * 0.2);
+        camGoal.target.copy(o.target); camGoal.dist = o.dist;
+        userZoomed = o.userZoomed;
+        resize();
+        selectComp(id, false);
+      } catch (err) {
+        console.error(err);
+        fadeEl.classList.remove("on"); transition = false; pendingNav = null;
+        return;
+      }
       fadeEl.classList.remove("on");
       transition = false;
       if (after) after();
@@ -14961,7 +14973,8 @@
   const SEARCH_IP = { protein: "prot", complex: "cx", carrier: "cr", atlas_process: "ap", atlas_compartment: "ac" };
   function searchPanel(html) { isel = null; selected = null; detail.innerHTML = html; setPerturbButtons(); openDetail(); }
   function searchGo(e) {
-    if (!e || transition) return;
+    if (!e) return;
+    if (transition) { pendingNav = () => searchGo(e); return; }
     const d = e.destination;
     const outside = (fn) => { if (inside) exitInterior(fn); else fn(); };
     if (e.type === "pathway") {
@@ -15325,7 +15338,7 @@
   });
   window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
   window.__insideId = () => (inside ? inside.id : null);
-  window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent });
+  window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
   window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
 
