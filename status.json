@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T15:10:03+02:00",
+    "generated_at":  "2026-10-06T15:15:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Queue consensus reply (D5) and QA item 10",
-                                  "status":  "running",
-                                  "step":  2,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  38,
-                                  "step_title":  "Check D5 against 09:36 contract",
+                                  "percent":  100,
+                                  "step_title":  "Write finish entry",
                                   "steps":  [
                                                 "Read log and request",
                                                 "Check D5 against 09:36 contract",
@@ -17,9 +17,9 @@
                                                 "Browser check and tests",
                                                 "Write finish entry"
                                             ],
-                                  "eta_seconds":  10,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T15:04:01+02:00",
+                                  "updated":  "2026-10-06T15:10:25+02:00",
                                   "last_run":  "2026-10-06T15:02:52+02:00",
                                   "next_run":  "2026-10-06T15:15:00+02:00"
                               },
@@ -54,6 +54,11 @@
     "recent":  [
                    {
                        "agent":  "cursor",
+                       "task":  "Queue consensus reply (D5) and QA item 10",
+                       "finished":  "2026-10-06T15:10:25+02:00"
+                   },
+                   {
+                       "agent":  "cursor",
                        "task":  "Queue order recommendation after QA 10-15 and A1",
                        "finished":  "2026-10-06T14:54:32+02:00"
                    },
@@ -76,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "QA slice 1 corrections (09:37) and cell-shape reply (09:27)",
                        "finished":  "2026-10-06T10:26:00+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "QA slice 1 items 5-6 + Golgi Cinematic reply",
-                       "finished":  "2026-10-06T09:23:33+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
