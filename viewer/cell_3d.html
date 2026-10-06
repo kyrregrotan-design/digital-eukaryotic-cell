@@ -267,6 +267,8 @@
   }
   #wc-list button:hover { background: var(--accent-dim); }
   #wc-list button.active { background: var(--accent-dim); border-color: var(--accent); }
+  button.pressed, button:active { filter: brightness(1.35); box-shadow: inset 0 0 0 1px var(--accent); }
+  button.pressed { cursor: progress; }
   .wc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .wc-dots { display: inline-flex; gap: 2px; flex-shrink: 0; vertical-align: middle; }
   .wc-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--muted); opacity: 0.7; }
@@ -10523,10 +10525,19 @@
       .replace(/,?\s*migrated to TORC1\/TORC2 on 20\d\d-\d\d-\d\d/g, "")
       .replace(/until Kyrre approves a transfer rule/g, "until a transfer rule is added")
       .replace(/^Kyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?(?:, decision \d[a-z]?)?:\s*/, "");
-    t = t.split(/(?<=[.!?])\s+(?=[A-Z\[])/).filter((x) => !DEV_SENTENCE.test(x)).join(" ").trim();
+    // Only the governance span is removed; a sentence is dropped only when no scientific text remains.
+    t = t.split(/(?<=[.!?])\s+(?=[A-Z\[])/).map((x) => {
+      if (!DEV_SENTENCE.test(x)) return x;
+      const y = x
+        .replace(/,?\s*\bKyrre(?: \d{4}-\d\d-\d\d)?(?: \d\d:\d\d)?,?\s+(?:approval(?: \d\d:\d\d)?|decision \d[a-z]?)(?:,? 20\d\d-\d\d-\d\d)?/gi, "")
+        .replace(/,?\s*\bdecision \d[a-z]?(?:,? 20\d\d-\d\d-\d\d)?/gi, "")
+        .replace(/\(\s*\)/g, "").replace(/\s+([,;:.!?])/g, "$1").replace(/([,;:])(?=[.!?]?$)/, "").replace(/^[\s,;:]+/, "").trim();
+      return DEV_SENTENCE.test(y) || !/[a-z]{3}/i.test(y) ? "" : y;
+    }).filter(Boolean).join(" ").trim();
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
   }
   const escL = (s) => esc(learnerText(s));
+  window.__learnerText = learnerText;
   const VERB_LABEL = { activates: "activates", inhibits: "inhibits", phosphorylates: "phosphorylates", transcriptionally_regulates: "regulates transcription of", part_of: "is part of" };
   const nodeLabel = (id) => (MODEL.nodes.find((n) => n.id === id) || { label: id }).label;
   const pathwayLabel = (id) => ((MODEL.pathways || []).find((p) => p.id === id) || { name: id }).name;
@@ -10810,7 +10821,7 @@
       const text = s.citation || "[REF NEEDED]";
       const link = s.url || (s.doi ? "https://doi.org/" + s.doi : null);
       return "• " + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(text) + "</a>" : esc(text)) +
-        (s.note ? '<br/><span style="opacity:0.8">' + esc(s.note) + "</span>" : "");
+        (s.note ? '<br/><span style="opacity:0.8">' + escL(s.note) + "</span>" : "");
     }).join("<br/>");
   }
 
@@ -10886,6 +10897,9 @@
       scopeNoteHtml([e.pathway_id])
     );
   }
+  // Test hooks for headless text checks: render the same panel a canvas pick would.
+  window.__showEdgeDetail = (id) => { const e = INFL.find((x) => x.id === id); if (!e) return false; detail.classList.add("detail-html"); detail.innerHTML = formatEdgeHtml(e); return true; };
+  window.__showNodeDetail = (id) => { const n = MODEL.nodes.find((x) => x.id === id); if (!n) return false; detail.classList.add("detail-html"); detail.innerHTML = formatNodeHtml(n); return true; };
 
   function nodeVisible(n) {
     const pws = n.pathways || [n.pathway_id];
@@ -11157,8 +11171,8 @@
       const cit = s.url
         ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.citation) + "</a>"
         : esc(s.citation);
-      return "<li>" + cit + (s.note ? '<span class="src-note">' + esc(s.note) + "</span>" : "") + "</li>";
-    }).join("") + "</ul>" + (ev.notes ? '<span class="ev">' + esc(ev.notes) + "</span>" : "");
+      return "<li>" + cit + (s.note ? '<span class="src-note">' + escL(s.note) + "</span>" : "") + "</li>";
+    }).join("") + "</ul>" + (ev.notes ? '<span class="ev">' + escL(ev.notes) + "</span>" : "");
   }
   function btn(act, id, label) {
     return '<button type="button" class="inline-btn" data-act="' + act + '" data-id="' + esc(id) + '">' + esc(label) + "</button>";
@@ -11249,7 +11263,7 @@
     html += p.pathway_links.map((l) => {
       const n = nodeById[l.node_id];
       return '<div class="subrow"><strong>' + esc(n ? n.label : l.node_id) + "</strong> · " + esc(l.relation.replace(/_/g, " ")) +
-        "<br/>" + esc(l.note) + "<br/>" + evidenceLine(l.evidence) + sourcesHtml(l.evidence) +
+        "<br/>" + escL(l.note) + "<br/>" + evidenceLine(l.evidence) + sourcesHtml(l.evidence) +
         btn("node", l.node_id, "Show in pathway model ›") + "</div>";
     }).join("");
     html += "<h4>Structure</h4>" + '<span class="ev">' +
@@ -11448,6 +11462,11 @@
       else if (ev.key === "Enter") { ev.preventDefault(); pick(out.querySelector("[data-srch]")); }
     });
     out.addEventListener("click", (ev) => pick(ev.target.closest("[data-srch]")));
+    // Pressed state stays on until the click handlers have finished, so slow handlers still show feedback.
+    document.addEventListener("pointerdown", (ev) => { const b = ev.target.closest && ev.target.closest("button"); if (b) b.classList.add("pressed"); }, true);
+    document.addEventListener("click", (ev) => { const b = ev.target.closest && ev.target.closest("button"); if (b) setTimeout(() => b.classList.remove("pressed"), 80); }, true);
+    document.addEventListener("pointercancel", () => document.querySelectorAll("button.pressed").forEach((b) => b.classList.remove("pressed")), true);
+    document.addEventListener("pointerup", () => setTimeout(() => document.querySelectorAll("button.pressed").forEach((b) => b.classList.remove("pressed")), 400), true);
     document.addEventListener("keydown", (ev) => {
       if (!(ev.ctrlKey || ev.metaKey) || ev.altKey || String(ev.key).toLowerCase() !== "k") return;
       ev.preventDefault();
