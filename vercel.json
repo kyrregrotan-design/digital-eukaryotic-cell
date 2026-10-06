@@ -2,9 +2,40 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
-    { "source": "/(.*)", "headers": [
-      { "key": "X-Content-Type-Options", "value": "nosniff" },
-      { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-    ] }
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/cell_webgl.html",
+      "destination": "/viewer/cell_webgl",
+      "permanent": true
+    },
+    {
+      "source": "/cell_webgl",
+      "destination": "/viewer/cell_webgl",
+      "permanent": true
+    },
+    {
+      "source": "/cell_3d.html",
+      "destination": "/viewer/cell_3d",
+      "permanent": true
+    },
+    {
+      "source": "/cell_3d",
+      "destination": "/viewer/cell_3d",
+      "permanent": true
+    }
   ]
 }

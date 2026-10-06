@@ -10513,6 +10513,23 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
+  // Project-governance wording (approvals, decision numbers, migration history) stays in the data files for provenance
+  // but is not shown to learners; scientific caveats, [VERIFY] and [REF NEEDED] markers are kept.
+  const DEV_SENTENCE = /\bKyrre\b|\bWave [AB]\d?\b|^Migration 20\d\d|^Added 20\d\d|^On 20\d\d-\d\d-\d\d\b|\bdecision \d[a-z]?\b/i;
+  function learnerText(s) {
+    if (s == null) return "";
+    let t = String(s)
+      .replace(/\s*\([^()]*(?:Kyrre|decision \d|policy 20\d\d|option S\d)[^()]*\)/gi, "")
+      .replace(/,?\s*migrated to TORC1\/TORC2 on 20\d\d-\d\d-\d\d/g, "")
+      .replace(/until Kyrre approves a transfer rule/g, "until a transfer rule is added")
+      .replace(/^Kyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?(?:, decision \d[a-z]?)?:\s*/, "");
+    t = t.split(/(?<=[.!?])\s+(?=[A-Z\[])/).filter((x) => !DEV_SENTENCE.test(x)).join(" ").trim();
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
+  }
+  const escL = (s) => esc(learnerText(s));
+  const VERB_LABEL = { activates: "activates", inhibits: "inhibits", phosphorylates: "phosphorylates", transcriptionally_regulates: "regulates transcription of", part_of: "is part of" };
+  const nodeLabel = (id) => (MODEL.nodes.find((n) => n.id === id) || { label: id }).label;
+  const pathwayLabel = (id) => ((MODEL.pathways || []).find((p) => p.id === id) || { name: id }).name;
 
   function setDetailPlain(text) {
     detail.classList.remove("detail-html");
@@ -10768,13 +10785,12 @@
 
   function formatEdge(e) {
     return [
-      "EDGE  " + e.id,
-      e.source + " —[" + e.interaction + "]→ " + e.target,
-      "Pathway: " + e.pathway_id,
+      nodeLabel(e.source) + " " + (VERB_LABEL[e.interaction] || String(e.interaction).replace(/_/g, " ")) + " " + nodeLabel(e.target),
+      "Pathway: " + pathwayLabel(e.pathway_id),
       "Evidence: " + scoreText(e.evidence_level, e.confidence),
       "Verified citation: " + (e.has_verified_citation ? "yes" : "no"),
       "Citation: " + primaryCitation(e.sources),
-      e.notes ? ("Notes: " + e.notes) : null,
+      e.notes ? ("Notes: " + learnerText(e.notes)) : null,
     ].filter(Boolean).join("\n");
   }
 
@@ -10820,8 +10836,8 @@
       "Node evidence: " + scoreText(n.evidence_level, n.confidence) + "<br/>" +
       "Illustrative compartment: " + esc(n.illustrative_compartment) + " (not measured)<br/>" +
       "Node sources:<br/>" + sourcesListHtml(n.sources) +
-      (n.description ? ("<br/>Note: " + esc(n.description)) : "") +
-      (n.notes ? ("<br/>Node notes: " + esc(n.notes)) : "") +
+      (n.description ? ("<br/>Note: " + escL(n.description)) : "") +
+      (n.notes ? ("<br/>Node notes: " + escL(n.notes)) : "") +
       geneIdentityHtml(n.gene_evidence) +
       relationsHtml(n.id) +
       scopeNoteHtml(n.pathways || [n.pathway_id]) +
@@ -10832,19 +10848,19 @@
   function geneIdentityHtml(ge) {
     if (!ge) return "";
     return '<p class="ped-note">Gene identity evidence (separate from the node): ' + scoreText(ge.evidence_level, ge.confidence) +
-      (ge.notes ? "<br/>Gene identity notes: " + esc(ge.notes) : "") +
+      (ge.notes ? "<br/>Gene identity notes: " + escL(ge.notes) : "") +
       "<br/>Gene identity sources:<br/>" + sourcesListHtml(ge.sources) + "</p>";
   }
 
   const RULED_MEMB_LABEL = "Descriptive membership; a separate explicit transfer rule propagates.";
   function descRecordHtml(r) {
     const kind = r.rule ? RULED_MEMB_LABEL : r.kind === "membership" ? "membership, no transfer rule" : "atlas-only";
-    return esc(r.source) + " " + esc(r.kind === "membership" ? "is a component of" : r.interaction) + " " + esc(r.target) + " (" + esc(r.id) + "; " +
+    return esc(nodeLabel(r.source)) + " " + esc(r.kind === "membership" ? "is a component of" : VERB_LABEL[r.interaction] || String(r.interaction).replace(/_/g, " ")) + " " + esc(nodeLabel(r.target)) + " (" +
       esc(kind) + "; " + scoreText(r.rec.evidence_level, r.rec.confidence) + ")" +
-      (r.rec.notes ? "<br/>Record notes: " + esc(r.rec.notes) : "") +
+      (r.rec.notes ? "<br/>Record notes: " + escL(r.rec.notes) : "") +
       "<br/>Record sources:<br/>" + sourcesListHtml(r.rec.sources) +
       (r.rule ? "<br/>Separate transfer rule " + esc(r.rule.id) + ": gain " + esc(r.rule.gain) + " · weight " + esc(r.rule.weight) + " · confidence " + esc(r.rule.confidence) +
-        (r.rule.notes ? "<br/>Rule notes: " + esc(r.rule.notes) : "") : "");
+        (r.rule.notes ? "<br/>Rule notes: " + escL(r.rule.notes) : "") : "");
   }
 
   function relationsHtml(id) {
@@ -10859,14 +10875,14 @@
   function formatEdgeHtml(e) {
     return (
       '<span class="tag">' + (e.transfer_rule ? "Component transfer rule" : "Model edge") + "</span>" +
-      "<strong>" + esc(e.id) + "</strong><br/>" +
-      esc(e.source) + " —[" + esc(e.interaction) + "]→ " + esc(e.target) + "<br/>" +
-      "Pathway: " + esc(e.pathway_id) + "<br/>" +
-      (e.transfer_rule ? "Membership: " + esc(e.membership_id) + " · gain " + esc(e.gain) + " · weight " + esc(e.weight) + "<br/>" : "") +
+      "<strong>" + esc(nodeLabel(e.source)) + " " + esc(VERB_LABEL[e.interaction] || String(e.interaction).replace(/_/g, " ")) + " " + esc(nodeLabel(e.target)) + "</strong><br/>" +
+      "Pathway: " + esc(pathwayLabel(e.pathway_id)) + "<br/>" +
+      (e.transfer_rule ? "Passes on a component change · gain " + esc(e.gain) + " · weight " + esc(e.weight) + "<br/>" : "") +
       "Evidence: " + scoreText(e.evidence_level, e.confidence) + "<br/>" +
       "Verified citation: " + (e.has_verified_citation ? "yes" : "no") + "<br/>" +
       "Citation: " + citationHtml(e.sources) +
-      (e.notes ? ("<br/>Notes: " + esc(e.notes)) : "") +
+      (e.notes ? ("<br/>Notes: " + escL(e.notes)) : "") +
+      '<br/><span style="opacity:0.6;font-size:0.85em">Model ID: ' + esc(e.id) + "</span>" +
       scopeNoteHtml([e.pathway_id])
     );
   }
@@ -11392,7 +11408,7 @@
     const p = MODEL.pathways.find((x) => x.id === id);
     if (!p) return "";
     const ns = MODEL.nodes.filter((n) => (n.pathways || [n.pathway_id]).includes(id));
-    return '<span class="tag">Signalling pathway</span><strong>' + esc(p.name) + "</strong>" + (p.summary ? "<p>" + esc(p.summary) + "</p>" : "") +
+    return '<span class="tag">Signalling pathway</span><strong>' + esc(p.name) + "</strong>" + (p.summary ? "<p>" + escL(p.summary) + "</p>" : "") +
       (ns.length ? "<h4>Nodes</h4>" + ns.map((n) => btn("node", n.id, n.label)).join("") : "") +
       '<span class="ev">Only this pathway is shown now; tick the others again in the Pathways list.</span>';
   }
@@ -11432,6 +11448,13 @@
       else if (ev.key === "Enter") { ev.preventDefault(); pick(out.querySelector("[data-srch]")); }
     });
     out.addEventListener("click", (ev) => pick(ev.target.closest("[data-srch]")));
+    document.addEventListener("keydown", (ev) => {
+      if (!(ev.ctrlKey || ev.metaKey) || ev.altKey || String(ev.key).toLowerCase() !== "k") return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      box.focus();
+      box.select();
+    }, true);
   })();
   window.addEventListener("keydown", (e) => {
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;

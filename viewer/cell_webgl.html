@@ -52,6 +52,8 @@
   button.b:hover { transform: translateY(-1px); background: rgba(111, 214, 200, 0.24); }
   button.b.primary { background: rgba(111, 214, 200, 0.3); border-color: var(--accent); }
   button.b:disabled { opacity: 0.4; cursor: default; transform: none; }
+  button.pressed, button.b:active, .chip:active { filter: brightness(1.35); box-shadow: inset 0 0 0 1px var(--accent); }
+  button.pressed { cursor: progress; }
   .row { display: flex; flex-wrap: wrap; gap: 6px; }
   .toggles label { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; margin: 4px 0; cursor: pointer; }
   .toggles input { accent-color: var(--accent); }
@@ -9996,6 +9998,20 @@
   "use strict";
   const MODEL = JSON.parse(document.getElementById("model-data").textContent || "{}");
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // Project-governance wording (approvals, decision numbers, migration history) stays in the data files for provenance
+  // but is not shown to learners; scientific caveats, [VERIFY] and [REF NEEDED] markers are kept.
+  const DEV_SENTENCE = /\bKyrre\b|\bWave [AB]\d?\b|^Migration 20\d\d|^Added 20\d\d|^On 20\d\d-\d\d-\d\d\b|\bdecision \d[a-z]?\b/i;
+  function learnerText(s) {
+    if (s == null) return "";
+    let t = String(s)
+      .replace(/\s*\([^()]*(?:Kyrre|decision \d|policy 20\d\d|option S\d)[^()]*\)/gi, "")
+      .replace(/,?\s*migrated to TORC1\/TORC2 on 20\d\d-\d\d-\d\d/g, "")
+      .replace(/until Kyrre approves a transfer rule/g, "until a transfer rule is added")
+      .replace(/^Kyrre \d{4}-\d\d-\d\d(?: \d\d:\d\d)?(?:, decision \d[a-z]?)?:\s*/, "");
+    t = t.split(/(?<=[.!?])\s+(?=[A-Z\[])/).filter((x) => !DEV_SENTENCE.test(x)).join(" ").trim();
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
+  }
+  const escL = (s) => esc(learnerText(s));
 
   function webglOK() {
     try { const c = document.createElement("canvas"); return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl"))); }
@@ -11497,11 +11513,11 @@
     return (sources || []).filter((s) => s.citation).map((s) => {
       const link = s.url || (s.doi ? "https://doi.org/" + s.doi : null);
       const cite = link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(s.citation) + "</a>" : esc(s.citation);
-      return cite + (s.note ? '<br/><span class="muted">' + esc(s.note) + "</span>" : "");
+      return cite + (s.note ? '<br/><span class="muted">' + escL(s.note) + "</span>" : "");
     }).join("<br/>");
   }
-  const edgeNotes = (e) => (e.notes ? '<p class="note">' + esc(e.notes) + "</p>" : "");
-  const recEvidenceHtml = (rec) => '<span class="src">' + (srcHtml(rec.sources) || "[REF NEEDED]") + "</span>" + (rec.notes ? '<p class="note">' + esc(rec.notes) + "</p>" : "");
+  const edgeNotes = (e) => (e.notes ? '<p class="note">' + escL(e.notes) + "</p>" : "");
+  const recEvidenceHtml = (rec) => '<span class="src">' + (srcHtml(rec.sources) || "[REF NEEDED]") + "</span>" + (rec.notes ? '<p class="note">' + escL(rec.notes) + "</p>" : "");
   const RULED_MEMB_LABEL = "Descriptive membership; a separate explicit transfer rule propagates.";
   function descRecordRow(r) {
     const a = NODE[r.source] || { id: r.source, label: r.source }, b = NODE[r.target] || { id: r.target, label: r.target };
@@ -11510,7 +11526,7 @@
     return '<div class="step"><a href="#" data-node="' + esc(a.id) + '">' + esc(a.label) + "</a> " + esc(verb) + ' <a href="#" data-node="' + esc(b.id) + '">' + esc(b.label) + "</a>" +
       ' <span class="muted">· ' + esc(r.id) + " · " + esc(kind) + " · " + scoreText(r.rec.evidence_level, r.rec.confidence) + "</span>" + recEvidenceHtml(r.rec) +
       (r.rule ? '<p class="note">Separate transfer rule ' + esc(r.rule.id) + ": gain " + esc(r.rule.gain) + ", weight " + esc(r.rule.weight) + ", confidence " + esc(r.rule.confidence) +
-        (r.rule.notes ? "<br/>" + esc(r.rule.notes) : "") + "</p>" : "") + "</div>";
+        (r.rule.notes ? "<br/>" + escL(r.rule.notes) : "") + "</p>" : "") + "</div>";
   }
 
   function overviewHtml() {
@@ -11607,13 +11623,13 @@
     const ge = n.gene_evidence;
     const st = nodeState[id];
     return '<span class="tag">' + (n.role === "process" ? "Process" : n.role === "complex" ? "Complex (local label, not a database accession)" : "Gene product") + "</span><h2>" + esc(n.label) + "</h2>" +
-      (n.description ? "<p>" + esc(n.description) + "</p>" : "") +
+      (n.description ? "<p>" + escL(n.description) + "</p>" : "") +
       (st ? '<p class="warnbox">Current teaching state: ' + (st.s > 0 ? "up ↑" : st.s < 0 ? "down ↓" : "changed, direction not specified by the edge type ?") + " (qualitative)</p>" : "") +
       "<div>" + (n.pathways || [n.pathway_id]).map(pwChip).join("") + "</div>" +
       '<div class="row" style="margin:8px 0"><button class="b" data-run="1">Activate ↑</button><button class="b" data-run="-1">Knock down ↓</button></div>' +
       '<p class="note">' + (n.wormbase_id ? 'WormBase: <a href="https://wormbase.org/species/c_elegans/gene/' + esc(n.wormbase_id) + '" target="_blank" rel="noopener">' + esc(n.wormbase_id) + "</a> · " : "") +
         "Node evidence: " + scoreText(n.evidence_level, n.confidence) + "</p>" +
-      (n.notes ? '<p class="note">' + esc(n.notes) + "</p>" : "") +
+      (n.notes ? '<p class="note">' + escL(n.notes) + "</p>" : "") +
       (!out.length && !inc.length && rels.length ? '<p class="warnbox">No influence arrow or transfer rule reaches this record, so a perturbation here does not propagate. This is missing model coverage, not biological insensitivity.</p>' : "") +
       '<p class="note">Drawn in: ' + esc((COMP[LAYOUT_COMP[n.illustrative_compartment]] || {}).label || n.illustrative_compartment) + " (illustrative placement, not localisation evidence)</p>" +
       (out.length ? "<h3>Acts on</h3>" + out.map((e) => edgeRow(e, NODE[e.target] || { id: e.target, label: e.target }, true)).join("") : "") +
@@ -11621,7 +11637,7 @@
       (ruled.length ? "<h3>Descriptive membership with a separate transfer rule</h3>" + ruled.map(descRecordRow).join("") : "") +
       (rels.length ? "<h3>Membership and atlas-only relations (do not propagate)</h3>" + rels.map(descRecordRow).join("") : "") +
       (srcHtml(n.sources) ? '<h3>Node sources</h3><p class="note">' + srcHtml(n.sources) + "</p>" : "") +
-      (ge ? '<h3>Gene identity evidence</h3><p class="note">Separate from the node: ' + scoreText(ge.evidence_level, ge.confidence) + (ge.notes ? "<br/>" + esc(ge.notes) : "") + "</p>" +
+      (ge ? '<h3>Gene identity evidence</h3><p class="note">Separate from the node: ' + scoreText(ge.evidence_level, ge.confidence) + (ge.notes ? "<br/>" + escL(ge.notes) : "") + "</p>" +
         (srcHtml(ge.sources) ? '<h3>Gene identity sources</h3><p class="note">' + srcHtml(ge.sources) + "</p>" : "") : "");
   }
 
@@ -11638,7 +11654,7 @@
         '<span class="src">' + (srcHtml(e.sources) || "[REF NEEDED]") + "</span>" + edgeNotes(e) + "</div>";
     };
     return '<span class="tag" style="color:' + pwColor(id) + '">Signalling pathway</span><h2>' + esc(p.name) + "</h2>" +
-      "<p>" + esc(p.summary || "") + "</p>" +
+      "<p>" + escL(p.summary || "") + "</p>" +
       '<div class="row" style="margin:6px 0 4px"><button class="b primary" data-play="' + esc(id) + '">▶ Play this pathway</button><button class="b" data-unfocus="1">Show all pathways</button></div>' +
       "<h3>Steps (" + es.length + " influence edges; " + citedCount(es) + " with citations)</h3>" +
       es.map(row).join("") +
@@ -12046,7 +12062,7 @@
       '<p class="note"><b>Cohort.</b> ' + esc(r.cohort_note) + "<br/><b>Survivor bias.</b> " + esc(r.survivor_bias_note) + "</p>" +
       '<p class="warnbox"><b>Limits.</b> ' + r.limitations.map(esc).join(" ") + "</p>" +
       '<span class="src">' + esc(s.citation) + (s.doi ? ' <a href="https://doi.org/' + esc(s.doi) + '" target="_blank" rel="noopener">doi:' + esc(s.doi) + "</a>" : "") +
-      (s.url ? ' · <a href="' + esc(s.url) + '" target="_blank" rel="noopener">full text</a>' : "") + (s.note ? "<br/>" + esc(s.note) : "") + "</span></div>";
+      (s.url ? ' · <a href="' + esc(s.url) + '" target="_blank" rel="noopener">full text</a>' : "") + (s.note ? "<br/>" + escL(s.note) : "") + "</span></div>";
   }
   function agHtml() {
     if (!AG_DAYS.length) return '<p class="warnbox">No reviewed aging observation is embedded in this build.</p>';
@@ -12065,7 +12081,7 @@
       "<h3>Observations shown (" + AG.records.length + ")</h3>" + AG.records.map(agRecordHtml).join("") +
       (AG.hidden_count ? '<p class="note">' + AG.hidden_count + " further records are still being curated or reviewed and are not shown.</p>" : "") +
       "<h3>How to read this</h3>" + AG.presentation_rules.map((x) => '<div class="step">' + esc(x) + "</div>").join("") +
-      '<p class="note wi-provenance">Records: ' + esc(AG.source_file) + " v" + esc(AG.version) + " (" + esc(AG.dated) + "). " + esc(AG.approval) + "</p>";
+      '<p class="note wi-provenance">Records: ' + esc(AG.source_file) + " v" + esc(AG.version) + " (" + esc(AG.dated) + ").</p>";
   }
   function agRender() {
     const pos = document.getElementById("ag-pos");
@@ -14209,7 +14225,8 @@
   function crumbFor(id) {
     const chain = [];
     let c = COMP[id];
-    while (c) { chain.unshift(c.label); c = c.parent && c.parent !== "cell" ? WC.compartments.find((x) => x.id === c.parent) : null; }
+    // Organelles are filed under "cytosol" in the atlas, but they are not rooms inside the cytosol for navigation.
+    while (c) { chain.unshift(c.label); c = c.parent && c.parent !== "cell" && c.parent !== "cytosol" ? WC.compartments.find((x) => x.id === c.parent) : null; }
     return "Whole cell › " + chain.join(" › ");
   }
   function clearInteriorHighlight() {
@@ -14572,7 +14589,7 @@
   const wiRange = (iv) => "[" + wiNum(iv[0]) + ", " + wiNum(iv[1]) + "]";
   const wiScen = (k) => tcaScen(WI.scenarios[k]);
   const wiGate = () => '<p class="warnbox"><b>' + esc(WI.gate.display_label.charAt(0).toUpperCase() + WI.gate.display_label.slice(1)) + ".</b> " +
-    esc(WI.gate.benchmark) + ": " + esc(WI.gate.status) + ". " + esc(WI.gate.reason) + " " + esc(WI.gate.rule) + "</p>";
+    esc(WI.gate.benchmark) + ": " + esc(WI.gate.status) + ". " + esc(WI.gate.reason) + " " + escL(WI.gate.rule) + "</p>";
   const wiBadge = () => '<span class="tag" style="color:var(--warn);background:rgba(242,196,109,0.1)">' + esc(WI.gate.display_label) + "</span>";
   const wiNearBox = (row) => '<p class="warnbox"><b>' + WI_NEAR + ".</b> Saved objective " + esc(String(row.objective)) +
     (row.fva ? "; its objective FVA interval " + esc(wiRange(row.fva[0])) : "") + ". " + esc(row.numerical_note || "") + "</p>";
@@ -14630,7 +14647,7 @@
   function wiSourceHtml() {
     return '<p class="note wi-provenance">Model: ' + esc(WI.base_model.file) + " (SHA-256 " + esc(WI.base_model.sha256.slice(0, 12)) + "…), licence " + esc(WI.licences.base_model) + "; patch source " + esc(WI.licences.patch_source_snapshot) +
       ". " + esc(WI.base_model.note) + " Precomputed " + esc(WI.generated_utc) + " with cobra " + esc(WI.solver.cobra) + " / " + esc(WI.solver.solver) + " " + esc(WI.solver.glpk || "") +
-      ". Full results: " + esc(WI.report_file) + " (SHA-256 " + esc(WI.report_sha256.slice(0, 12)) + "…). Approval: " + esc(WI.approval) + ".</p>";
+      ". Full results: " + esc(WI.report_file) + " (SHA-256 " + esc(WI.report_sha256.slice(0, 12)) + "…).</p>";
   }
   function wiOverviewHtml() {
     if (!WI) return '<p class="warnbox">No what-if report is embedded in this build.</p>';
@@ -14937,6 +14954,19 @@
       else if (ev.key === "Enter") { ev.preventDefault(); pick(out.querySelector("[data-srch]")); }
     });
     out.addEventListener("click", (ev) => pick(ev.target.closest("[data-srch]")));
+    // Pressed state stays on until the click handlers have finished, so slow handlers still show feedback.
+    document.addEventListener("pointerdown", (ev) => { const b = ev.target.closest && ev.target.closest("button"); if (b) b.classList.add("pressed"); }, true);
+    document.addEventListener("click", (ev) => { const b = ev.target.closest && ev.target.closest("button"); if (b) setTimeout(() => b.classList.remove("pressed"), 80); }, true);
+    document.addEventListener("pointercancel", () => document.querySelectorAll("button.pressed").forEach((b) => b.classList.remove("pressed")), true);
+    document.addEventListener("pointerup", () => setTimeout(() => document.querySelectorAll("button.pressed").forEach((b) => b.classList.remove("pressed")), 400), true);
+    document.addEventListener("keydown", (ev) => {
+      if (!(ev.ctrlKey || ev.metaKey) || ev.altKey || String(ev.key).toLowerCase() !== "k") return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (leftP.classList.contains("hidden")) setPanel("left", true);
+      box.focus();
+      box.select();
+    }, true);
   })();
 
   function setupCaption() {
@@ -15122,7 +15152,10 @@
       '<div class="warnbox"><b>Caveats for this tour</b><ul style="margin:4px 0 0;padding-left:18px">' + (t.caveats || []).map((x) => "<li>" + esc(x) + "</li>").join("") +
       "<li>Qualitative educational cascade: values are relative model activities, not concentrations, rates or timings.</li></ul></div>";
     if (line.kind === "intro") {
-      html += "<h3>How the tour was computed</h3><p class=\"note\">" + esc(os.semantics || TOURS_DATA.semantics || "") + "</p><p class=\"note\">" + esc(TOURS_DATA.narration_rule || "") + "</p>";
+      html += "<h3>How the tour was computed</h3><p class=\"note\">The starting signal passes along each link in turn. An activating link passes it on, an inhibiting link reverses it, " +
+        "and its strength is scaled by the link's model weight and how well supported it is. The signal travels for six rounds and fades a little at each one. " +
+        "Values are relative teaching activities, not concentrations, rates or timings.</p>" +
+        "<p class=\"note\">The narration only describes links that have a cited source inside this pathway. Changes that spread further are listed with their limitations, not presented as established results.</p>";
     } else if (line.kind === "route") {
       const e = (t.route || []).find((r) => r.edge_id === line.edge_id) || {};
       html += "<h3>This step: " + esc(tourLabel(t, e.source)) + " " + esc(VERB[e.interaction] || e.interaction) + " " + esc(tourLabel(t, e.target)) + "</h3>" +
