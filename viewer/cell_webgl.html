@@ -32,6 +32,7 @@
   .closer { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04); color: var(--muted); cursor: pointer; font-size: 0.9rem; line-height: 1; z-index: 2; }
   .closer:hover { color: var(--text); background: var(--accent-dim); }
   #right .closer { position: sticky; float: right; top: 0; margin: -6px -6px 0 0; }
+  #detail > .tag:first-child { max-width: calc(100% - 40px); }
   .opener { display: none; top: 16px; padding: 8px 12px; color: var(--text); font: inherit; font-size: 0.76rem; cursor: pointer; }
   .opener.on { display: block; }
   #open-left { left: 16px; } #open-right { right: 16px; }
@@ -74,7 +75,7 @@
   .cov { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; font-size: 0.74rem; }
   .cov .y { color: var(--accent); } .cov .n { color: var(--muted); }
   .step { font-size: 0.76rem; line-height: 1.45; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 5px; }
-  .step .src { display: block; color: var(--muted); font-size: 0.68rem; margin-top: 2px; }
+  .step .src { display: block; color: var(--muted); font-size: 0.68rem; margin-top: 2px; overflow-wrap: anywhere; }
   #tooltip {
     position: fixed; z-index: 10; pointer-events: none; padding: 6px 10px; border-radius: 9px;
     background: rgba(10, 14, 20, 0.88); border: 1px solid var(--glass-border); font-size: 0.78rem;
