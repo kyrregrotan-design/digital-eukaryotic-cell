@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T07:40:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-06T07:45:03+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "Viewer QA slice 1 (items 1-7) + opinions A-L",
