@@ -1,46 +1,45 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T18:50:03+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-06T18:55:03+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "qa-slice2h: close QA 11, A1 label declutter (WebGL)",
-                                  "status":  "done",
-                                  "step":  7,
-                                  "total":  7,
-                                  "percent":  100,
-                                  "step_title":  "Finish entry",
+                                  "task":  "qa-slice2i: Codex\u0027s three gene-label fixes (A1)",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  6,
+                                  "percent":  21.4,
+                                  "step_title":  "Fix focused-pathway rank",
                                   "steps":  [
-                                                "Start entry",
-                                                "Close QA 11",
-                                                "Find label code in cell_webgl",
-                                                "Distance fade and pile-up cap",
-                                                "Headless check and pytest",
-                                                "Answer evidence-filter AGREE",
-                                                "Finish entry"
+                                                "Read log and Codex findings",
+                                                "Fix focused-pathway rank",
+                                                "Gene hit boxes before compartments",
+                                                "Full badge footprint in",
+                                                "Targeted headless Chrome checks",
+                                                "Log finish and hand off"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  251,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T18:44:53+02:00",
-                                  "last_run":  "2026-10-06T18:37:52+02:00",
+                                  "updated":  "2026-10-06T18:54:48+02:00",
+                                  "last_run":  "2026-10-06T18:53:55+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Review gene labels and evidence filter",
-                                 "status":  "running",
-                                 "step":  1,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  14.2,
-                                 "step_title":  "Inspect label code and priorities",
+                                 "percent":  100,
+                                 "step_title":  "Log verdict and queue handoff",
                                  "steps":  [
                                                "Inspect label code and priorities",
                                                "Verify browser evidence and edge cases",
                                                "Assess evidence filter proposal",
                                                "Log verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  460,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-06T18:48:21+02:00",
+                                 "updated":  "2026-10-06T18:53:49+02:00",
                                  "last_run":  "2026-10-06T18:45:43+02:00",
                                  "next_run":  null
                              }
@@ -49,11 +48,16 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  17,
+    "today_runs":  18,
     "queue":  [
 
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Review gene labels and evidence filter",
+                       "finished":  "2026-10-06T18:53:49+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "qa-slice2h: close QA 11, A1 label declutter (WebGL)",
@@ -78,11 +82,6 @@
                        "agent":  "cursor",
                        "task":  "Approved queue order in FREMDRIFT + QA 10 (c)/(d)",
                        "finished":  "2026-10-06T16:49:10+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "qa-slice2d: Overview title, tour framing on resize (QA 10e)",
-                       "finished":  "2026-10-06T16:13:04+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
