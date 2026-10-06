@@ -237,6 +237,9 @@
   .srch-group { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0.5rem 0 0.2rem; }
   .srch-hit { display: block; width: 100%; text-align: left; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border-radius: 7px; margin-bottom: 0.2rem; cursor: pointer; }
   .srch-hit:hover, .srch-hit:focus { background: var(--accent-dim); outline: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #atlas-search:focus-visible, #search-in:focus-visible { box-shadow: 0 0 0 2px var(--accent-dim); }
+  .srch-hit:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
   .srch-alias, .srch-basis { display: block; font-size: 0.66rem; color: var(--muted); line-height: 1.35; }
   .srch-none { font-size: 0.72rem; color: var(--muted); padding: 0.3rem 0.1rem; }
   #atlas-list { margin-top: 0.45rem; max-height: 11rem; overflow: auto; display: flex; flex-direction: column; gap: 0.1rem; }

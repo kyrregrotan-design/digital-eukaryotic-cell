@@ -165,6 +165,9 @@
   .srch-group { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 8px 0 3px; }
   .srch-hit { display: block; width: 100%; text-align: left; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-size: 0.74rem; padding: 5px 8px; border-radius: 8px; margin-bottom: 3px; cursor: pointer; }
   .srch-hit:hover, .srch-hit:focus { background: var(--accent-dim); outline: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #search-in:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+  .srch-hit:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
   .srch-alias, .srch-basis { display: block; font-size: 0.66rem; color: var(--muted); line-height: 1.35; }
   .srch-none { font-size: 0.72rem; color: var(--muted); padding: 4px 2px; }
   #tour-list .b { text-align: left; }
@@ -176,6 +179,19 @@
   #tp-sub { font-size: 0.82rem; line-height: 1.5; color: #e6edf2; max-height: 7.5em; overflow-y: auto; }
   #tp-bar { height: 2px; background: var(--line); border-radius: 2px; margin: 8px 0; overflow: hidden; }
   #tp-prog { height: 100%; width: 0; background: var(--accent); }
+  #tp-live { display: flex; align-items: center; gap: 6px; font-size: 0.66rem; color: var(--muted); min-height: 1.2em; margin: -4px 0 6px; }
+  #tp-live .tp-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); flex: none; }
+  #tp-pbar { flex: 0 0 72px; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  #tp-pfill { display: block; height: 100%; width: 0; background: var(--accent); }
+  #tour-player:not([data-live]) #tp-live, #tour-player[data-live=""] #tp-live { visibility: hidden; }
+  #tour-player[data-live="idle"] #tp-pbar { visibility: hidden; }
+  #tour-player[data-live="wait"] .tp-dot, #tour-player[data-live="speak"] .tp-dot, #tour-player[data-live="read"] .tp-dot { background: var(--accent); }
+  #tour-player[data-live="wait"] .tp-dot, #tour-player[data-live="wait"] #tp-prog { animation: tp-pulse 1.1s ease-in-out infinite; }
+  #tour-player[data-live="wait"] #tp-pfill, #tour-player[data-live="speak"]:not([data-bound]) #tp-pfill { width: 30%; animation: tp-slide 1.4s ease-in-out infinite; }
+  @keyframes tp-pulse { 50% { opacity: 0.25; } }
+  @keyframes tp-slide { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+  body.cap-small.tp-compact #tp-live { display: none; }
+  @media (prefers-reduced-motion: reduce) { #tour-player .tp-dot, #tp-pfill, #tp-prog { animation: none !important; } #tp-pfill { transition: none !important; } }
   #tp-ctrl { align-items: center; }
   #tp-ctrl label { font-size: 0.72rem; color: var(--muted); display: inline-flex; align-items: center; gap: 4px; }
   #tour-player select { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); border-radius: 8px; padding: 5px 6px; font: inherit; font-size: 0.74rem; }
@@ -185,7 +201,7 @@
   #tp-2d-head, #tp-2d-foot { font-size: 0.66rem; color: var(--muted); }
   #tp-2d-foot { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   #tp-svg-wrap { overflow-x: auto; }
-  #tp-svg-wrap:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+  #tp-svg-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   #tp-svg { display: block; width: 100%; height: auto; max-height: 38vh; }
   #tp-svg .n rect { fill: rgba(255, 255, 255, 0.05); stroke: #5b6b78; stroke-width: 1.2; }
   #tp-svg .n.seed rect { stroke-dasharray: 4 3; }
@@ -200,9 +216,10 @@
   #ag-pos { width: 100%; accent-color: var(--accent); margin: 6px 0 2px; }
   .ag-days { position: relative; height: 28px; }
   .ag-days .chip { position: absolute; top: 0; white-space: nowrap; }
+  .ag-days .ag-gap { position: absolute; top: 5px; transform: translateX(-50%); font-size: 0.68rem; color: var(--muted); white-space: nowrap; pointer-events: none; }
   #ag-now { font-size: 0.8rem; min-height: 2.6em; }
-  .ag-stops { display: grid; gap: 8px; margin: 6px 0; }
-  .ag-stop { grid-area: auto; padding: 8px 10px; border: 1px solid var(--glass-border); border-radius: 10px; background: rgba(255, 255, 255, 0.03); font-size: 0.78rem; line-height: 1.45; }
+  .ag-stops { display: grid; margin: 6px 0; }
+  .ag-stop { grid-area: 1 / 1; padding: 8px 10px; border: 1px solid var(--glass-border); border-radius: 10px; background: rgba(255, 255, 255, 0.03); font-size: 0.78rem; line-height: 1.45; }
   #ag-speed { background: rgba(255, 255, 255, 0.05); color: var(--text); border: 1px solid var(--glass-border); border-radius: 8px; padding: 4px 6px; font: inherit; font-size: 0.74rem; }
   #ag-speed option { background: #16222e; }
   .ag-ctx td { padding: 1px 8px 1px 0; vertical-align: top; font-size: 0.72rem; }
@@ -286,8 +303,8 @@
     <p class="title">Graphics</p>
     <label class="gfx">Graphics look
       <select id="g-look">
-        <option value="advanced">Advanced (Stage A look)</option>
-        <option value="standard">Standard (existing look)</option>
+        <option value="advanced">Advanced (depth and surface detail)</option>
+        <option value="standard">Standard (simpler surfaces)</option>
       </select>
     </label>
     <label class="gfx">Rendering quality
@@ -340,6 +357,7 @@
   </div>
   <div id="tp-sub" aria-live="polite"></div>
   <div id="tp-bar"><div id="tp-prog"></div></div>
+  <div id="tp-live" aria-hidden="true"><span class="tp-dot"></span><span id="tp-live-t"></span><span id="tp-pbar"><span id="tp-pfill"></span></span></div>
   <div class="row" id="tp-ctrl">
     <button class="b" id="tp-prev" title="Previous part">‹ Back</button>
     <button class="b" id="tp-play">▶ Play</button>
@@ -11781,6 +11799,14 @@
     if (auto && detailPeek()) { detailReady(true); return; }
     if (rightP.classList.contains("hidden")) setPanel("right", true); rightP.scrollTop = 0;
   };
+  // A pick made on a small screen during a caption or tour stays in the detail buffer until another selection, a new
+  // walkthrough or closing the drawer, so automatic walkthrough steps cannot replace it before Details is opened.
+  let pickHtml = null;
+  function autoDetail(write) {
+    if (pickHtml !== null && detail.innerHTML === pickHtml) return;
+    pickHtml = null; write();
+    if (document.getElementById("open-right").classList.contains("ready")) detailReady(true);
+  }
   function showOverview() { selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
   function selectComp(id, fly) {
     selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons(); openDetail();
@@ -12177,7 +12203,7 @@
     document.getElementById("aging-sec-note").textContent = AG ? "No reviewed aging observation yet; " + AG.hidden_count + " records are still being curated." : "No aging observations are embedded in this build.";
   }
   const AG_STATUS = { observed: "Observed in the source", inferred: "Inferred by the authors, not directly observed", illustrative: "Illustrative only" };
-  const AG_DAYS_PER_SEC = 2, AG_HOLD_MS = 1800;
+  const AG_GAP_MS = 2000, AG_HOLD_MS = 1800, AG_START_MS = 400;
   let agPos = AG_DAYS[0] || 0, agPlaying = false, agSpeed = 1, agLast = 0, agHoldUntil = 0;
   const agDay = (d) => "adult day " + (Number.isInteger(d) ? d : d.toFixed(1));
   function agWeights(p) {
@@ -12217,10 +12243,11 @@
       '<p class="warnbox">' + esc(AG.disclaimer) + "</p>" +
       '<div id="ag-now" aria-live="polite"></div>' +
       '<input id="ag-pos" type="range" min="' + lo + '" max="' + hi + '" step="0.1" value="' + agPos + '" aria-label="Position on the illustrative aging timeline, in adult days" />' +
-      '<div class="ag-days">' + AG_DAYS.map((d, i) => '<button class="chip" data-agday="' + d + '" style="left:' + ((d - lo) / span * 100) + "%;transform:translateX(" + (i === 0 ? "0" : i === last ? "-100%" : "-50%") + ')">' + esc(agDay(d)) + "</button>").join("") + "</div>" +
+      '<div class="ag-days">' + AG_DAYS.map((d, i) => '<button class="chip" data-agday="' + d + '" style="left:' + ((d - lo) / span * 100) + "%;transform:translateX(" + (i === 0 ? "0" : i === last ? "-100%" : "-50%") + ')">' + esc(agDay(d)) + "</button>").join("") +
+        AG_DAYS.slice(1).map((d, i) => (d - AG_DAYS[i]) / span < 0.3 ? "" : '<span class="ag-gap" style="left:' + (((AG_DAYS[i] + d) / 2 - lo) / span * 100) + '%">· · no observation sampled · ·</span>').join("") + "</div>" +
       '<div class="row" style="margin:6px 0;align-items:center"><button class="b" id="ag-play" data-agplay="1">▶ Play</button>' +
       '<label class="muted" style="font-size:0.72rem">Playback speed <select id="ag-speed">' + [0.5, 1, 2].map((v) => '<option value="' + v + '"' + (v === agSpeed ? " selected" : "") + ">" + v + "×</option>").join("") + "</select></label></div>" +
-      '<p class="note">Playback speed changes presentation only. Stops sit at the adult days the sources sampled; between them the cards only crossfade, and nothing is interpolated as a value, rate or schedule.</p>' +
+      '<p class="note">Playback speed changes presentation only. Stops sit at the adult days the sources sampled; between them the cards only crossfade, and nothing is interpolated as a value, rate or schedule. Each gap between sampled days plays in the same short time, however many days it spans; the slider position still shows the adult day.</p>' +
       '<div class="ag-stops">' + AG_DAYS.map(agStopHtml).join("") + "</div>" +
       '<p class="note">' + (targeted ? "" : "The 3D cell is not changed by this timeline: no reviewed record names a single organelle, and no size, volume or shrink factor is sourced. Organelles without a sourced aging change are shown unchanged.") + "</p>" +
       "<h3>Observations shown (" + AG.records.length + ")</h3>" + AG.records.map(agRecordHtml).join("") +
@@ -12244,9 +12271,10 @@
     if (!agPlaying || !document.getElementById("ag-pos")) { agPlaying = false; return; }
     const dt = agLast ? Math.min(0.1, (now - agLast) / 1000) : 0; agLast = now;
     if (now >= agHoldUntil) {
-      const next = AG_DAYS.find((d) => d > agPos + 1e-6);
+      const ni = AG_DAYS.findIndex((d) => d > agPos + 1e-6), next = AG_DAYS[ni];
       if (next == null) { agPlaying = false; agRender(); return; }
-      agPos = reducedMotion() ? next : Math.min(next, agPos + dt * AG_DAYS_PER_SEC * agSpeed);
+      const gap = ni > 0 ? next - AG_DAYS[ni - 1] : next - agPos;
+      agPos = reducedMotion() ? next : Math.min(next, agPos + dt * gap / (AG_GAP_MS / 1000) * agSpeed);
       if (agPos === next) agHoldUntil = now + AG_HOLD_MS / agSpeed;
     }
     agRender();
@@ -12256,7 +12284,7 @@
     agPlaying = !agPlaying;
     if (agPlaying) {
       if (agPos >= AG_DAYS[AG_DAYS.length - 1] - 1e-6) agPos = AG_DAYS[0];
-      agLast = 0; agHoldUntil = performance.now() + AG_HOLD_MS / agSpeed;
+      agLast = 0; agHoldUntil = performance.now() + AG_START_MS / agSpeed;
       requestAnimationFrame(agTick);
     }
     agRender();
@@ -12717,7 +12745,7 @@
       const S = tour.steps[si];
       shown = S.st; fired = S.fired;
       ifocus = S.ref ? { t: "node", id: S.ref } : null;
-      if (S.ref) { isel = null; selected = { node: S.ref }; detail.innerHTML = nodeHtml(S.ref); setPerturbButtons(); if (si === 0) openDetail(true); }
+      if (S.ref) autoDetail(() => { isel = null; selected = { node: S.ref }; detail.innerHTML = nodeHtml(S.ref); setPerturbButtons(); if (si === 0) openDetail(true); });
       const pts = S.focus.map((id) => (N[id] ? N[id].home : null)).filter(Boolean);
       if (pts.length) {
         const c = pts.reduce((a, p) => a.add(p), V(0, 0, 0)).multiplyScalar(1 / pts.length);
@@ -12729,7 +12757,7 @@
     function playTour(id, i) {
       const sc = SC[id] || SCEN[0];
       if (!sc) return;
-      curSc = sc.id; mode = "tour"; playing = true; stopAfter = false;
+      curSc = sc.id; mode = "tour"; playing = true; stopAfter = false; pickHtml = null;
       tour = buildTour(sc);
       Object.keys(INPUT).forEach((k) => delete INPUT[k]);
       startStep(i || 0);
@@ -12981,17 +13009,17 @@
       const S = K.tour.steps[K.si];
       o.onStep(S, K.si);
       ifocus = S.ref || null;
-      if (S.ref) {
+      if (S.ref) autoDetail(() => {
         isel = null;
         if (S.ref.t === "node") { selected = { node: S.ref.id }; detail.innerHTML = nodeHtml(S.ref.id); } else { selected = null; detail.innerHTML = ipHtml(S.ref); }
         setPerturbButtons();
         if (K.si === 0) openDetail(true);
-      }
+      });
       if (S.cam) { camGoal.target.set(S.cam[0], S.cam[1], S.cam[2]); camGoal.dist = ctx.home.dist * (S.cam[3] || 1); }
       else { camGoal.target.copy(ctx.home.target); camGoal.dist = ctx.home.dist; }
       K.caption();
     };
-    K.play = (id, i) => { const k = o.tours[id] ? id : o.first; K.cur = k; K.mode = "tour"; K.playing = true; K.tour = o.tours[k](); K.startStep(i || 0); };
+    K.play = (id, i) => { const k = o.tours[id] ? id : o.first; K.cur = k; pickHtml = null; K.mode = "tour"; K.playing = true; K.tour = o.tours[k](); K.startStep(i || 0); };
     K.flow = () => { K.mode = "flow"; K.playing = true; ifocus = null; if (o.onFlow) o.onFlow(); camGoal.target.copy(ctx.home.target); camGoal.dist = ctx.home.dist; K.caption(); };
     K.tick = (dt) => {
       const k = dt * K.speed;
@@ -14261,7 +14289,7 @@
       tracks = (S.tracks || []).map((t) => Object.assign({}, t));
       if (S.g != null) grT = S.g;
       ifocus = S.ref || null;
-      if (S.ref) {
+      if (S.ref) autoDetail(() => {
         isel = null; detail.innerHTML = ipHtml(S.ref);
         if (S.source_process_ids) {
           detail.innerHTML += S.source_process_ids.map((id) => {
@@ -14270,12 +14298,12 @@
           }).join("");
         }
         if (si === 0) openDetail(true);
-      }
+      });
       if (S.cam) { camGoal.target.set(S.cam[0] * 0.75, S.cam[1] * 0.6 - 0.1, 0.4); camGoal.dist = ctx.home.dist * Math.min(1, S.cam[2] * 1.45); }
       caption();
     }
-    function playTour(name, i) { clearAll(); mode = "tour"; tour = TOURS[name] || TOURS.proton_gradient; playing = true; stopAfter = false; startStep(i || 0); }
-    function playStep(i) { clearAll(); mode = "tour"; tour = TOURS.proton_gradient; playing = true; stopAfter = true; startStep(i); }
+    function playTour(name, i) { clearAll(); mode = "tour"; tour = TOURS[name] || TOURS.proton_gradient; playing = true; stopAfter = false; pickHtml = null; startStep(i || 0); }
+    function playStep(i) { clearAll(); mode = "tour"; tour = TOURS.proton_gradient; playing = true; stopAfter = true; pickHtml = null; startStep(i); }
     function setFlow() {
       clearAll(); mode = "flow"; playing = true; ifocus = null; cycleClock = 99;
       camGoal.target.copy(ctx.home.target); camGoal.dist = ctx.home.dist;
@@ -14917,6 +14945,7 @@
     isel = inside ? ip : null; selected = null;
     detail.innerHTML = ipHtml(ip); setPerturbButtons(); openDetail(auto);
     if (ip.t === "aging") agRender();
+    pickHtml = document.body.classList.contains("cap-small") && inside && inside.api ? detail.innerHTML : null;
   }
   function mitoOverviewHtml() {
     const m = AC.mitochondrion || {};
@@ -15317,35 +15346,60 @@
     tourPlayButton();
     if (c.playing) tourSpeak();
   }
-  function tourPlayButton() { tourEl("tp-play").textContent = tourCur && tourCur.playing ? "❚❚ Pause" : "▶ Play"; }
+  function tourPlayButton() {
+    tourEl("tp-play").textContent = tourCur && tourCur.playing ? "❚❚ Pause" : "▶ Play";
+    if (tourCur && !tourCur.playing) tourLive("idle", TSYN && tourVoice && tourEl("tp-voice").checked ? "Paused · Play reads this part aloud" : "");
+  }
+  function tourLive(state, text, ms) {
+    const p = tourEl("tour-player"), f = tourEl("tp-pfill");
+    p.setAttribute("data-live", state || "");
+    p.removeAttribute("data-bound");
+    tourEl("tp-live-t").textContent = text || "";
+    f.style.transition = "none";
+    f.style.width = state === "read" ? (reducedMotion() ? "100%" : "0%") : state === "gap" ? "100%" : "";
+    if (state === "read" && ms && !reducedMotion()) { void f.offsetWidth; f.style.transition = "width " + Math.round(ms) + "ms linear"; f.style.width = "100%"; }
+  }
   function tourSpeak(once) {
     const c = tourCur; if (!c) return;
     tourCancelSpeech();
     const tok = c.tok, text = c.t.script[c.i].say;
+    const live = () => tourCur === c && tok === c.tok && c.playing;
     const done = () => {
       if (!tourCur || tourCur !== c || tok !== c.tok || !c.playing) return;
       if (once) { c.playing = false; tourPlayButton(); return; }
       tourAfterLine();
     };
+    const readFor = (ms) => { tourLive("read", "Reading time for this part (no voice)", ms); c.timers.push(setTimeout(done, ms)); };
     if (TSYN && tourVoice && tourEl("tp-voice").checked) {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = tourVoice.lang || "en-GB"; u.rate = c.rate; u.pitch = 1;
       try { u.voice = tourVoice; } catch (e) { /* keep lang only */ }
+      u.onstart = () => { if (live()) tourLive("speak", "Speaking"); };
+      u.onboundary = (ev) => {
+        if (!live() || !ev || typeof ev.charIndex !== "number") return;
+        const p = tourEl("tour-player");
+        if (p.getAttribute("data-live") !== "speak") tourLive("speak", "Speaking");
+        p.setAttribute("data-bound", "1");
+        tourEl("tp-pfill").style.width = Math.min(100, (ev.charIndex + (ev.charLength || 0)) / Math.max(1, text.length) * 100) + "%";
+      };
       u.onend = done;
       u.onerror = (ev) => {
         if (!tourCur || tourCur !== c || tok !== c.tok || !c.playing) return;
         if (ev && (ev.error === "interrupted" || ev.error === "canceled")) return;
         tourEl("tp-voice-note").textContent = "Speech failed in this browser; continuing with subtitles.";
-        c.timers.push(setTimeout(done, tourReadMs(text, c.rate)));
+        readFor(tourReadMs(text, c.rate));
       };
+      tourLive("wait", "Starting the voice…");
+      c.timers.push(setTimeout(() => { if (live() && tourEl("tour-player").getAttribute("data-live") === "wait") tourLive("wait", "Waiting for the browser voice · the subtitle shows the same words"); }, 2500));
       TSYN.speak(u);
-    } else c.timers.push(setTimeout(done, tourReadMs(text, c.rate)));
+    } else readFor(tourReadMs(text, c.rate));
   }
   const tourReadMs = (text, rate) => Math.max(4000, text.split(/\s+/).length * 380) / (rate || 1);
   function tourAfterLine() {
     const c = tourCur;
-    if (c.i >= c.t.script.length - 1) { c.playing = false; tourPlayButton(); tourEl("tp-step").textContent += " · tour finished"; return; }
+    if (c.i >= c.t.script.length - 1) { c.playing = false; tourPlayButton(); tourLive("idle", "Tour finished"); tourEl("tp-step").textContent += " · tour finished"; return; }
     const tok = c.tok;
+    tourLive("gap", "Next part…");
     c.timers.push(setTimeout(() => { if (tourCur === c && tok === c.tok && c.playing) tourShow(c.i + 1); }, 700));
   }
   function tourCards(explicit) {
@@ -15563,6 +15617,7 @@
     if (wasFront) rightP.classList.remove("tour-source-front");
     (which === "left" ? leftP : rightP).classList.toggle("hidden", !open);
     if (which === "right" && open) detailReady(false);
+    if (which === "right" && !open) pickHtml = null;
     document.getElementById("open-" + which).classList.toggle("on", !open);
     const other = which === "left" ? "right" : "left";
     if (open && window.innerWidth < 900 && !(other === "left" ? leftP : rightP).classList.contains("hidden")) setPanel(other, false);
