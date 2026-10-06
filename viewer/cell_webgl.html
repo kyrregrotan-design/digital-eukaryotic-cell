@@ -14315,6 +14315,20 @@
       runPendingNav();
     }, 430);
   }
+  // If restoring the outer view fails part-way, leave a plain whole-cell home view instead of a half-restored camera, panel or selection.
+  function outsideFallback() {
+    const safe = (f) => { try { f(); } catch (err) { console.error(err); } };
+    inside = null; ihover = isel = ifocus = null;
+    document.body.classList.remove("inside", "mito", "story");
+    document.getElementById("inside-sec").innerHTML = "";
+    cam.yaw = camGoal.yaw = HOME.yaw; cam.pitch = camGoal.pitch = HOME.pitch;
+    cam.target.copy(HOME.target); camGoal.target.copy(HOME.target);
+    userZoomed = false;
+    safe(resize);
+    cam.dist = camGoal.dist = HOME.dist;
+    hover = null;
+    safe(showOverview);
+  }
   function exitInterior(after) {
     if (transition) { pendingNav = () => exitInterior(after); return; }
     if (!inside) return;
@@ -14341,6 +14355,7 @@
         selectComp(id, false);
       } catch (err) {
         console.error(err);
+        outsideFallback();
         fadeEl.classList.remove("on"); transition = false; pendingNav = null;
         return;
       }
