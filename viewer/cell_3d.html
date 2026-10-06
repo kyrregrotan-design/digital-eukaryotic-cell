@@ -158,6 +158,7 @@
     backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     padding: 0.45rem 0.65rem; border-radius: 10px;
+    max-width: calc(100% - 28px);
   }
   #mode-badge, #learn-badge {
     position: absolute; top: 14px; z-index: 2;
@@ -179,6 +180,7 @@
     padding: 0.35rem 0.55rem; border-radius: 8px;
     max-width: 220px; text-align: right; line-height: 1.3;
   }
+  @media (max-width: 1000px) { #illus-badge { bottom: auto; top: 52px; } }
   #cascade-badge {
     position: absolute; left: 14px; top: 48px; z-index: 2;
     font-size: 0.68rem; letter-spacing: 0.03em;
@@ -12708,6 +12710,27 @@
     return { x: w * 0.5 + x * S, y: h * 0.5 - y * S, z, sx: x, sy: y, s: S / z };
   }
 
+  // Some network layout positions lie outside the drawn membrane (radius 1.15). Ease them radially
+  // inside it; NET_RMAX 0.97 still projects inside the membrane circle at the closest zoom (dist 2.2).
+  const NET_R0 = 0.82, NET_RMAX = 0.97, NET_K = 0.6;
+  function netPos(n) {
+    const p = n.position, r = Math.hypot(p[0], p[1], p[2]);
+    if (r <= NET_R0) return v3(p[0], p[1], p[2]);
+    const f = (NET_R0 + (NET_RMAX - NET_R0) * Math.tanh((r - NET_R0) / NET_K)) / r;
+    return v3(p[0] * f, p[1] * f, p[2] * f);
+  }
+  window.__netExtent = (raw) => {
+    const w = canvas.clientWidth, h = canvas.clientHeight, c = project(v3(0, 0, 0), w, h);
+    if (!c) return null;
+    const rc = 1.15 * c.s;
+    const out = MODEL.nodes.map((n) => {
+      const p = project(raw ? v3(n.position[0], n.position[1], n.position[2]) : netPos(n), w, h);
+      return p && { id: n.id, rel: +(Math.hypot(p.x - c.x, p.y - c.y) / rc).toFixed(3), x: Math.round(p.x), y: Math.round(p.y) };
+    }).filter(Boolean);
+    return { w, h, dist: +dist.toFixed(2), network: viewNetwork, outside: out.filter((o) => o.rel > 1).length,
+      offCanvas: out.filter((o) => o.x < 0 || o.x > w || o.y < 0 || o.y > h).length, maxRel: Math.max(...out.map((o) => o.rel)), nodes: out };
+  };
+
   // Uniform pixels-per-unit so the cell stays round and fills the view at any aspect ratio.
   function viewScale(w, h) {
     return Math.min(w, h) * 1.25;
@@ -12746,7 +12769,7 @@
     for (const n of MODEL.nodes) {
       if (lh || !netOn) break;
       if (!nodeVisible(n)) continue;
-      const p = project(v3(n.position[0], n.position[1], n.position[2]), w, h);
+      const p = project(netPos(n), w, h);
       if (!p) continue;
       const d = Math.hypot(p.x - x, p.y - y);
       if (d < bestD) { bestD = d; best = { kind: "node", obj: n, key: "n:" + n.id }; }
@@ -12757,8 +12780,8 @@
       const a = nodeById[e.source], b = nodeById[e.target];
       if (!a || !b) continue;
       if (!nodeVisible(a) || !nodeVisible(b)) continue;
-      const pa = project(v3(a.position[0], a.position[1], a.position[2]), w, h);
-      const pb = project(v3(b.position[0], b.position[1], b.position[2]), w, h);
+      const pa = project(netPos(a), w, h);
+      const pb = project(netPos(b), w, h);
       if (!pa || !pb) continue;
       const d = distToSegment(x, y, pa.x, pa.y, pb.x, pb.y);
       if (d < bestD) { bestD = d; best = { kind: "edge", obj: e, key: "e:" + e.id }; }
@@ -13342,8 +13365,8 @@
       if (!edgeVisible(e)) continue;
       const a = nodeById[e.source], b = nodeById[e.target];
       if (!a || !b) continue;
-      const pa = project(v3(a.position[0], a.position[1], a.position[2]), w, h);
-      const pb = project(v3(b.position[0], b.position[1], b.position[2]), w, h);
+      const pa = project(netPos(a), w, h);
+      const pb = project(netPos(b), w, h);
       if (!pa || !pb) continue;
       const col = hexToRgb(MODEL.pathway_colors[e.pathway_id] || "#888");
       const style = evidenceStyle(e.evidence_level, e.confidence);
@@ -13376,7 +13399,7 @@
 
     const projected = MODEL.nodes.map((n) => {
       if (!showNetwork || !nodeVisible(n)) return null;
-      const pr = project(v3(n.position[0], n.position[1], n.position[2]), w, h);
+      const pr = project(netPos(n), w, h);
       return pr ? { n, pr } : null;
     }).filter(Boolean).sort((a, b) => b.pr.z - a.pr.z);
 

@@ -15428,14 +15428,23 @@
     if (wasFront) rightP.classList.remove("tour-source-front");
     (which === "left" ? leftP : rightP).classList.toggle("hidden", !open);
     document.getElementById("open-" + which).classList.toggle("on", !open);
+    const other = which === "left" ? "right" : "left";
+    if (open && window.innerWidth < 900 && !(other === "left" ? leftP : rightP).classList.contains("hidden")) setPanel(other, false);
     resize();
     if (wasFront && tourCur) tourEl("tp-cards").focus();
+  }
+  let panelW = window.innerWidth;
+  function narrowPanels() {
+    const w = window.innerWidth;
+    if (w < 1280 && panelW >= 1280 && !rightP.classList.contains("hidden")) setPanel("right", false);
+    if (w < 900 && panelW >= 900 && !leftP.classList.contains("hidden")) setPanel("left", false);
+    panelW = w;
   }
   document.getElementById("close-left").onclick = () => setPanel("left", false);
   document.getElementById("close-right").onclick = () => setPanel("right", false);
   document.getElementById("open-left").onclick = () => setPanel("left", true);
   document.getElementById("open-right").onclick = () => setPanel("right", true);
-  window.addEventListener("resize", resize);
+  window.addEventListener("resize", () => { narrowPanels(); resize(); });
   if (window.innerWidth < 1280) setPanel("right", false);
   if (window.innerWidth < 900) setPanel("left", false);
   resize();
