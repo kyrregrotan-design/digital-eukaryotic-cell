@@ -1,21 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T17:55:03+02:00",
+    "generated_at":  "2026-10-06T18:00:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "QA 10 close, FREMDRIFT text, QA 12 narrow layout",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "qa-slice2g: QA 12 close, QA 11 edges inside membrane (A1)",
+                                  "status":  "running",
+                                  "step":  5,
+                                  "total":  6,
+                                  "percent":  81.7,
+                                  "step_title":  "Headless check and pytest",
                                   "steps":  [
-
+                                                "Start entry",
+                                                "Close QA 12 in FREMDRIFT",
+                                                "Reproduce QA 11 in cell_3d",
+                                                "Fix edges/nodes inside membrane",
+                                                "Headless check and pytest",
+                                                "Finish entry"
                                             ],
-                                  "eta_seconds":  925,
+                                  "eta_seconds":  25,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T17:30:04+02:00",
+                                  "updated":  "2026-10-06T17:58:28+02:00",
                                   "last_run":  "2026-10-06T17:54:28+02:00",
                                   "next_run":  "2026-10-06T18:15:00+02:00"
                               },
@@ -43,7 +48,7 @@
                      "agent":  "cursor",
                      "time":  "2026-10-06T18:15:00+02:00"
                  },
-    "today_runs":  12,
+    "today_runs":  13,
     "queue":  [
 
               ],
