@@ -62,6 +62,7 @@
   #right h2 { font-size: 1.15rem; margin: 2px 0 6px; letter-spacing: -0.01em; }
   #right h3 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 14px 0 6px; font-weight: 650; }
   #right p { font-size: 0.8rem; line-height: 1.55; margin: 0 0 8px; }
+  #right p.note { font-size: 0.7rem; line-height: 1.45; }
   #right ul { margin: 0 0 8px; padding-left: 18px; font-size: 0.77rem; line-height: 1.5; }
   #right li { margin-bottom: 4px; }
   #right a { color: var(--accent); }
@@ -11805,7 +11806,7 @@
     onHover(e);
   });
   canvas.addEventListener("pointerleave", () => { hover = null; hideTip(); });
-  canvas.addEventListener("wheel", (e) => { e.preventDefault(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
+  canvas.addEventListener("wheel", (e) => { e.preventDefault(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(inside ? Math.max(16, inside.home.dist * 1.25) : 16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
   canvas.addEventListener("dblclick", (e) => {
     const tapped = tapForDblclick(e);
     if (inside) { const h = tapped !== undefined ? tapped : hitInterior(e); if (h && h.ip.t === "comp" && BUILD[h.ip.id] && h.ip.id !== inside.id) enterInterior(h.ip.id); return; }
@@ -12351,7 +12352,7 @@
   // everything; factor movement through pores and mRNA export are teaching animations.
   BUILD.nucleus = function (ctx) {
     ctx.custom = true;
-    ctx.hw = 5.6; ctx.hh = 3.05; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 30;
+    ctx.hw = 5.6; ctx.hh = 3.05; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 45;
     ctx.home = { yaw: 0, pitch: 0.15, target: V(0, 0.3, 0.3), dist: 12 };
     const s = ctx.s;
     const XW = 5.6, Z0 = -1.6, ZC = 0.45, ZN = 0.9, YO = 1.0, YI = 0.5, YD = -1.75;
@@ -12956,7 +12957,7 @@
   // pace of a teaching vesicle cycle; membrane steps without a model edge are textbook overview.
   function buildAutophagy(ctx) {
     ctx.custom = true;
-    ctx.hw = 6.0; ctx.hh = 3.15; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 30;
+    ctx.hw = 6.0; ctx.hh = 3.15; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 45;
     ctx.home = { yaw: 0, pitch: 0.12, target: V(0, 0.1, 0.3), dist: 12 };
     const s = ctx.s, r = rng(71), ZN = 0.9, ZS = 0.3;
     const S1 = V(-4.2, -1.35, ZS), S2 = V(-1.5, -1.35, ZS), S3 = V(1.3, -1.35, ZS), S3L = V(0.55, -1.35, ZS), S4 = V(3.9, -1.35, ZS), OUT = V(4.9, 0.3, ZS);
@@ -13284,7 +13285,7 @@
   // Textbook overview: the model has no ER or Golgi nodes, so nothing here is simulated or worm-specific.
   function buildSecretory(ctx) {
     ctx.custom = true;
-    ctx.hw = 6.0; ctx.hh = 3.15; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 30;
+    ctx.hw = 6.0; ctx.hh = 3.15; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 45;
     ctx.home = { yaw: 0, pitch: 0.12, target: V(0, 0.15, 0.3), dist: 12 };
     const s = ctx.s, r = rng(83), ZC = 0.3, ZI = 0.55;
     const er = { t: "comp", id: "rough_er" }, cyt = { t: "comp", id: "cytosol" }, pmC = { t: "comp", id: "plasma_membrane" }, lyC = { t: "comp", id: "lysosomes" };
@@ -13767,7 +13768,7 @@
   // ---------------------------------------------------------------- interiors: the mitochondrion
   BUILD.mitochondria = function (ctx) {
     ctx.custom = true; ctx.mito = true;
-    ctx.hw = 5.6; ctx.hh = 2.6; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 30;
+    ctx.hw = 5.6; ctx.hh = 2.6; ctx.depthPad = 0.6; ctx.labelPad = 40; ctx.maxDist = 45;
     ctx.home = { yaw: 0, pitch: 0.17, target: V(0, -0.25, 0.3), dist: 12 };
     const s = ctx.s;
     const XW = 5.4, Z0 = -1.6, ZC = 0.45, ZP = 1.0;
@@ -14845,7 +14846,7 @@
     if (!inside) { el.innerHTML = ""; return; }
     const c = COMP[inside.id];
     let h = '<p class="title">You are inside</p><h2 style="font-size:1rem;margin:0 0 8px">' + esc(c ? c.label : inside.id) + "</h2>" +
-      '<div class="row"><button class="b" data-exit="1">← Whole cell</button><button class="b" data-ihome="1">Reset view</button><button class="b" data-ioverview="1">Overview</button></div>';
+      '<div class="row"><button class="b" data-exit="1">← Whole cell</button><button class="b" data-ihome="1">Reset view</button><button class="b" data-ioverview="1" title="Leave the guided step and show the whole interior, everything at once">Overview</button></div>';
     if (inside.mito) {
       h += '<p class="title" style="margin-top:14px">Animate</p><div class="row"><button class="b primary" data-mtour="proton_gradient">▶ Guided tour</button><button class="b" data-mflow="1">Continuous flow</button></div>' +
         '<p class="title" style="margin-top:14px">Parts</p><div>' + (ATLAS.complexes || []).map((x) => ipChip({ t: "cx", id: x.id }, x.label.replace(/\s*\(.*\)$/, ""))).join("") +
@@ -14876,7 +14877,15 @@
     }
     if ((el = q("data-enter"))) { enterInterior(el.getAttribute("data-enter")); return true; }
     if (q("data-exit")) { exitInterior(); return true; }
-    if (q("data-ioverview")) { showInteriorOverview(); return true; }
+    if (q("data-ioverview")) {
+      if (inside) {
+        userZoomed = false;
+        if (inside.api) inside.api.setFlow();
+        camGoal.yaw = inside.home.yaw; camGoal.pitch = inside.home.pitch; camGoal.target.copy(inside.home.target); camGoal.dist = inside.home.dist;
+      }
+      showInteriorOverview();
+      return true;
+    }
     if (q("data-ihome")) {
       if (inside) { userZoomed = false; camGoal.yaw = inside.home.yaw; camGoal.pitch = inside.home.pitch; camGoal.target.copy(inside.home.target); camGoal.dist = inside.home.dist; }
       return true;
@@ -15279,11 +15288,20 @@
     const ids = [...new Set([t.input, ...route.map((e) => e.source), ...route.map((e) => e.target), ...(t.route_nodes || [])])];
     const cols = {}; ids.forEach((id) => { const d = depth[id] || 0; (cols[d] = cols[d] || []).push(id); });
     const maxD = Math.max(1, ...Object.keys(cols).map(Number)), maxRows = Math.max(...Object.values(cols).map((c) => c.length));
-    const NW = 112, NH = 30, W = Math.max(560, 24 + (maxD + 1) * NW + maxD * 60), H = Math.max(96, 36 + maxRows * 46), pos = {};
+    const NW = 112, NH = 40, W = Math.max(560, 24 + (maxD + 1) * NW + maxD * 60), H = Math.max(96, 36 + maxRows * 46), pos = {};
     Object.keys(cols).forEach((d) => cols[d].forEach((id, r) => {
       pos[id] = { x: 12 + NW / 2 + Number(d) * (W - 24 - NW) / maxD, y: H / 2 + (r - (cols[d].length - 1) / 2) * 46 };
     }));
     return { W, H, NW, NH, ids, pos };
+  }
+  function tour2dWrap(lab, max = 15, rows = 3) {
+    const cut = (x) => (x.length > max ? x.slice(0, max - 1) + "…" : x), lines = [];
+    lab.replace(/-/g, "- ").split(/\s+/).filter(Boolean).forEach((w) => {
+      const cur = lines[lines.length - 1], next = cur === undefined ? null : cur + (cur.endsWith("-") ? "" : " ") + w;
+      if (next !== null && next.length <= max) lines[lines.length - 1] = next; else lines.push(w);
+    });
+    if (lines.length > rows) lines.splice(rows - 1, lines.length, lines.slice(rows - 1).reduce((a, b) => a + (a.endsWith("-") ? "" : " ") + b) + "…");
+    return lines.length ? lines.map(cut) : [""];
   }
   function tour2dRender() {
     const c = tourCur, box = tourEl("tp-2d");
@@ -15305,9 +15323,10 @@
     });
     L.ids.forEach((id) => {
       const p = L.pos[id], sg = tourSign(h.activities[id] || 0), lab = tourLabel(t, id);
-      const short = lab.length > 15 ? lab.slice(0, 14) + "…" : lab;
+      const lines = tour2dWrap(lab), fs = [12, 11, 10][lines.length - 1], y0 = L.NH / 2 - (lines.length - 1) * (fs + 1) / 2 + fs * 0.35;
       s += '<g class="n' + (id === t.input ? " seed" : "") + (hl.has(id) ? " hl" : "") + (sg > 0 ? " up" : sg < 0 ? " down" : "") + '" data-id="' + esc(id) + '" transform="translate(' + (p.x - L.NW / 2) + "," + (p.y - L.NH / 2) + ')"><title>' + esc(lab) + (id === t.input ? " (tour input)" : "") + "</title>" +
-        '<rect width="' + L.NW + '" height="' + L.NH + '" rx="8"' + (hl.has(id) ? ' style="stroke:' + col + '"' : "") + '/><text x="8" y="19">' + esc(short) + '</text><text class="sg" x="' + (L.NW - 14) + '" y="19">' + (sg > 0 ? "↑" : sg < 0 ? "↓" : "") + "</text></g>";
+        '<rect width="' + L.NW + '" height="' + L.NH + '" rx="8"' + (hl.has(id) ? ' style="stroke:' + col + '"' : "") + '/><text class="lab" x="8" y="' + y0.toFixed(1) + '" style="font-size:' + fs + 'px">' +
+        lines.map((ln, k) => '<tspan x="8"' + (k ? ' dy="' + (fs + 1) + '"' : "") + ">" + esc(ln) + "</tspan>").join("") + '</text><text class="sg" x="' + (L.NW - 14) + '" y="' + (L.NH / 2 + 4) + '">' + (sg > 0 ? "↑" : sg < 0 ? "↓" : "") + "</text></g>";
     });
     const svg = tourEl("tp-svg");
     const curE = line.kind === "route" ? (t.route || []).find((e) => e.edge_id === line.edge_id) : null;
@@ -15370,6 +15389,7 @@
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
   window.__viewState = () => ({ cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: +camGoal.dist.toFixed(3), target: camGoal.target.toArray().map((v) => +v.toFixed(3)) },
     userZoomed, focus: focusPw, visible: Object.keys(pwVisible).filter((k) => pwVisible[k]).sort() });
+  window.__interiorLabels = () => inside ? { edges: panelEdges(), w: window.innerWidth, labels: inside.labels.map((l) => { const p = proj(l.pos); return { text: l.text, x: Math.round(p.x), y: Math.round(p.y), ok: p.ok }; }) } : null;
   window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
 
   // ---------------------------------------------------------------- loop
@@ -15389,13 +15409,14 @@
       captionEl.style.left = (L + (w - L - R) / 2) + "px";
       captionEl.style.width = Math.max(360, Math.min(780, w - L - R - 24)) + "px";
     }
-    const capH = capOn ? captionEl.offsetHeight + 24 : 0;
+    const capH = capOn && !document.body.classList.contains("cramped") ? captionEl.offsetHeight + 24 : 0;
     lastCapH = capH;
     camera.setViewOffset(w, h, (R - L) / 2, capH / 2, w, h);
     camera.updateProjectionMatrix();
     if (inside) {
+      const oldHome = inside.home.dist;
       inside.home.dist = interiorFit(inside, capH);
-      if (!userZoomed) camGoal.dist = inside.home.dist;
+      if (!userZoomed) camGoal.dist = oldHome > 0 ? camGoal.dist * inside.home.dist / oldHome : inside.home.dist;
     } else {
       HOME.dist = fitDist();
       if (!userZoomed) camGoal.dist = HOME.dist;
