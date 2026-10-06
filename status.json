@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T18:00:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-06T18:05:03+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "qa-slice2g: QA 12 close, QA 11 edges inside membrane (A1)",
-                                  "status":  "running",
-                                  "step":  5,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  81.7,
-                                  "step_title":  "Headless check and pytest",
+                                  "percent":  100,
+                                  "step_title":  "Finish entry",
                                   "steps":  [
                                                 "Start entry",
                                                 "Close QA 12 in FREMDRIFT",
@@ -18,9 +18,9 @@
                                                 "Headless check and pytest",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  25,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T17:58:28+02:00",
+                                  "updated":  "2026-10-06T18:01:01+02:00",
                                   "last_run":  "2026-10-06T17:54:28+02:00",
                                   "next_run":  "2026-10-06T18:15:00+02:00"
                               },
@@ -55,6 +55,11 @@
     "recent":  [
                    {
                        "agent":  "cursor",
+                       "task":  "qa-slice2g: QA 12 close, QA 11 edges inside membrane (A1)",
+                       "finished":  "2026-10-06T18:01:01+02:00"
+                   },
+                   {
+                       "agent":  "cursor",
                        "task":  "QA 10 close, FREMDRIFT text, QA 12 narrow layout",
                        "finished":  "2026-10-06T17:30:04+02:00"
                    },
@@ -77,11 +82,6 @@
                        "agent":  "cursor",
                        "task":  "Queue consensus reply (D5) and QA item 10",
                        "finished":  "2026-10-06T15:10:25+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Queue order recommendation after QA 10-15 and A1",
-                       "finished":  "2026-10-06T14:54:32+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
