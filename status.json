@@ -1,26 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T20:55:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-06T21:01:14+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "QA16 behavioral coverage (Codex 20:25)",
-                                  "status":  "done",
-                                  "step":  5,
+                                  "task":  "QA 15: mobile landscape pathway panel",
+                                  "status":  "running",
+                                  "step":  2,
                                   "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Pytest and finish entry",
+                                  "percent":  38,
+                                  "step_title":  "Locate panel CSS/JS",
                                   "steps":  [
-                                                "Start entry",
-                                                "Read QA16 code and existing test",
-                                                "Behavioral controller test",
-                                                "Browser tier-transition run",
-                                                "Pytest and finish entry"
+                                                "Close QA16 in log",
+                                                "Locate panel CSS/JS",
+                                                "Compact panel on short/narrow screens",
+                                                "Headless check 844x390 and 390x844",
+                                                "Tests and log"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  8,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T20:31:40+02:00",
-                                  "last_run":  "2026-10-06T20:41:37+02:00",
+                                  "updated":  "2026-10-06T20:56:05+02:00",
+                                  "last_run":  "2026-10-06T20:55:09+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
@@ -47,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  23,
+    "today_runs":  24,
     "queue":  [
 
               ],
