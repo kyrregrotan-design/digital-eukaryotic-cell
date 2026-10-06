@@ -242,7 +242,7 @@
   <div class="section toggles outer-only">
     <p class="title">View</p>
     <label><input type="checkbox" id="t-labels" checked /> Organelle names</label>
-    <label><input type="checkbox" id="t-genes" /> All gene names</label>
+    <label title="Where names would overlap, the nearest one is shown and a +N badge counts the hidden ones; hover a gene or zoom in to read them. Farther names are drawn fainter."><input type="checkbox" id="t-genes" /> All gene names</label>
     <label><input type="checkbox" id="t-flow" checked /> Ambient signal flow</label>
     <label><input type="checkbox" id="t-motion" checked /> Illustrative motion</label>
     <div class="note" id="motion-note">Illustration, not simulation. Vesicles bud from the ER and travel to the Golgi (COPII; generic overview source: Reactome R-CEL-203973, computationally inferred from human, not worm or adult-intestinal evidence). From the trans-Golgi, green vesicles go to the plasma membrane and purple ones towards lysosomes, and an autophagosome fuses with a lysosome to form an autolysosome (textbook overview; source [REF NEEDED]). Paths, vesicle numbers and timing are arbitrary display choices, not measured speeds or rates. The plasma-membrane arrival points do not show apical or basolateral sorting: the model has no sourced sorting data.</div>
@@ -11967,22 +11967,74 @@
         });
       });
     }
-    const placed = [];
+    const camD = camera.position.distanceTo(cam.target), cands = [];
     MODEL.nodes.forEach((n) => {
       if (!nodeVisible(n.id)) return;
       const st = nodeState[n.id];
-      const want = showGenes || st || (focusPw && !nodeObj[n.id].dim) || (hover && hover.node === n.id) || (selected && selected.node === n.id);
+      const sel = !!(selected && selected.node === n.id), hov = !!(hover && hover.node === n.id);
+      const want = showGenes || st || (focusPw && !nodeObj[n.id].dim) || hov || sel;
       if (!want) return;
       const p = proj(nodePos[n.id]);
       if (!p.ok) return;
       const mark = st ? (st.s > 0 ? " ↑" : st.s < 0 ? " ↓" : " ?") : "";
-      const text = n.label.length > 26 ? n.label.slice(0, 24) + "…" : n.label;
-      const y = p.y - 18;
-      if (placed.some((q) => Math.abs(q.y - y) < 18 && Math.abs(q.x - p.x) < 90) && !(selected && selected.node === n.id)) return;
-      const box = pill(text + mark, p.x, y, selected && selected.node === n.id, nodeColor(n), "center");
-      placed.push({ x: p.x, y });
-      labelBoxes.push(Object.assign(box, { node: n.id }));
+      const text = (n.label.length > 26 ? n.label.slice(0, 24) + "…" : n.label) + mark;
+      const depth = (camera.position.distanceTo(nodePos[n.id]) - camD) / nodeSpread();
+      const rank = sel ? 0 : hov ? 1 : st ? 2 : (focusPw && !nodeObj[n.id].dim) ? 3 : 4;
+      const w = pillWidth(text, sel);
+      cands.push({ n, text, sel, rank, depth, x: p.x - w / 2, y: p.y - 28, w, h: 20, cx: p.x, cy: p.y - 18, hidden: [] });
     });
+    cands.sort((a, b) => a.rank - b.rank || a.depth - b.depth);
+    // a badge's width grows with its hidden count during placement, so every label reserves room for the widest possible badge
+    octx.font = "600 10px " + getComputedStyle(document.body).fontFamily;
+    const badgeMaxW = octx.measureText("+" + "8".repeat(String(Math.max(1, cands.length - 1)).length)).width + 10;
+    cands.forEach((c) => { c.fx = c.x; c.fy = c.y - 6; c.fw = c.w + badgeMaxW / 2; c.fh = c.h + 6; });
+    const placed = [], dropped = [];
+    cands.forEach((c) => {
+      const hit = c.sel ? null : placed.find((q) => c.fx < q.fx + q.fw + 4 && q.fx < c.fx + c.fw + 4 && c.fy < q.fy + q.fh + 2 && q.fy < c.fy + c.fh + 2);
+      if (hit) { hit.hidden.push(c.n.id); dropped.push(c.n.id); return; }
+      placed.push(c);
+    });
+    for (let i = placed.length - 1; i >= 0; i--) {
+      const c = placed[i];
+      octx.globalAlpha = c.rank <= 2 ? 1 : Math.max(0.45, Math.min(1, 0.8 - 0.3 * c.depth));
+      const box = pill(c.text, c.cx, c.cy, c.sel, nodeColor(c.n), "center");
+      c.badge = null;
+      if (c.hidden.length) {
+        const t = "+" + c.hidden.length;
+        octx.font = "600 10px " + getComputedStyle(document.body).fontFamily;
+        const bw = octx.measureText(t).width + 10, bx = box.x + box.w - bw / 2, by = box.y - 6;
+        octx.fillStyle = "rgba(10,14,20,0.92)"; octx.strokeStyle = "rgba(235,242,246,0.5)";
+        octx.beginPath();
+        if (octx.roundRect) octx.roundRect(bx, by, bw, 13, 6.5); else octx.rect(bx, by, bw, 13);
+        octx.fill(); octx.stroke();
+        octx.fillStyle = "rgba(238,243,247,0.9)";
+        octx.fillText(t, bx + 5, by + 10);
+        c.badge = { x: bx, y: by, w: bw, h: 13 };
+      }
+      octx.globalAlpha = 1;
+      const b = c.badge;
+      c.box = b ? { x: box.x, y: b.y, w: Math.max(box.x + box.w, b.x + b.w) - box.x, h: box.y + box.h - b.y, node: c.n.id } : Object.assign(box, { node: c.n.id });
+    }
+    // gene pills are painted over compartment pills, so they come first in the hit list
+    labelBoxes = placed.map((c) => c.box).concat(labelBoxes);
+    const r = Math.round;
+    geneLabelState = { shown: placed.map((c) => ({ id: c.n.id, x0: r(c.x), x1: r(c.x + c.w), y0: r(c.y), y1: r(c.y + c.h),
+      fx0: r(c.fx), fx1: r(c.fx + c.fw), fy0: r(c.fy), fy1: r(c.fy + c.fh),
+      hit: { x0: r(c.box.x), x1: r(c.box.x + c.box.w), y0: r(c.box.y), y1: r(c.box.y + c.box.h) },
+      badge: c.badge ? { x0: r(c.badge.x), x1: r(c.badge.x + c.badge.w), y0: r(c.badge.y), y1: r(c.badge.y + c.badge.h) } : null,
+      rank: c.rank, depth: +c.depth.toFixed(3), alpha: c.rank <= 2 ? 1 : +Math.max(0.45, Math.min(1, 0.8 - 0.3 * c.depth)).toFixed(3), hidden: c.hidden.slice() })),
+      dropped, ranks: Object.fromEntries(cands.map((c) => [c.n.id, c.rank])), at: Object.fromEntries(cands.map((c) => [c.n.id, [r(c.cx), r(c.cy + 18)]])), badgeMaxW: r(badgeMaxW) };
+  }
+  let geneLabelState = { shown: [], dropped: [] }, nodeSpreadR = 0;
+  function nodeSpread() {
+    if (!nodeSpreadR) {
+      const ids = Object.keys(nodePos), c = new THREE.Vector3();
+      ids.forEach((id) => c.add(nodePos[id]));
+      c.divideScalar(Math.max(1, ids.length));
+      ids.forEach((id) => { nodeSpreadR = Math.max(nodeSpreadR, nodePos[id].distanceTo(c)); });
+      nodeSpreadR = nodeSpreadR || 1;
+    }
+    return nodeSpreadR;
   }
 
   // ---------------------------------------------------------------- highlight + animation
@@ -15387,6 +15439,7 @@
   window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
   window.__insideId = () => (inside ? inside.id : null);
   window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
+  window.__geneLabels = () => JSON.parse(JSON.stringify(geneLabelState));
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
   window.__viewState = () => ({ cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: +camGoal.dist.toFixed(3), target: camGoal.target.toArray().map((v) => +v.toFixed(3)) },
     userZoomed, focus: focusPw, visible: Object.keys(pwVisible).filter((k) => pwVisible[k]).sort() });
