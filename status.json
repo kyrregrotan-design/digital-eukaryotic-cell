@@ -1,26 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T07:35:03+02:00",
+    "generated_at":  "2026-10-06T07:40:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Viewer QA slice 1 (items 1-7) + opinions A-J",
-                                  "status":  "running",
-                                  "step":  5,
+                                  "task":  "Viewer QA slice 1 (items 1-7) + opinions A-L",
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  75.5,
-                                  "step_title":  "Tests and browser check",
+                                  "percent":  100,
+                                  "step_title":  "Opinions A-L and finish log",
                                   "steps":  [
                                                 "Read QA list",
                                                 "Learner-facing text (item 1)",
                                                 "Ctrl+K and redirects (items 4, 7)",
                                                 "Pressed feedback (item 3)",
                                                 "Tests and browser check",
-                                                "Opinions A-J and finish log"
+                                                "Opinions A-L and finish log"
                                             ],
-                                  "eta_seconds":  137,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-06T07:34:13+02:00",
+                                  "updated":  "2026-10-06T07:39:47+02:00",
                                   "last_run":  "2026-10-06T07:28:00+02:00",
                                   "next_run":  "2026-10-06T08:15:00+02:00"
                               },
@@ -55,6 +55,11 @@
     "recent":  [
                    {
                        "agent":  "cursor",
+                       "task":  "Viewer QA slice 1 (items 1-7) + opinions A-L",
+                       "finished":  "2026-10-06T07:39:47+02:00"
+                   },
+                   {
+                       "agent":  "cursor",
                        "task":  "Tour Sources card foreground fix",
                        "finished":  "2026-10-05T22:18:56+02:00"
                    },
@@ -77,11 +82,6 @@
                        "agent":  "cursor",
                        "task":  "Tours 2D teaching view, slice 1 (SVG route diagram)",
                        "finished":  "2026-10-05T20:31:33+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Aging card layout acceptance",
-                       "finished":  "2026-10-05T19:46:46+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
