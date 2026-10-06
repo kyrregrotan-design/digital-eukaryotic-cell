@@ -11371,8 +11371,10 @@
     if (nc === qc) return 95;
     if (n.startsWith(q) || nc.startsWith(qc)) return 85;
     const words = n.split(" ");
+    if ((" " + n + " ").includes(" " + q + " ")) return 80;
     if (words.some((w) => w.startsWith(q))) return 70;
-    if (q.length >= 3 && n.includes(q)) return 55;
+    // Mid-word matches need four letters, so a short symbol such as "TOR" does not hit "factor" or "storage".
+    if (q.length >= 4 && n.includes(q)) return 45;
     if (qc.length < 4) return 0;
     const max = qc.length >= 8 ? 2 : 1;
     let d = Math.min(srchDist(qc, nc, max), srchDist(qc, nc.slice(0, qc.length), max));
@@ -11419,6 +11421,7 @@
         n++;
       });
     });
+    if (hits.length < 3) out += '<div class="srch-none">Only ' + (hits.length === 1 ? "one item" : "two items") + " in the model so far. Coverage is still partial: not every gene or step is indexed yet.</div>";
     return out;
   }
   const SEARCH_KIND = { protein: "protein", complex: "complex", carrier: "carrier", atlas_process: "process", atlas_compartment: "compartment" };
@@ -11459,8 +11462,15 @@
   (function searchControls() {
     const box = document.getElementById("search-in"), out = document.getElementById("search-out");
     const render = () => { out.innerHTML = srchNorm(box.value).length < 2 ? "" : searchResultsHtml(searchRun(box.value)); };
-    const pick = (b) => { if (b) searchGo(SEARCH[Number(b.getAttribute("data-srch"))]); };
+    const pick = (b) => {
+      if (!b) return;
+      const e = SEARCH[Number(b.getAttribute("data-srch"))];
+      out.innerHTML = "";
+      box.blur();
+      searchGo(e);
+    };
     box.addEventListener("input", render);
+    box.addEventListener("focus", render);
     box.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") { box.value = ""; render(); box.blur(); }
       else if (ev.key === "Enter") { ev.preventDefault(); pick(out.querySelector("[data-srch]")); }

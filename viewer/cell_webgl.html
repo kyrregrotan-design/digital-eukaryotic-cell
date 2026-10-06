@@ -14931,8 +14931,10 @@
     if (nc === qc) return 95;
     if (n.startsWith(q) || nc.startsWith(qc)) return 85;
     const words = n.split(" ");
+    if ((" " + n + " ").includes(" " + q + " ")) return 80;
     if (words.some((w) => w.startsWith(q))) return 70;
-    if (q.length >= 3 && n.includes(q)) return 55;
+    // Mid-word matches need four letters, so a short symbol such as "TOR" does not hit "factor" or "storage".
+    if (q.length >= 4 && n.includes(q)) return 45;
     if (qc.length < 4) return 0;
     const max = qc.length >= 8 ? 2 : 1;
     let d = Math.min(srchDist(qc, nc, max), srchDist(qc, nc.slice(0, qc.length), max));
@@ -14979,6 +14981,7 @@
         n++;
       });
     });
+    if (hits.length < 3) out += '<div class="srch-none">Only ' + (hits.length === 1 ? "one item" : "two items") + " in the model so far. Coverage is still partial: not every gene or step is indexed yet.</div>";
     return out;
   }
   const ATLAS_INTERIOR = {
@@ -15014,8 +15017,15 @@
   (function searchControls() {
     const box = document.getElementById("search-in"), out = document.getElementById("search-out");
     const render = () => { out.innerHTML = srchNorm(box.value).length < 2 ? "" : searchResultsHtml(searchRun(box.value)); };
-    const pick = (b) => { if (b) searchGo(SEARCH[Number(b.getAttribute("data-srch"))]); };
+    const pick = (b) => {
+      if (!b) return;
+      const e = SEARCH[Number(b.getAttribute("data-srch"))];
+      out.innerHTML = "";
+      box.blur();
+      searchGo(e);
+    };
     box.addEventListener("input", render);
+    box.addEventListener("focus", render);
     box.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") { ev.stopPropagation(); box.value = ""; render(); box.blur(); }
       else if (ev.key === "Enter") { ev.preventDefault(); pick(out.querySelector("[data-srch]")); }
@@ -15128,7 +15138,8 @@
     if (!t) return;
     if (tourCur) tourClose();
     resetCascade();
-    tourCur = { t, i: 0, playing: false, tok: 0, timers: [], hl: new Set(), prevFocus: focusPw, rate: Number(tourEl("tp-rate").value) || 1 };
+    tourCur = { t, i: 0, playing: false, tok: 0, timers: [], hl: new Set(), prevFocus: focusPw, rate: Number(tourEl("tp-rate").value) || 1,
+      prevVisible: { ...pwVisible }, prevCam: { yaw: camGoal.yaw, pitch: camGoal.pitch, dist: camGoal.dist, target: camGoal.target.clone(), userZoomed } };
     focusPw = t.pathway_id; pwVisible[t.pathway_id] = true;
     renderPwList(); refreshPathwayStyles();
     document.body.classList.add("touring");
@@ -15139,12 +15150,15 @@
   function tourClose(keepDetail) {
     if (!tourCur) return;
     tourCancelSpeech();
-    const prev = tourCur.prevFocus;
+    const prev = tourCur.prevFocus, vis = tourCur.prevVisible, pc = tourCur.prevCam;
     tourCur = null;
     document.getElementById("right").classList.remove("tour-source-front");
     document.body.classList.remove("touring");
     Object.keys(nodeState).forEach((k) => delete nodeState[k]);
+    Object.keys(pwVisible).forEach((k) => { pwVisible[k] = !!vis[k]; });
     focusPw = prev; renderPwList(); refreshPathwayStyles();
+    camGoal.yaw = pc.yaw; camGoal.pitch = pc.pitch; camGoal.dist = pc.dist; camGoal.target.copy(pc.target);
+    userZoomed = pc.userZoomed;
     document.getElementById("status-pill").textContent = "qualitative signal flow · idle";
     if (!keepDetail) showOverview();
   }
@@ -15343,8 +15357,7 @@
   tourEl("tp-close").onclick = () => tourClose();
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || !tourCur || inside) return;
-    if (document.getElementById("right").classList.contains("tour-source-front")) setPanel("right", false);
-    else tourClose();
+    tourClose();
   });
   document.addEventListener("visibilitychange", () => { if (document.hidden && tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); } });
   window.addEventListener("pagehide", () => {
@@ -15355,6 +15368,8 @@
   window.__insideId = () => (inside ? inside.id : null);
   window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
+  window.__viewState = () => ({ cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: +camGoal.dist.toFixed(3), target: camGoal.target.toArray().map((v) => +v.toFixed(3)) },
+    userZoomed, focus: focusPw, visible: Object.keys(pwVisible).filter((k) => pwVisible[k]).sort() });
   window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
 
   // ---------------------------------------------------------------- loop
