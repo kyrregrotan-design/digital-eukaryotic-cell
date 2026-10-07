@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T16:30:06+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T16:35:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 preview: Golgi triangle spacing",
@@ -25,18 +25,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review preview organelle spacing",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Review Golgi triangle spacing fix",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  60.4,
+                                 "step_title":  "Check live and saved reports",
                                  "steps":  [
-
+                                               "Read decisions and review scope",
+                                               "Verify geometry distance and culling",
+                                               "Check live and saved reports",
+                                               "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  530,
+                                 "eta_seconds":  203,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T16:20:01+02:00",
+                                 "updated":  "2026-10-07T16:34:10+02:00",
                                  "last_run":  "2026-10-07T16:29:54+02:00",
                                  "next_run":  null
                              }
@@ -45,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  24,
+    "today_runs":  25,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
