@@ -10583,12 +10583,43 @@
     for (let i = 0; i < 3; i++) m = Math.min(m, segTri(x.t[i], x.t[(i + 1) % 3], false, y.t), segTri(y.t[i], y.t[(i + 1) % 3], false, x.t));
     return m;
   }
-  const RAY = V(0.8017, 0.4236, 0.4216).normalize();
-  function inSolid(p, s) {
-    if (p.distanceTo(s.c) > s.R) return false;
+  // Point-in-solid ray directions, tried in order until one gives an unambiguous crossing count.
+  const RAYS = [[0.8017, 0.4236, 0.4216], [1, 0.371, 0.211], [0.319, 1, 0.273], [0.271, 0.347, 1], [-0.613, 0.557, 0.561],
+    [0.433, -0.719, 0.543], [-0.38, -0.47, -0.796]].map((d) => V(d[0], d[1], d[2]).normalize());
+  const RAY_EPS = 1e-7, _nv = new THREE.Vector3(), _re = new THREE.Vector3();
+  // Crossings of the ray o + s*dir (0 < s <= len) with tris, or -1 if the ray hits within RAY_EPS (barycentric) of a
+  // triangle edge or vertex, grazes a face plane, or starts on the surface: a shared edge or vertex would then be
+  // counted twice or not at all.
+  function rayCount(o, dir, tris, len) {
     let n = 0;
-    for (const t of s.tris) { const h = rayTri(p, RAY, t); if (h !== null && h > 1e-12) n++; }
-    return n % 2 === 1;
+    for (const t of tris) {
+      _e1.subVectors(t[1], t[0]); _e2.subVectors(t[2], t[0]); _pv.crossVectors(dir, _e2);
+      const det = _e1.dot(_pv);
+      if (Math.abs(det) <= RAY_EPS * _nv.crossVectors(_e1, _e2).length()) {
+        if (segTri(o, _re.copy(dir).multiplyScalar(len).add(o), false, t) <= RAY_EPS * len) return -1;
+        continue;
+      }
+      _tv.subVectors(o, t[0]); const u = _tv.dot(_pv) / det; if (u < -RAY_EPS || u > 1 + RAY_EPS) continue;
+      _qv.crossVectors(_tv, _e1); const v = dir.dot(_qv) / det; if (v < -RAY_EPS || u + v > 1 + RAY_EPS) continue;
+      const s = _e2.dot(_qv) / det;
+      if (s < -RAY_EPS * len) continue;
+      if (s <= RAY_EPS * len || u < RAY_EPS || v < RAY_EPS || u + v > 1 - RAY_EPS) return -1;
+      n++;
+    }
+    return n;
+  }
+  const SOLID_RAYS = { calls: 0, retries: 0, unresolved: 0 };
+  function inSolid(p, s, info) {
+    if (p.distanceTo(s.c) > s.R) return false;
+    SOLID_RAYS.calls++;
+    for (let i = 0; i < RAYS.length; i++) {
+      const n = rayCount(p, RAYS[i], s.tris, 2 * s.R);
+      if (n >= 0) { if (info) Object.assign(info, { ray: i, crossings: n }); return n % 2 === 1; }
+      SOLID_RAYS.retries++;
+    }
+    SOLID_RAYS.unresolved++;
+    if (info) Object.assign(info, { ray: null, crossings: null });
+    return false;
   }
   const _sc = [0, 1, 2, 3, 4, 5].map(() => new THREE.Vector3());
   // Item x of a shape centred at offset d, moved into the other shape's frame (scratch vectors, valid until the next call).
@@ -10902,7 +10933,7 @@
   // ---------------------------------------------------------------- compartment anchors (labels)
   const ANCHOR = {
     plasma_membrane: rimPts[Math.floor(rimPts.length * 0.62)].clone(),
-    apical_microvilli: V(0.6, AX.y + 0.2, -0.6),
+    apical_microvilli: BODY_SHAPE1 ? (() => { const ap = SHAPE.apical(0.6, -0.6); return V(0.6, ap.y, -0.6).addScaledVector(ap.n, 0.2); })() : V(0.6, AX.y + 0.2, -0.6),
     cytosol: V(0.75, -0.55, 0.15),
     cytoskeleton: CYTOSK.clone(),
     nucleus: NC.clone().add(V(-0.2, 0.25, 0.2)),
@@ -11082,7 +11113,57 @@
     ANAT_POS.gut_granules = gr.length ? gr[0].p.clone() : V(0, 0, 0);
     ANAT_INFO.gut_granules = { count: gr.length, granules: gr.map((g) => ({ p: g.p.toArray().map((x) => +x.toFixed(3)), r: +g.r.toFixed(3) })), routePts: routePts.length };
   }
-  if (ANAT.ceaj) {
+  // a2-shape-1 preview: the CeAJ is a closed belt just below the apical rim of SHAPE (two long partner edges and the
+  // two rounded A-P end arcs), and the terminal web and endotube are sheets under the groove whose edges end in that
+  // belt. Depths, the belt height and the neighbour face are display choices, not measurements.
+  const SD = SHAPE.dims, CJ_D = 0.115, CJ_C = 0.985;
+  // Profile stations pole to pole as [x, k, sin t]; sin t is 0 on the straight middle and 1 at the poles.
+  const shapeStations = (nMid, nEnd) => {
+    const st = [], M = SD.L - SD.ER;
+    for (let i = nEnd; i >= 1; i--) { const t = i / nEnd * Math.PI / 2; st.push([-(M + SD.ER * Math.sin(t)), i === nEnd ? 0 : Math.cos(t), Math.sin(t)]); }
+    for (let i = 0; i <= nMid; i++) st.push([-M + 2 * M * i / nMid, 1, 0]);
+    for (let i = 1; i <= nEnd; i++) { const t = i / nEnd * Math.PI / 2; st.push([M + SD.ER * Math.sin(t), i === nEnd ? 0 : Math.cos(t), Math.sin(t)]); }
+    st[0][0] = -SD.L; st[st.length - 1][0] = SD.L;
+    return st;
+  };
+  // Point under the apical groove at lateral fraction s (-1..1), d0*k below the surface; the depth blends to the belt
+  // depth towards s = +-1, so every sheet edge lies on the belt centreline.
+  const subAp = (x, k, s, d0) => { const d = d0 + (CJ_D - d0) * s ** 8; return V(x, k * (SD.HA - SD.G * (1 - s * s) - d), SD.W * k * s * CJ_C); };
+  const CJ_ST = shapeStations(60, 16);
+  const BELT = BODY_SHAPE1 ? (() => {
+    const pts = CJ_ST.map(([x, k]) => subAp(x, k, 1, CJ_D));
+    for (let i = CJ_ST.length - 2; i >= 1; i--) pts.push(subAp(CJ_ST[i][0], CJ_ST[i][1], -1, CJ_D));
+    return pts;
+  })() : null;
+  if (ANAT.ceaj && BODY_SHAPE1) {
+    // Faint neighbouring-cell membrane over the +x rounded end, below the belt (wall, basal arc, wall), offset outward.
+    const rows = CJ_ST.filter(([x]) => x >= SD.L - SD.ER - 1e-9), WALL = 4, ARC = 24, pos = [], idx = [];
+    rows.forEach(([x, k, sx]) => {
+      const yT = k * (SD.HA - CJ_D), ring = [];
+      for (let j = 0; j <= WALL; j++) ring.push(V(x, yT * (1 - j / WALL), SD.W * k));
+      for (let j = 1; j < ARC; j++) { const a = Math.PI * j / ARC; ring.push(V(x, -SD.HB * k * Math.sin(a), SD.W * k * Math.cos(a))); }
+      for (let j = 0; j <= WALL; j++) ring.push(V(x, yT * j / WALL, -SD.W * k));
+      ring.forEach((p) => {
+        const yz = V(0, p.y, p.z); if (yz.lengthSq() > 0) yz.normalize();
+        p.addScaledVector(V(sx, yz.y * Math.sqrt(1 - sx * sx), yz.z * Math.sqrt(1 - sx * sx)).normalize(), 0.035);
+        pos.push(p.x, p.y, p.z);
+      });
+    });
+    const m = 2 * WALL + ARC + 1;
+    for (let i = 0; i < rows.length - 1; i++) for (let j = 0; j < m - 1; j++) { const a = i * m + j, b = a + 1, c = a + m, d = c + 1; idx.push(a, c, b, b, c, d); }
+    const ng = new THREE.BufferGeometry(); ng.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); ng.setIndex(idx); ng.computeVertexNormals();
+    anatAdd(new THREE.Mesh(ng, anatMat("ceaj", { color: 0xc9b2a0, roughness: 0.7, transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x000000) })), "ceaj");
+    anatAdd(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(BELT, true), 480, 0.035, 10, true), anatMat("ceaj", { color: 0x2fbf9a, roughness: 0.35, clearcoat: 0.6, emissive: new THREE.Color(0x0a3a2c), emissiveIntensity: 0.6, clippingPlanes: [cut] })), "ceaj");
+    const keptBelt = BELT.filter((p) => kept(p, 0.02));
+    // Label point: the top of the kept -z partner edge where it turns into the +x end arc.
+    const corner = keptBelt.filter((p) => p.z < 0 && p.x >= SD.L - SD.ER - 1e-9).sort((a, b) => b.y - a.y)[0];
+    ANAT_POS.ceaj = (corner || keptBelt[Math.floor(keptBelt.length / 2)] || BELT[0]).clone();
+    let step = 0, outside = 0, maxDist = -Infinity;
+    BELT.forEach((p, i) => { step = Math.max(step, p.distanceTo(BELT[(i + 1) % BELT.length])); if (!SHAPE.insideStrict(p)) outside++; maxDist = Math.max(maxDist, SHAPE.dist(p)); });
+    ANAT_INFO.ceaj = { body: "shape1", beltClosed: true, beltPoints: BELT.length, beltPointsKept: keptBelt.length, beltDepthK: CJ_D,
+      beltMaxStep: +step.toFixed(4), beltNotStrictlyInside: outside, beltMaxSignedDist: +maxDist.toFixed(4), contactFace: "+x rounded end, below the belt",
+      contactFaceRows: rows.length };
+  } else if (ANAT.ceaj) {
     // A lateral contact face with a neighbouring intestinal cell on the +x side; the CeAJ band runs along its apical edge.
     const PH = 0.62, TH0 = APICAL_TH + 0.03, TH1 = Math.acos(-0.55);
     const W = 40, Hs = 28, pos = [], idx = [];
@@ -11101,7 +11182,63 @@
     ANAT_POS.ceaj = (keptBand.length ? keptBand[Math.floor(keptBand.length / 2)] : bandPts[30]).clone();
     ANAT_INFO.ceaj = { contactFacePhi: PH, bandTheta: +(TH0 + 0.025).toFixed(3), bandPoints: bandPts.length, bandPointsKept: keptBand.length, apicalLimitY: +(0.8 * AX.y).toFixed(3), bandMaxY: +Math.max(...bandPts.map((p) => p.y)).toFixed(3) };
   }
-  if (ANAT.terminal_web_endotube) {
+  if (ANAT.terminal_web_endotube && BODY_SHAPE1) {
+    // Two sheets under the apical groove: the actin-rich terminal web above the IF-rich endotube; both end in the belt.
+    const TW_D = 0.08, ET_D = 0.15, NS = 40;
+    const sheet = (d0) => {
+      const pos = [], idx = [], n = NS + 1;
+      CJ_ST.forEach(([x, k]) => { for (let j = 0; j <= NS; j++) { const p = subAp(x, k, -1 + 2 * j / NS, d0); pos.push(p.x, p.y, p.z); } });
+      for (let i = 0; i < CJ_ST.length - 1; i++) for (let j = 0; j < NS; j++) { const a = i * n + j, b = a + 1, c = a + n, d = c + 1; idx.push(a, b, c, b, d, c); }
+      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+      return g;
+    };
+    anatAdd(new THREE.Mesh(sheet(TW_D), anatMat("terminal_web_endotube", { color: 0xf2d36b, roughness: 0.6, transparent: true, opacity: 0.75, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x2a2000), emissiveIntensity: 0.4 })), "terminal_web_endotube");
+    anatAdd(new THREE.Mesh(sheet(ET_D), anatMat("terminal_web_endotube", { color: 0xff9ec0, roughness: 0.55, transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x3a1020), emissiveIntensity: 0.4 })), "terminal_web_endotube");
+    const r = rng(223), seg = [], kAt = (x) => SHAPE.apical(x, 0).k;
+    for (let i = 0; i < 420; i++) {
+      const x = (r() * 2 - 1) * SD.L * 0.97, s = (r() * 2 - 1) * 0.95, dd = (r() - 0.5) * 0.02;
+      const x2 = x + (r() - 0.5) * 0.12, s2 = Math.max(-0.97, Math.min(0.97, s + (r() - 0.5) * 0.06));
+      const a = subAp(x, kAt(x), s, ET_D + dd), b = subAp(x2, kAt(x2), s2, ET_D + dd + (r() - 0.5) * 0.01);
+      if (!kept(a, 0.01) || !kept(b, 0.01)) continue;
+      seg.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    }
+    // Cross-section strips where the cutaway slices the two sheets (the cut distance falls monotonically with s).
+    const arcAt = (d0) => {
+      const pts = [];
+      CJ_ST.forEach(([x, k]) => {
+        if (k <= 0) return;
+        const f = (s) => cut.distanceToPoint(subAp(x, k, s, d0));
+        let lo = -1, hi = 1;
+        if (!(f(lo) > 0 && f(hi) < 0)) return;
+        for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (f(m) > 0) lo = m; else hi = m; }
+        pts.push(subAp(x, k, (lo + hi) / 2, d0));
+      });
+      return pts;
+    };
+    const twArc = arcAt(TW_D), etArc = arcAt(ET_D);
+    if (twArc.length > 3) anatAdd(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(twArc), 120, 0.022, 8, false), anatMat("terminal_web_endotube", { color: 0xf2d36b, roughness: 0.5, emissive: new THREE.Color(0x3a2c00), emissiveIntensity: 0.5 })), "terminal_web_endotube");
+    if (etArc.length > 3) anatAdd(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(etArc), 120, 0.032, 8, false), anatMat("terminal_web_endotube", { color: 0xff9ec0, roughness: 0.5, emissive: new THREE.Color(0x4a1428), emissiveIntensity: 0.5 })), "terminal_web_endotube");
+    const lg = new THREE.BufferGeometry(); lg.setAttribute("position", new THREE.Float32BufferAttribute(seg, 3));
+    anatAdd(new THREE.LineSegments(lg, anatMat("terminal_web_endotube", { color: 0xd8608c, transparent: true, opacity: 0.95, depthWrite: false }, THREE.LineBasicMaterial)), "terminal_web_endotube");
+    let tw = null;
+    for (let i = 0; i < 64 && !tw; i++) { const x = -0.6 + (i % 8) * 0.15, p = subAp(x, kAt(x), -0.4 + Math.floor(i / 8) * 0.1, CJ_D); if (kept(p, 0.15)) tw = p; }
+    ANAT_POS.terminal_web_endotube = tw || subAp(0, 1, 0, CJ_D);
+    if (twArc.length > 3 && etArc.length > 3) {
+      const twMid = twArc[Math.floor(twArc.length / 2)], etMid = etArc[Math.floor(etArc.length / 2)], ap = SHAPE.apical(twMid.x, twMid.z);
+      ANAT_LBL.terminal_web_endotube = { bb: V(twMid.x, ap.y, twMid.z).addScaledVector(ap.n, 0.22), tw: twMid.clone(), et: etMid.clone(), target: twMid.clone().lerp(etMid, 0.5) };
+    }
+    // Sheet edges against the belt (zero by construction) and interior vertices not strictly inside SHAPE.
+    let edgeGap = 0, notInside = 0;
+    [TW_D, ET_D].forEach((d0) => CJ_ST.forEach(([x, k], i) => {
+      if (k <= 0) return;
+      const iNeg = BELT.length - i;
+      edgeGap = Math.max(edgeGap, subAp(x, k, 1, d0).distanceTo(BELT[i]), subAp(x, k, -1, d0).distanceTo(BELT[iNeg]));
+      for (let j = 0; j <= NS; j++) if (!SHAPE.insideStrict(subAp(x, k, -1 + 2 * j / NS, d0))) notInside++;
+    }));
+    ANAT_INFO.terminal_web_endotube = { body: "shape1", terminalWebDepthK: TW_D, endotubeDepthK: ET_D, beltDepthK: CJ_D, ifSegments: seg.length / 6,
+      sheetStations: CJ_ST.length, sheetEdgeToBeltMax: +edgeGap.toExponential(3), sheetVerticesNotStrictlyInside: notInside,
+      sectionPoints: [twArc.length, etArc.length], sectionMinY: [twArc, etArc].map((a) => (a.length ? +Math.min(...a.map((p) => p.y)).toFixed(3) : null)) };
+  } else if (ANAT.terminal_web_endotube) {
     // Two thin subapical shells under the brush border: the actin-rich terminal web above the IF-rich endotube.
     const cap = (s, th) => { const g = new THREE.SphereGeometry(1, 96, 14, 0, Math.PI * 2, 0.02, th); g.scale(AX.x * s, AX.y * s, AX.z * s); return g; };
     anatAdd(new THREE.Mesh(cap(0.955, APICAL_TH), anatMat("terminal_web_endotube", { color: 0xf2d36b, roughness: 0.6, transparent: true, opacity: 0.75, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [cut], emissive: new THREE.Color(0x2a2000), emissiveIntensity: 0.4 })), "terminal_web_endotube");
@@ -11156,7 +11293,7 @@
   const SIGN = { activates: 1, part_of: 1, component_transfer: 1, inhibits: -1, transcriptionally_regulates: 0 };
   const VERB = { activates: "activates", inhibits: "inhibits", part_of: "is part of", component_transfer: "is a component of (explicit transfer rule) →", transcriptionally_regulates: "transcriptionally regulates" };
 
-  const nodePos = {};
+  const nodePos = {}, NODE_SHIFT = { margin: null, pathways: {} };
   (function layout() {
     const pwOrder = MODEL.pathways.map((p) => p.id).filter((id) => MODEL.nodes.some((n) => n.pathway_id === id));
     const depth = {};
@@ -11174,7 +11311,7 @@
       ids.forEach((id) => { if (depth[id] == null) depth[id] = 0; });
     });
     const center = V(NC.x + 0.15, NC.y - 0.05, 0);
-    const count = {};
+    const count = {}, ringDir = {}, ringIds = {};
     MODEL.nodes.forEach((n) => {
       const k = pwOrder.indexOf(n.pathway_id);
       const ang = (k / pwOrder.length) * Math.PI * 2 + 0.35;
@@ -11199,9 +11336,26 @@
       } else {
         const rad = 1.65 - Math.min(depth[n.id], 5) * 0.17;
         p = V(center.x + dir.x * rad * 1.15, center.y + dir.y * rad * 0.68, 0.62).add(side);
+        ringDir[n.pathway_id] = dir;
+        (ringIds[n.pathway_id] = ringIds[n.pathway_id] || []).push(n.id);
       }
       nodePos[n.id] = p;
     });
+    // SHAPE preview: the cytosol ring was sized for the ellipsoid. If any ring node of a pathway lacks NODE_IN
+    // clearance (itself and its six axis offsets strictly inside SHAPE), that pathway's ring nodes all move inward
+    // along its arm by the smallest 0.01 step that fits, so spacing and reading order inside the arm are unchanged.
+    // NODE_IN is a display margin, not a measurement.
+    if (BODY_SHAPE1) {
+      const NODE_IN = 0.15, AXES = [V(1, 0, 0), V(-1, 0, 0), V(0, 1, 0), V(0, -1, 0), V(0, 0, 1), V(0, 0, -1)];
+      const clear = (p) => SHAPE.insideStrict(p) && AXES.every((a) => SHAPE.insideStrict(p.clone().addScaledVector(a, NODE_IN)));
+      NODE_SHIFT.margin = NODE_IN;
+      Object.keys(ringDir).forEach((pid) => {
+        const ids = ringIds[pid];
+        let s = 0;
+        while (s < 1.5 && !ids.every((id) => clear(nodePos[id].clone().addScaledVector(ringDir[pid], -s)))) s = +(s + 0.01).toFixed(2);
+        if (s > 0) { ids.forEach((id) => nodePos[id].addScaledVector(ringDir[pid], -s)); NODE_SHIFT.pathways[pid] = { shift: s, nodes: ids }; }
+      });
+    }
   })();
 
   const glowTex = (function () {
@@ -11871,6 +12025,17 @@
     const A = get(a, ca), B = get(b, cb);
     return A && B ? { clearance: clearance(A, B), need: gapFor(A, B) } : null;
   };
+  // Point-in-solid check for solid k of a fitted shape, p in that shape's placement-relative frame. Also returns the
+  // clearance of a zero-radius point at p against that solid alone (nonpositive when p is inside). Preview only.
+  window.__solidAt = (id, k, p) => {
+    const s = FIT_SHAPES[id] && FIT_SHAPES[id].solids && FIT_SHAPES[id].solids[k];
+    if (!s) return null;
+    const q = V(p[0], p[1], p[2]), info = {}, o = V(0, 0, 0);
+    const inside = inSolid(q, s, info);
+    const A = placed("point", 0, q, [{ a: o, b: o, r: 0 }]), B = placed("solid", 0, o, mkShape([], s.tris, [s.tris]));
+    return { inside, ray: info.ray, crossings: info.crossings, n_tris: s.tris.length, point_clearance: clearance(A, B) };
+  };
+  window.__solidRays = () => Object.assign({}, SOLID_RAYS);
   window.__shapeAudit = () => {
     const SURF = new Set(["anchor:plasma_membrane", "anchor:apical_microvilli", "anat_pos:ceaj", "anat_label:terminal_web_endotube.bb"]);
     MODEL.nodes.forEach((n) => { if (n.illustrative_compartment === "membrane") SURF.add("node:" + n.id); });
@@ -11925,7 +12090,7 @@
         not_checked: "rough ER sheets, free ribosomes, cytoskeleton, chromatin, motion vesicles; spheres are tested by radius, not by mesh" };
     }
     return { body: { shape: BODY_SHAPE1 ? "shape1" : "ellipsoid", ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
-      parts_vs_shape: parts, body_fit: BODY_FIT, spacing,
+      parts_vs_shape: parts, body_fit: BODY_FIT, spacing, ...(BODY_SHAPE1 ? { node_shift: NODE_SHIFT } : {}),
       target: { dims: SHAPE.dims, surface_tol: SHAPE.SURFACE_TOL, surface_ids: [...SURF], eps: SHAPE.EPS, audit_res: SHAPE.AUDIT_RES,
         mesh_check: { analytic_boundary_samples: meshN, max_dist_to_audit_mesh: meshErr, samples_strictly_inside: meshFalseInside },
         witnesses: witness }, points: out };
