@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T14:00:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T14:05:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Part E answer + ER defect slice",
-                                  "status":  "running",
-                                  "step":  5,
+                                  "task":  "Part E answer + ER defect slice + FREMDRIFT item",
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  81.7,
-                                  "step_title":  "Fix + after audit + browser check",
+                                  "percent":  100,
+                                  "step_title":  "Finish entry",
                                   "steps":  [
                                                 "Start entry",
                                                 "Read MOL-0014/0015, answer Q1-Q3",
@@ -18,29 +18,26 @@
                                                 "Fix + after audit + browser check",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  10,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T13:57:42+02:00",
+                                  "updated":  "2026-10-07T14:03:06+02:00",
                                   "last_run":  "2026-10-07T13:53:25+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Licensing and shape contract review",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record findings and Cursor handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Read coordination and loop guards",
-                                               "Check licensing decision application",
-                                               "Verify shape contract and audit coverage",
-                                               "Record findings and Cursor handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  391,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-07T09:54:08+02:00",
-                                 "last_run":  "2026-10-07T09:43:29+02:00",
+                                 "last_run":  "2026-10-07T14:03:35+02:00",
                                  "next_run":  null
                              }
                },
@@ -54,6 +51,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Part E answer + ER defect slice + FREMDRIFT item",
+                       "finished":  "2026-10-07T14:03:06+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "a2-shape-1: robust SHAPE gate + remap",
@@ -78,22 +80,17 @@
                        "agent":  "cursor",
                        "task":  "Close qa-slice3, complete licence rows, start a2-shape-1",
                        "finished":  "2026-10-07T09:08:28+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Final qa-slice3 and licence review",
-                       "finished":  "2026-10-07T09:01:01+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  40.4,
-                      "total":  45,
+                      "percent":  39.2,
+                      "total":  46,
                       "done":  16,
                       "in_progress":  3,
-                      "todo":  26,
-                      "remaining":  29,
-                      "weight_total":  94,
+                      "todo":  27,
+                      "remaining":  30,
+                      "weight_total":  97,
                       "weight_done":  38,
                       "groups":  [
                                      "Ferdig i dag",
@@ -264,6 +261,13 @@
                                         "weight":  1
                                     },
                                     {
+                                        "id":  "side-assets-integration",
+                                        "group":  "Senere",
+                                        "text":  "Sideressurser: GLTF-laster (three r158, MIT) og innfasing av ressurser med AGREE fra både Cursor og…",
+                                        "status":  "todo",
+                                        "weight":  3
+                                    },
+                                    {
                                         "id":  "etc-proton-gradient",
                                         "group":  "Senere",
                                         "text":  "ETC-interiør: H+ med egen forklaring og farge, illustrativ protongradient i likevekt fyller, ATP-sy…",
@@ -374,16 +378,9 @@
                                         "text":  "Kunnskapslinse: farge etter evidensstyrke, med evidensfilter (kun visning, vis alt som standard, de…",
                                         "status":  "todo",
                                         "weight":  1
-                                    },
-                                    {
-                                        "id":  "teacher-link",
-                                        "group":  "Senere",
-                                        "text":  "Lærerlenke: visning, turtrinn og perturbasjon i URL-en",
-                                        "status":  "todo",
-                                        "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-07T09:08:00+02:00",
+                      "updated":  "2026-10-07T14:02:00+02:00",
                       "updated_by":  "Cursor"
                   }
 }
