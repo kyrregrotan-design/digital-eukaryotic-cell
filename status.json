@@ -1,21 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T14:20:05+02:00",
+    "generated_at":  "2026-10-07T14:25:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Part E answer + ER defect slice + FREMDRIFT item",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "ER_FIT 0.97 correction + actual-body evidence + part E relay",
+                                  "status":  "running",
+                                  "step":  4,
+                                  "total":  6,
+                                  "percent":  65,
+                                  "step_title":  "Refresh audit + live probe",
                                   "steps":  [
-
+                                                "Start entry",
+                                                "Apply ER_FIT 0.97 in viewer and replica",
+                                                "Add actual-body containment check",
+                                                "Refresh audit + live probe",
+                                                "Relay part E/MOL-0001 corrections",
+                                                "Finish entry"
                                             ],
-                                  "eta_seconds":  799,
+                                  "eta_seconds":  32,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T14:03:06+02:00",
+                                  "updated":  "2026-10-07T14:22:29+02:00",
                                   "last_run":  "2026-10-07T14:19:23+02:00",
                                   "next_run":  null
                               },
@@ -43,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  15,
+    "today_runs":  16,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
