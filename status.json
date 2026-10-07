@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T22:55:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T23:00:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 (e): motion check on SHAPE preview",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  78,
-                                  "step_title":  "Run preview and default",
+                                  "percent":  100,
+                                  "step_title":  "Log result",
                                   "steps":  [
                                                 "Read logs and request",
                                                 "Inspect motion code",
@@ -17,29 +17,28 @@
                                                 "Run preview and default",
                                                 "Log result"
                                             ],
-                                  "eta_seconds":  15,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T22:46:01+02:00",
+                                  "updated":  "2026-10-07T22:56:11+02:00",
                                   "last_run":  "2026-10-07T22:41:09+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review option A label rows",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and queue handoff",
+                                 "task":  "Review SHAPE motion fix",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  3,
+                                 "percent":  46.4,
+                                 "step_title":  "Reproduce preview and default routes",
                                  "steps":  [
-                                               "Inspect changes and saved evidence",
-                                               "Reproduce layout and panel switching",
-                                               "Verify picking and audit comparisons",
-                                               "Record verdict and queue handoff"
+                                               "Inspect scope and motion code",
+                                               "Reproduce preview and default routes",
+                                               "Compare audits and conclude"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  243,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T22:40:54+02:00",
-                                 "last_run":  "2026-10-07T22:30:35+02:00",
+                                 "updated":  "2026-10-07T22:59:04+02:00",
+                                 "last_run":  "2026-10-07T22:56:33+02:00",
                                  "next_run":  null
                              }
                },
@@ -47,12 +46,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  48,
+    "today_runs":  49,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-1 (e): motion check on SHAPE preview",
+                       "finished":  "2026-10-07T22:56:11+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review option A label rows",
@@ -77,11 +81,6 @@
                        "agent":  "codex",
                        "task":  "Review CeAJ labels",
                        "finished":  "2026-10-07T21:18:06+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "a2-shape-1 (e): home size and CeAJ label overlap (preview)",
-                       "finished":  "2026-10-07T21:04:49+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
