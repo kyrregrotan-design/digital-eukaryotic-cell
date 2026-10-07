@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T15:00:04+02:00",
+    "generated_at":  "2026-10-07T15:05:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,20 +25,20 @@
                               },
                    "codex":  {
                                  "task":  "Review shape1 preview milestone",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  72.5,
-                                 "step_title":  "Verify preview evidence read-only",
+                                 "percent":  100,
+                                 "step_title":  "Record verdict and handoff",
                                  "steps":  [
                                                "Read task and standing decisions",
                                                "Check default branch and body geometry",
                                                "Verify preview evidence read-only",
                                                "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  102,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T14:58:59+02:00",
+                                 "updated":  "2026-10-07T15:04:39+02:00",
                                  "last_run":  "2026-10-07T14:54:19+02:00",
                                  "next_run":  null
                              }
@@ -53,6 +53,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Review shape1 preview milestone",
+                       "finished":  "2026-10-07T15:04:39+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "a2-shape-1 body swap: SHAPE body behind preview switch",
@@ -77,11 +82,6 @@
                        "agent":  "cursor",
                        "task":  "Part E answer + ER defect slice + FREMDRIFT item",
                        "finished":  "2026-10-07T14:03:06+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "a2-shape-1: robust SHAPE gate + remap",
-                       "finished":  "2026-10-07T10:00:33+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
