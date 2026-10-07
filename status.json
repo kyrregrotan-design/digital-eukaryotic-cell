@@ -1,26 +1,27 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T09:35:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-07T09:40:06+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Close qa-slice3, complete licence rows, start a2-shape-1",
-                                  "status":  "done",
-                                  "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Validate and log",
+                                  "task":  "a2-shape-1: harness corrections and SHAPE module",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  6,
+                                  "percent":  31.7,
+                                  "step_title":  "Fix __shapeAudit node and tour-target coverage",
                                   "steps":  [
-                                                "Mark qa-slice3 done",
-                                                "Complete seven register rows",
-                                                "Read a2-shape-1 plan",
-                                                "a2-shape-1 baseline harness",
-                                                "Validate and log"
+                                                "Read log and Codex 09:11 findings",
+                                                "Fix __shapeAudit node and tour-target coverage",
+                                                "Probe predicates and surface contract",
+                                                "SHAPE module (D-section inside test)",
+                                                "Browser check and pytest",
+                                                "Finish entry"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  262,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T09:08:28+02:00",
-                                  "last_run":  "2026-10-07T09:01:13+02:00",
+                                  "updated":  "2026-10-07T09:36:50+02:00",
+                                  "last_run":  "2026-10-07T09:35:19+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
@@ -47,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  10,
+    "today_runs":  11,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
