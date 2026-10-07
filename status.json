@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T10:00:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T10:05:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1: robust SHAPE gate + remap",
-                                  "status":  "running",
-                                  "step":  3,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  48.3,
-                                  "step_title":  "Witness checks",
+                                  "percent":  100,
+                                  "step_title":  "pytest + finish entry",
                                   "steps":  [
                                                 "Start entry",
                                                 "Strict membership + bounded distance",
@@ -18,9 +18,9 @@
                                                 "Site/AI-image check",
                                                 "pytest + finish entry"
                                             ],
-                                  "eta_seconds":  220,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T09:57:29+02:00",
+                                  "updated":  "2026-10-07T10:00:33+02:00",
                                   "last_run":  "2026-10-07T09:54:23+02:00",
                                   "next_run":  null
                               },
@@ -55,6 +55,11 @@
               ],
     "recent":  [
                    {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-1: robust SHAPE gate + remap",
+                       "finished":  "2026-10-07T10:00:33+02:00"
+                   },
+                   {
                        "agent":  "codex",
                        "task":  "Licensing and shape contract review",
                        "finished":  "2026-10-07T09:54:08+02:00"
@@ -78,11 +83,6 @@
                        "agent":  "codex",
                        "task":  "Final qa-slice3 and licence review",
                        "finished":  "2026-10-07T09:01:01+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "qa-slice3 classic-view remainder + licence register",
-                       "finished":  "2026-10-07T08:51:19+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
