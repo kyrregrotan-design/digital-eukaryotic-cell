@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T15:10:06+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T15:15:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1: apical normal fix + organelle remap (preview)",
-                                  "status":  "running",
-                                  "step":  5,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  78.3,
-                                  "step_title":  "Probes + pytest",
+                                  "percent":  100,
+                                  "step_title":  "Finish entry",
                                   "steps":  [
                                                 "Start entry",
                                                 "Apical normal correction",
@@ -18,29 +18,26 @@
                                                 "Probes + pytest",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  85,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T15:09:19+02:00",
+                                  "updated":  "2026-10-07T15:12:06+02:00",
                                   "last_run":  "2026-10-07T15:04:58+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Review shape1 preview milestone",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Read task and standing decisions",
-                                               "Check default branch and body geometry",
-                                               "Verify preview evidence read-only",
-                                               "Record verdict and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  322,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-07T15:04:39+02:00",
-                                 "last_run":  "2026-10-07T14:54:19+02:00",
+                                 "last_run":  "2026-10-07T15:12:26+02:00",
                                  "next_run":  null
                              }
                },
@@ -54,6 +51,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-1: apical normal fix + organelle remap (preview)",
+                       "finished":  "2026-10-07T15:12:06+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review shape1 preview milestone",
@@ -78,11 +80,6 @@
                        "agent":  "codex",
                        "task":  "ER bug fix and side-asset review",
                        "finished":  "2026-10-07T14:19:10+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Part E answer + ER defect slice + FREMDRIFT item",
-                       "finished":  "2026-10-07T14:03:06+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
