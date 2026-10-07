@@ -10981,7 +10981,15 @@
     const clearNuc = (p) => { const a = p.clone().sub(NC), d = a.length(); if (d < NR + 0.3) p.copy(NC).addScaledVector(a.normalize(), NR + 0.3); return p; };
     const via = (a, b, lift) => clearNuc(a.clone().add(b).multiplyScalar(0.5).add(lift));
     const curve = (a, b, lift) => new THREE.CatmullRomCurve3([a.clone(), via(a, b, lift), b.clone()]);
-    const onPM = (d) => { d = d.clone().normalize(); const s = 1 / Math.sqrt((d.x / AX.x) ** 2 + (d.y / AX.y) ** 2 + (d.z / AX.z) ** 2); return d.multiplyScalar(s * 0.955); };
+    // Preview: the first exit of the ray from the body centre through SHAPE (march, then bisect), same 0.955 depth.
+    const shapeExit = (d) => {
+      let lo = 0, hi = 0;
+      while (hi < 4 && SHAPE.insideStrict(d.clone().multiplyScalar(hi + 0.01))) hi += 0.01;
+      lo = hi; hi += 0.01;
+      for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (SHAPE.insideStrict(d.clone().multiplyScalar(m))) lo = m; else hi = m; }
+      return lo;
+    };
+    const onPM = (d) => { d = d.clone().normalize(); const s = BODY_SHAPE1 ? shapeExit(d) : 1 / Math.sqrt((d.x / AX.x) ** 2 + (d.y / AX.y) ** 2 + (d.z / AX.z) ** 2); return d.multiplyScalar(s * 0.955); };
     const pmEnds = [V(1, 0.5, -0.35), V(1, -0.4, -0.4), V(0.45, -0.25, -1)].map(onPM).filter((p) => kept(p, 0.08));
     const lysoEnd = LYSO[0].clone().addScaledVector(trans.clone().sub(LYSO[0]).normalize(), 0.17);
     const ROUTES = {
@@ -11062,7 +11070,7 @@
         fusionClearance: +fscore.toFixed(3),
       };
     }
-    return { update, check, ves, phase: () => phase };
+    return { update, check, ves, routes: ROUTES, fusion: { start: fStart, contact: fContact, auto: A0 }, phase: () => phase };
   })();
 
   // ---------------------------------------------------------------- atlas anatomy details (schematic)
@@ -12055,6 +12063,18 @@
   window.__drawCalls = () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles });
   window.__motionState = () => Object.assign({ on: motionOn, reduced: reducedMotion(), visible: motionGroup.visible, clock: +motionClock.toFixed(2),
     shown: MOTION.ves.filter((v) => v.m.visible).length, phase: MOTION.phase() }, MOTION.check());
+  window.__motionRoutes = () => {
+    const r4 = (x) => +x.toFixed(4), row = (p) => ({ pos: p.toArray().map(r4), shape_inside: SHAPE.insideStrict(p), shape_boundary_dist: r4(SHAPE.boundaryDist(p)), kept: kept(p, 0.04) });
+    const out = {};
+    Object.keys(MOTION.routes).forEach((k) => { out[k] = MOTION.routes[k].map((c) => {
+      const pts = c.getSpacedPoints(60);
+      return { start: row(pts[0]), end: row(pts[pts.length - 1]), samples: pts.length, shape_outside: pts.filter((p) => !SHAPE.insideStrict(p)).length,
+        min_boundary_dist: r4(Math.min(...pts.map((p) => SHAPE.boundaryDist(p)))) }; }); });
+    const F = MOTION.fusion, fp = [];
+    for (let i = 0; i <= 20; i++) fp.push(F.start.clone().lerp(F.auto, i / 20));
+    out.fusion = { start: row(F.start), auto: row(F.auto), shape_outside: fp.filter((p) => !SHAPE.insideStrict(p)).length, min_boundary_dist: r4(Math.min(...fp.map((p) => SHAPE.boundaryDist(p)))) };
+    return out;
+  };
   window.__anatState = anatCheck;
   window.__anatSelect = (id) => { selectAnat(id, true); return { selected: selected && selected.anat, html: detail.innerHTML }; };
   window.__anatLabels = () => {
@@ -12565,13 +12585,43 @@
       R: rightP.classList.contains("hidden") ? 16 : 32 + rightP.offsetWidth,
     };
   }
+  // SHAPE preview: below this free-middle width (a display choice) the compartment labels sit in rows above and below
+  // the cell instead of side columns, so the fit reserves row height instead of 280 px of width.
+  const LABEL_ROWS_BELOW = 650, ROW_STEP = 24, ROW_GAP = 6;
+  function labelRowsOn() {
+    const { L, R } = panelEdges();
+    return BODY_SHAPE1 && showLabels && !document.body.classList.contains("cramped") && window.innerWidth - L - R < LABEL_ROWS_BELOW;
+  }
+  // Fewest rows (at most 4) for which dealing the widths out in turn keeps every row inside availW.
+  function rowCount(widths, availW) {
+    for (let k = 1; k < 4; k++) {
+      const sums = Array(k).fill(-ROW_GAP);
+      widths.forEach((w, i) => { sums[i % k] += w + ROW_GAP; });
+      if (Math.max(...sums) <= availW) return k;
+    }
+    return 4;
+  }
+  const compLabelText = (c) => c.label.replace(/\s*\(.*\)$/, "");
+  // The bottom rows stay above the arrow legend and the tour player, which sit centred over the free middle.
+  function rowBottom(H) {
+    let y = H - 60;
+    ["legend", "tour-player"].forEach((id) => { const el = document.getElementById(id); if (el && el.offsetWidth) y = Math.min(y, el.getBoundingClientRect().top - 14); });
+    return y;
+  }
   function fitDist() {
     const w = window.innerWidth, h = window.innerHeight;
     const { L, R } = panelEdges();
-    const avail = Math.max(240, w - L - R - (showLabels ? 280 : 30));
+    const rowsOn = labelRowsOn();
+    let reserveH = 90;
+    if (rowsOn) {
+      const ws = WC.compartments.map((c) => pillWidth(compLabelText(c), false)).sort((a, b) => b - a);
+      const k = rowCount(ws.slice(0, Math.ceil(ws.length / 2)), w - L - R - 20);
+      reserveH = 2 * Math.max(86 + ROW_STEP * (k - 1) + 20, h - rowBottom(h) + ROW_STEP * (k - 1) + 20);
+    }
+    const avail = Math.max(240, w - L - R - (showLabels && !rowsOn ? 280 : 30));
     const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const dW = HOME_FIT.hx / (t * (w / h) * (avail / w));
-    const dH = HOME_FIT.hy / (t * ((h - 90) / h));
+    const dH = HOME_FIT.hy / (t * ((h - reserveH) / h));
     return Math.min(18, Math.max(dW, dH));
   }
   function flyTo(p, factor) {
@@ -12647,7 +12697,7 @@
   ray.params.Line.threshold = 0.025;
   ray.params.Points.threshold = 0.06;
   const ndc = new THREE.Vector2();
-  let labelBoxes = [];
+  let labelBoxes = [], labelRowState = null;
   function hitTest(e) {
     const x = e.clientX, y = e.clientY;
     const lb = labelBoxes.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
@@ -12754,9 +12804,42 @@
     if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, 62, false, null, "center");
     drawAnatSectionLabels(leftEdge, rightEdge);
     // The CeAJ close-up hides the compartment columns: at this zoom they clamp to the panel edges and cover the cell.
-    if (showLabels && !document.body.classList.contains("cramped") && !(CJ_FADE && CJ_FADE.cam)) {
+    labelRowState = null;
+    if (labelRowsOn() && !(CJ_FADE && CJ_FADE.cam)) {
+      const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
+      items.forEach((it) => { it.active = (hover && hover.comp === it.id) || (selected && selected.comp === it.id); it.w = pillWidth(it.text, it.active); });
+      items.sort((a, b) => a.p.y - b.p.y);
+      const half = Math.ceil(items.length / 2), minX = leftEdge + 10, maxX = rightEdge - 10;
+      const top0 = anatLabelsShown.length ? 112 : motionGroup.visible && !tourCur ? 86 : 70, bot0 = rowBottom(H);
+      const bands = [[items.slice(0, half), top0, 1], [items.slice(half), bot0, -1]];
+      const drawn = [];
+      labelRowState = { k: [], free: [Math.round(minX), Math.round(maxX)] };
+      bands.forEach(([list, y0, dir]) => {
+        list.sort((a, b) => a.p.x - b.p.x);
+        const k = rowCount(list.map((it) => it.w), maxX - minX);
+        labelRowState.k.push(k);
+        // Row 0 is outermost; dealing out in turn keeps each row in anchor order so leader lines rarely cross.
+        for (let r = 0; r < k; r++) {
+          const row = list.filter((_, i) => i % k === r), ly = y0 + dir * ROW_STEP * r;
+          let end = minX - ROW_GAP;
+          row.forEach((it) => { it.x = Math.max(it.p.x - it.w / 2, end + ROW_GAP, minX); end = it.x + it.w; });
+          let start = maxX + ROW_GAP;
+          for (let i = row.length - 1; i >= 0; i--) { row[i].x = Math.min(row[i].x, start - ROW_GAP - row[i].w); start = row[i].x; }
+          row.forEach((it) => { it.ly = ly; it.dir = dir; drawn.push(it); });
+        }
+      });
+      // Lines first, then pills, so a leader line from an outer row passes under the inner-row pills.
+      drawn.forEach((it) => {
+        octx.strokeStyle = it.active ? "rgba(111,214,200,0.95)" : "rgba(235,242,246,0.45)";
+        octx.lineWidth = it.active ? 1.5 : 1;
+        octx.beginPath(); octx.moveTo(it.p.x, it.p.y); octx.lineTo(it.x + it.w / 2, it.ly + it.dir * 10); octx.stroke();
+        octx.fillStyle = octx.strokeStyle;
+        octx.beginPath(); octx.arc(it.p.x, it.p.y, 2.8, 0, Math.PI * 2); octx.fill();
+      });
+      drawn.forEach((it) => labelBoxes.push(Object.assign(pill(it.text, it.x, it.ly, it.active, null, "left"), { comp: it.id })));
+    } else if (showLabels && !document.body.classList.contains("cramped") && !(CJ_FADE && CJ_FADE.cam)) {
       const c0 = proj(V(0, 0, 0));
-      const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: c.label.replace(/\s*\(.*\)$/, ""), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
+      const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
       const sorted = items.slice().sort((a, b) => a.p.x - b.p.x);
       const half = Math.ceil(sorted.length / 2);
       [[sorted.slice(0, half), "L"], [sorted.slice(half), "R"]].forEach(([list, side]) => {
@@ -16291,6 +16374,7 @@
   window.__insideId = () => (inside ? inside.id : null);
   window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
   window.__geneLabels = () => JSON.parse(JSON.stringify(geneLabelState));
+  window.__labelRows = () => labelRowState && { ...labelRowState, homeDist: +HOME.dist.toFixed(4) };
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
   window.__viewState = () => ({ cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: +camGoal.dist.toFixed(3), target: camGoal.target.toArray().map((v) => +v.toFixed(3)) },
     userZoomed, focus: focusPw, visible: Object.keys(pwVisible).filter((k) => pwVisible[k]).sort() });
