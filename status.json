@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T20:10:05+02:00",
+    "generated_at":  "2026-10-07T20:15:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review CeAJ selection view",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "CeAJ camera bookmark fix review",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  62.4,
+                                 "step_title":  "Reproduce camera lifecycle cases",
                                  "steps":  [
-
+                                               "Check scope and history",
+                                               "Review helper and audit evidence",
+                                               "Reproduce camera lifecycle cases",
+                                               "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  402,
+                                 "eta_seconds":  228,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T19:56:55+02:00",
+                                 "updated":  "2026-10-07T20:13:48+02:00",
                                  "last_run":  "2026-10-07T20:08:46+02:00",
                                  "next_run":  null
                              }
@@ -44,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  38,
+    "today_runs":  39,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
