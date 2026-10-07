@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T16:40:05+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-07T16:45:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 preview: Golgi triangle spacing",
