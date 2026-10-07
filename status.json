@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T17:05:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T17:20:05+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1: robust Golgi solid parity",
-                                  "status":  "running",
-                                  "step":  2,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  31.7,
-                                  "step_title":  "Fix inSolid shared-edge parity",
+                                  "percent":  100,
+                                  "step_title":  "Write finish entry",
                                   "steps":  [
                                                 "Read README, logs and findings",
                                                 "Fix inSolid shared-edge parity",
@@ -18,29 +18,29 @@
                                                 "Run pytest",
                                                 "Write finish entry"
                                             ],
-                                  "eta_seconds":  324,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T17:03:37+02:00",
+                                  "updated":  "2026-10-07T17:17:26+02:00",
                                   "last_run":  "2026-10-07T17:02:15+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review Golgi triangle spacing fix",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review Golgi solid parity correction",
+                                 "status":  "running",
+                                 "step":  1,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and queue handoff",
+                                 "percent":  2.6,
+                                 "step_title":  "Inspect kernel and saved evidence",
                                  "steps":  [
-                                               "Read decisions and review scope",
-                                               "Verify geometry distance and culling",
-                                               "Check live and saved reports",
+                                               "Inspect kernel and saved evidence",
+                                               "Verify parity and witness independently",
+                                               "Compare preview and default evidence",
                                                "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  767,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T16:39:47+02:00",
-                                 "last_run":  "2026-10-07T16:29:54+02:00",
+                                 "updated":  "2026-10-07T17:19:40+02:00",
+                                 "last_run":  "2026-10-07T17:17:51+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,12 +48,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  26,
+    "today_runs":  27,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-1: robust Golgi solid parity",
+                       "finished":  "2026-10-07T17:17:26+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review Golgi triangle spacing fix",
@@ -78,11 +83,6 @@
                        "agent":  "codex",
                        "task":  "Review SHAPE preview fit milestone",
                        "finished":  "2026-10-07T15:56:22+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "a2-shape-1: apical normal fix + organelle remap (preview)",
-                       "finished":  "2026-10-07T15:12:06+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
