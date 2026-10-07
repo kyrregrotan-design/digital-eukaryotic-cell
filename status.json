@@ -1,33 +1,30 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T08:00:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-07T08:05:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "qa-slice3 jargon pass",
-                                  "status":  "done",
-                                  "step":  4,
-                                  "total":  4,
-                                  "percent":  100,
-                                  "step_title":  "Log finish and handoff",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "Scan learner-facing text",
-                                                "Rewrite jargon in viewers",
-                                                "Browser check and pytest",
-                                                "Log finish and handoff"
+
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  820,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-07T07:51:22+02:00",
-                                  "last_run":  "2026-10-07T07:41:14+02:00",
+                                  "last_run":  "2026-10-07T08:04:43+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Review WebGL learner wording",
-                                 "status":  "running",
+                                 "status":  "done",
                                  "step":  4,
                                  "total":  4,
-                                 "percent":  88,
+                                 "percent":  100,
                                  "step_title":  "Record verdict and queue handoff",
                                  "steps":  [
                                                "Read changed wording and evidence",
@@ -35,9 +32,9 @@
                                                "Run read-only verification",
                                                "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  64,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T07:58:54+02:00",
+                                 "updated":  "2026-10-07T08:04:26+02:00",
                                  "last_run":  "2026-10-07T07:52:16+02:00",
                                  "next_run":  null
                              }
@@ -51,6 +48,11 @@
 
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Review WebGL learner wording",
+                       "finished":  "2026-10-07T08:04:26+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "qa-slice3 jargon pass",
@@ -75,11 +77,6 @@
                        "agent":  "cursor",
                        "task":  "qa-slice3 remainder: reduced-motion fix, aging timeline, language",
                        "finished":  "2026-10-06T22:42:22+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review qa-slice3 part 1",
-                       "finished":  "2026-10-06T22:34:48+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
