@@ -10223,7 +10223,11 @@
   const cutN = V(0.15, -0.35, -1).normalize();
   const cut = new THREE.Plane(cutN, 0.35);
   const kept = (p, margin) => cut.distanceToPoint(p) >= (margin || 0);
-  const insideCell = (p, s) => (p.x / (AX.x * s)) ** 2 + (p.y / (AX.y * s)) ** 2 + (p.z / (AX.z * s)) ** 2 < 1;
+  // a2-shape-1 preview: ?body=shape1 draws the SHAPE body. The default view stays the ellipsoid until every remap
+  // (brush border, CeAJ belt, terminal web, listed anchors and nodes) passes the harness.
+  const BODY_SHAPE1 = /(?:^|[?&])body=shape1(?:&|$)/.test(location.search);
+  const insideCell = (p, s) => BODY_SHAPE1 ? SHAPE.insideStrict(p.clone().divideScalar(s))
+    : (p.x / (AX.x * s)) ** 2 + (p.y / (AX.y * s)) ** 2 + (p.z / (AX.z * s)) ** 2 < 1;
 
   // a2-shape-1 target body (approved 2026-10-06 10:31), not drawn yet: a D-section half-ring segment with x = A-P,
   // +y apical and z = partner edges; shallow concave apical groove, convex basal face, rounded A-P ends. Every size
@@ -10278,16 +10282,43 @@
       return Math.sqrt(best);
     }
     const dist = (p) => { const d = boundaryDist(p); return insideStrict(p) ? -d : d; };
+    // First boundary crossing along o + t*d (o strictly inside, d a unit vector): march, then bisect.
+    function rayHit(o, d) {
+      const q = new THREE.Vector3(); let lo = 0, hi = 0.02;
+      while (hi < 8 && insideStrict(q.copy(o).addScaledVector(d, hi))) { lo = hi; hi += 0.02; }
+      for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (insideStrict(q.copy(o).addScaledVector(d, m))) lo = m; else hi = m; }
+      return o.clone().addScaledVector(d, lo);
+    }
+    // Apical groove at station x: height and outward normal, for |z| < W*k.
+    function apical(x, z) {
+      const e = Math.max(0, Math.abs(x) - (L - ER)), k = Math.sqrt(Math.max(0, 1 - (e / ER) ** 2)), wk = W * k;
+      return { k, y: k * (HA - G * (1 - (z / wk) ** 2)), n: V(0, 1, -2 * G * z / (wk * wk) * k).normalize() };
+    }
     // Membrane-bound items must lie in a two-sided band around the membrane (brush-border label offset plus rim
     // tube); everything else must be strictly inside. SURFACE_TOL is a display tolerance, not a measured thickness.
     const SURFACE_TOL = 0.35;
-    return { dims: { L, W, HA, HB, G, ER }, EPS, AUDIT_RES, grid, insideStrict, boundaryDist, dist, SURFACE_TOL,
+    return { dims: { L, W, HA, HB, G, ER }, EPS, AUDIT_RES, grid, insideStrict, boundaryDist, dist, SURFACE_TOL, rayHit, apical,
       inside: (p, margin) => insideStrict(p) && (!margin || boundaryDist(p) > margin),
       onSurface: (p) => Math.abs(dist(p)) <= SURFACE_TOL };
   })();
 
-  const cellGeo = organic(new THREE.SphereGeometry(1, 160, 110), 0.018, 5.5, 1.3);
-  cellGeo.scale(AX.x, AX.y, AX.z);
+  // Random-sampling box that encloses the body (half extents).
+  const BOX = BODY_SHAPE1 ? V(SHAPE.dims.L, SHAPE.dims.HB, SHAPE.dims.W) : AX;
+  // SHAPE body: the same profile grid as the audit mesh, wound outward; the organic ripple frequency is rescaled
+  // from the unit sphere to scene units, so the surface texture matches the ellipsoid's.
+  function shapeBodyGeo() {
+    const rings = SHAPE.grid(90, 36, 90), m = rings[0].length, pos = [], idx = [];
+    rings.forEach((r) => r.forEach((p) => pos.push(p.x, p.y, p.z)));
+    for (let i = 0; i < rings.length - 1; i++) for (let j = 0; j < m; j++) {
+      const a = i * m + j, b = i * m + (j + 1) % m, c = (i + 1) * m + j, d = (i + 1) * m + (j + 1) % m;
+      idx.push(a, b, c, b, d, c);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+    return organic(g, 0.018, 5.5 / 2, 1.3);
+  }
+  const cellGeo = BODY_SHAPE1 ? shapeBodyGeo() : organic(new THREE.SphereGeometry(1, 160, 110), 0.018, 5.5, 1.3);
+  if (!BODY_SHAPE1) cellGeo.scale(AX.x, AX.y, AX.z);
   add(new THREE.Mesh(cellGeo, mat("plasma_membrane", {
     color: 0xd9895c, roughness: 0.55, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.5,
     sheen: 1, sheenColor: new THREE.Color(0xffc8a0), sheenRoughness: 0.5,
@@ -10308,6 +10339,7 @@
     for (let i = 0; i < 240; i++) {
       const a = (i / 240) * Math.PI * 2;
       const d = u.clone().multiplyScalar(Math.cos(a)).addScaledVector(v, Math.sin(a));
+      if (BODY_SHAPE1) { pts.push(p0.clone().addScaledVector(d, SHAPE.rayHit(p0, d).distanceTo(p0) * 0.995)); continue; }
       const A = (d.x / AX.x) ** 2 + (d.y / AX.y) ** 2 + (d.z / AX.z) ** 2;
       const B = 2 * (p0.x * d.x / AX.x ** 2 + p0.y * d.y / AX.y ** 2 + p0.z * d.z / AX.z ** 2);
       const C = (p0.x / AX.x) ** 2 + (p0.y / AX.y) ** 2 + (p0.z / AX.z) ** 2 - 1;
@@ -10327,8 +10359,9 @@
     for (let i = 0; i < 420; i++) {
       const u = r() * 2 - 1, a = r() * Math.PI * 2, s = Math.sqrt(1 - u * u);
       const d = V(s * Math.cos(a), u, s * Math.sin(a));
-      const p = V(d.x * AX.x, d.y * AX.y, d.z * AX.z);
-      if (!kept(p, 0.04) || p.y / AX.y > 0.8) continue;
+      const p = BODY_SHAPE1 ? SHAPE.rayHit(V(0, 0, 0), d) : V(d.x * AX.x, d.y * AX.y, d.z * AX.z);
+      const onBrush = BODY_SHAPE1 ? p.y > 0 && Math.abs(p.y - SHAPE.apical(p.x, p.z).y) < 0.02 : p.y / AX.y > 0.8;
+      if (!kept(p, 0.04) || onBrush) continue;
       ms.push(placeM(p, 0.035 + r() * 0.035));
     }
     dsph(instanced(new THREE.SphereGeometry(1, 14, 10), mat("plasma_membrane", { color: 0x8f78d8, roughness: 0.35, clearcoat: 0.6, emissive: new THREE.Color(0x000000) }), ms, "plasma_membrane"), true);
@@ -10337,7 +10370,16 @@
   // apical microvilli (brush border)
   (function () {
     const ms = [], n = 900;
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; BODY_SHAPE1 && i < n; i++) {
+      // Quasi-uniform golden-ratio lattice over the apical groove, each microvillus along the local surface normal.
+      const x = -SHAPE.dims.L * 0.96 + 2 * SHAPE.dims.L * 0.96 * (i + 0.5) / n;
+      const ap0 = SHAPE.apical(x, 0), z = (((i * 0.6180339887) % 1) * 2 - 1) * SHAPE.dims.W * ap0.k * 0.95;
+      const ap = SHAPE.apical(x, z), base = V(x, ap.y, z);
+      if (!kept(base, 0.03)) continue;
+      const len = 0.34 + 0.06 * Math.sin(i * 1.7);
+      ms.push(placeM(base.clone().addScaledVector(ap.n, len / 2 - 0.02), V(1, 1, 1), quatTo(ap.n)));
+    }
+    for (let i = 0; !BODY_SHAPE1 && i < n; i++) {
       const y = 1 - (i + 0.5) / n * (1 - 0.8);
       const a = i * 2.399963, s = Math.sqrt(1 - y * y);
       const d = V(s * Math.cos(a), y, s * Math.sin(a));
@@ -10356,7 +10398,7 @@
   (function () {
     const r = rng(9), pos = [];
     for (let i = 0; i < 2600; i++) {
-      const p = V((r() * 2 - 1) * AX.x, (r() * 2 - 1) * AX.y, (r() * 2 - 1) * AX.z);
+      const p = V((r() * 2 - 1) * BOX.x, (r() * 2 - 1) * BOX.y, (r() * 2 - 1) * BOX.z);
       if (!insideCell(p, 0.95) || !kept(p)) continue;
       pos.push(p.x, p.y, p.z);
     }
@@ -10423,6 +10465,17 @@
   // ---------------------------------------------------------------- rough ER
   const erMat = mat("rough_er", { color: 0x4d6fd6, roughness: 0.45, clearcoat: 0.5, sheen: 0.6, sheenColor: new THREE.Color(0xa9c0ff), emissive: new THREE.Color(0x000000), side: THREE.DoubleSide, clippingPlanes: [cut] });
   const ER_PHI0 = -1.5, ER_PHIL = 2.0, ER_TH0 = 0.5, ER_THL = 1.75;
+  const erRipple = (d, k) => 0.025 * Math.sin(d.x * 14 + k) * Math.sin(d.y * 11 + k * 0.7) + 0.015 * Math.sin(d.z * 23);
+  // Sheets stay inside the body: points beyond ER_FIT of the body ellipsoid are pulled back towards the nucleus.
+  // ER_FIT is a display margin that also clears the inward ripple of the drawn membrane, not a measured dimension.
+  const ER_FIT = 0.97;
+  const erClamp = (q) => {
+    if (insideCell(q, ER_FIT)) return q;
+    const a = q.clone().sub(NC);
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (insideCell(NC.clone().addScaledVector(a, m), ER_FIT)) lo = m; else hi = m; }
+    return NC.clone().addScaledVector(a, lo);
+  };
   for (let k = 0; k < 6; k++) {
     const R = NR + 0.12 + k * 0.1;
     const g = new THREE.SphereGeometry(R, 96, 48, ER_PHI0 + k * 0.05, ER_PHIL - k * 0.12, ER_TH0 + k * 0.03, ER_THL - k * 0.07);
@@ -10430,21 +10483,24 @@
     for (let i = 0; i < p.count; i++) {
       v.fromBufferAttribute(p, i);
       const d = v.clone().normalize();
-      const w = 0.025 * Math.sin(d.x * 14 + k) * Math.sin(d.y * 11 + k * 0.7) + 0.015 * Math.sin(d.z * 23);
-      v.addScaledVector(d, w);
-      p.setXYZ(i, v.x + NC.x, v.y + NC.y, v.z + NC.z);
+      v.addScaledVector(d, erRipple(d, k));
+      const q = erClamp(v.clone().add(NC));
+      p.setXYZ(i, q.x, q.y, q.z);
     }
     g.computeVertexNormals();
     add(new THREE.Mesh(g, erMat), "rough_er");
   }
+  // Each ribosome sits on the cytosolic (outer) face of its own sheet: inside that sheet's angular extent, centre
+  // one radius plus a small display clearance above the rippled surface; none on the flattened patches.
   (function erRibosomes() {
-    const r = rng(33), ms = [];
+    const r = rng(33), ms = [], RR = 0.017, CLEAR = 0.003, EDGE = 0.04;
     for (let i = 0; i < 1600; i++) {
-      const k = Math.floor(r() * 6), R = NR + 0.12 + k * 0.1 + 0.03;
-      const phi = ER_PHI0 + r() * ER_PHIL, th = ER_TH0 + r() * ER_THL;
-      const p = V(-R * Math.cos(phi) * Math.sin(th), R * Math.cos(th), R * Math.sin(phi) * Math.sin(th)).add(NC);
-      if (!kept(p)) continue;
-      ms.push(placeM(p, 0.017));
+      const k = Math.floor(r() * 6), pl = ER_PHIL - k * 0.12, tl = ER_THL - k * 0.07;
+      const phi = ER_PHI0 + k * 0.05 + EDGE + r() * (pl - 2 * EDGE), th = ER_TH0 + k * 0.03 + EDGE + r() * (tl - 2 * EDGE);
+      const d = V(-Math.cos(phi) * Math.sin(th), Math.cos(th), Math.sin(phi) * Math.sin(th));
+      const p = d.clone().multiplyScalar(NR + 0.12 + k * 0.1 + erRipple(d, k) + RR + CLEAR).add(NC);
+      if (!kept(p) || !insideCell(p, ER_FIT)) continue;
+      ms.push(placeM(p, RR));
     }
     dsph(instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes"), true);
   })();
@@ -10575,7 +10631,7 @@
   (function () {
     const r = rng(91), ms = [];
     for (let i = 0; i < 1400; i++) {
-      const p = V((r() * 2 - 1) * AX.x, (r() * 2 - 1) * AX.y, (r() * 2 - 1) * AX.z);
+      const p = V((r() * 2 - 1) * BOX.x, (r() * 2 - 1) * BOX.y, (r() * 2 - 1) * BOX.z);
       if (!insideCell(p, 0.9) || !kept(p) || p.distanceTo(NC) < NR + 0.75) continue;
       ms.push(placeM(p, 0.018));
     }
@@ -10602,7 +10658,7 @@
         col.push(c.r, c.g, c.b, c.r, c.g, c.b);
       }
     }
-    const rp = () => { for (;;) { const p = V((r() * 2 - 1) * AX.x, (r() * 2 - 1) * AX.y, (r() * 2 - 1) * AX.z); if (insideCell(p, 0.92)) return p; } };
+    const rp = () => { for (;;) { const p = V((r() * 2 - 1) * BOX.x, (r() * 2 - 1) * BOX.y, (r() * 2 - 1) * BOX.z); if (insideCell(p, 0.92)) return p; } };
     for (let i = 0; i < 90; i++) filament(rp(), rp(), palette[i % 3]);
     for (let i = 0; i < 40; i++) filament(CYTOSK.clone(), rp(), palette[1]);
     for (let i = 0; i < 50; i++) { const y = AX.y * 0.8; filament(V((r() - 0.5) * 3, y, (r() - 0.5) * 2.2), V((r() - 0.5) * 3, y - 0.05, (r() - 0.5) * 2.2), palette[0]); }
@@ -10777,7 +10833,7 @@
     new Set(MOTION.ves.map((v) => v.c)).forEach((c) => c.getSpacedPoints(30).forEach((p) => routePts.push(p)));
     const gr = [];
     for (let tries = 0; gr.length < 9 && tries < 4000; tries++) {
-      const p = V((r() * 2 - 1) * AX.x, (r() * 2 - 1) * AX.y * 0.75, (r() * 2 - 1) * AX.z);
+      const p = V((r() * 2 - 1) * BOX.x, (r() * 2 - 1) * BOX.y * 0.75, (r() * 2 - 1) * BOX.z);
       const rad = 0.06 + r() * 0.025;
       if (!insideCell(p, 0.82) || !kept(p, rad + 0.08) || p.distanceTo(NC) < NR + 0.3) continue;
       if (occupied.some(([q, qr]) => p.distanceTo(q) < qr + rad + 0.08)) continue;
@@ -11606,7 +11662,19 @@
       if (pts.length) row("tour_target", t.id + ":" + (i + 1), pts.reduce((sum, p) => sum.add(p), V(0, 0, 0)).multiplyScalar(0.6 / pts.length));
     }));
     row("camera_target", "home", HOME.target);
-    return { body: { ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
+    // Drawn whole-cell parts against the SHAPE body: kept mesh vertices, or instance centres, not strictly inside.
+    const SKIN = new Set(["plasma_membrane", "cytosol", "apical_microvilli"]), parts = {};
+    pickables.forEach((o) => {
+      const c = o.userData.comp; if (!c || SKIN.has(c) || !o.geometry || !o.geometry.attributes.position) return;
+      o.updateWorldMatrix(true, false);
+      const e = parts[c] = parts[c] || { checked: 0, outside: 0, sampled_max_dist: 0 }, q = new THREE.Vector3(), mI = new THREE.Matrix4();
+      // boundaryDist is costly, so the outside distance is sampled (every 20th outside point).
+      const test = (p) => { if (!kept(p, 0)) return; e.checked++; if (!SHAPE.insideStrict(p) && e.outside++ % 20 === 0) e.sampled_max_dist = Math.max(e.sampled_max_dist, SHAPE.boundaryDist(p)); };
+      if (o.isInstancedMesh) for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, mI); test(q.setFromMatrixPosition(mI).applyMatrix4(o.matrixWorld)); }
+      else { const a = o.geometry.attributes.position; for (let i = 0; i < a.count; i++) test(q.fromBufferAttribute(a, i).applyMatrix4(o.matrixWorld)); }
+    });
+    return { body: { shape: BODY_SHAPE1 ? "shape1" : "ellipsoid", ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
+      parts_vs_shape: parts,
       target: { dims: SHAPE.dims, surface_tol: SHAPE.SURFACE_TOL, surface_ids: [...SURF], eps: SHAPE.EPS, audit_res: SHAPE.AUDIT_RES,
         mesh_check: { analytic_boundary_samples: meshN, max_dist_to_audit_mesh: meshErr, samples_strictly_inside: meshFalseInside },
         witnesses: witness }, points: out };
