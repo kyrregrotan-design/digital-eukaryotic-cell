@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T14:50:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-07T14:55:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 body swap: SHAPE body behind preview switch",
@@ -25,21 +25,18 @@
                               },
                    "codex":  {
                                  "task":  "Accept ER membrane-clearance correction",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record acceptance and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Inspect exact correction",
-                                               "Reproduce containment reports",
-                                               "Verify live geometry",
-                                               "Record acceptance and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  435,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-07T14:34:59+02:00",
-                                 "last_run":  "2026-10-07T14:25:45+02:00",
+                                 "last_run":  "2026-10-07T14:54:19+02:00",
                                  "next_run":  null
                              }
                },
