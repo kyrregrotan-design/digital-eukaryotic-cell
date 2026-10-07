@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-06T23:30:03+02:00",
+    "generated_at":  "2026-10-07T07:00:03+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  33,
+    "today_runs":  0,
     "queue":  [
 
               ],
