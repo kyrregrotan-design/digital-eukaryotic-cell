@@ -11351,14 +11351,17 @@
       ids.forEach((id) => { if (depth[id] == null) depth[id] = 0; });
     });
     const center = V(NC.x + 0.15, NC.y - 0.05, 0);
-    const count = {}, ringDir = {}, ringIds = {};
+    const count = {}, ringDir = {}, ringIds = {}, hostCount = {};
     MODEL.nodes.forEach((n) => {
       const k = pwOrder.indexOf(n.pathway_id);
       const ang = (k / pwOrder.length) * Math.PI * 2 + 0.35;
       const dir = V(Math.cos(ang), Math.sin(ang), 0);
       const where = n.illustrative_compartment;
       const slot = n.pathway_id + ":" + where + ":" + depth[n.id];
-      const j = (count[slot] = (count[slot] || 0) + 1) - 1;
+      let j = (count[slot] = (count[slot] || 0) + 1) - 1;
+      // SHAPE preview: nodes hosted on one organelle copy take their offset index from that host, in model order,
+      // so nodes of different depths or pathways no longer stack on the same point.
+      if (BODY_SHAPE1 && (where === "mitochondrion" || where === "autophagosome" || where === "lysosome")) j = (hostCount[where] = (hostCount[where] || 0) + 1) - 1;
       const side = V(-dir.y, dir.x, 0).multiplyScalar((j % 2 ? 1 : -1) * Math.ceil(j / 2) * 0.2);
       let p;
       if (where === "membrane") {
@@ -12061,6 +12064,7 @@
   };
   window.__anatHit = (x, y) => { const h = hitTest({ clientX: x, clientY: y }); return h ? (h.anat ? "anat:" + h.anat : h.comp ? "comp:" + h.comp : "node:" + h.node) : null; };
   window.__anatScreen = (id) => { const p = ANAT_POS[id] && proj(ANAT_POS[id]); return p ? { x: p.x, y: p.y, ok: p.ok } : null; };
+  window.__nodeScreen = (id) => { const p = nodePos[id] && proj(nodePos[id]); return p ? { x: p.x, y: p.y, ok: p.ok } : null; };
   // Surface gap between two fitted shapes ("comp:idx", or "nucleus:0") at given centres, e.g. to re-test a recorded
   // earlier placement. Preview only; null for unknown ids.
   window.__spacingAt = (a, ca, b, cb) => {
@@ -12749,7 +12753,8 @@
     if (inside) { drawInteriorOverlay(W, H, leftEdge, rightEdge); return; }
     if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, 62, false, null, "center");
     drawAnatSectionLabels(leftEdge, rightEdge);
-    if (showLabels && !document.body.classList.contains("cramped")) {
+    // The CeAJ close-up hides the compartment columns: at this zoom they clamp to the panel edges and cover the cell.
+    if (showLabels && !document.body.classList.contains("cramped") && !(CJ_FADE && CJ_FADE.cam)) {
       const c0 = proj(V(0, 0, 0));
       const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: c.label.replace(/\s*\(.*\)$/, ""), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
       const sorted = items.slice().sort((a, b) => a.p.x - b.p.x);
