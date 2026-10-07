@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T18:40:06+02:00",
+    "generated_at":  "2026-10-07T18:45:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
@@ -18,7 +18,7 @@
                                                 "Probes and pytest",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  846,
+                                  "eta_seconds":  546,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-07T18:34:45+02:00",
                                   "last_run":  "2026-10-07T18:34:10+02:00",
