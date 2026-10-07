@@ -10225,6 +10225,67 @@
   const kept = (p, margin) => cut.distanceToPoint(p) >= (margin || 0);
   const insideCell = (p, s) => (p.x / (AX.x * s)) ** 2 + (p.y / (AX.y * s)) ** 2 + (p.z / (AX.z * s)) ** 2 < 1;
 
+  // a2-shape-1 target body (approved 2026-10-06 10:31), not drawn yet: a D-section half-ring segment with x = A-P,
+  // +y apical and z = partner edges; shallow concave apical groove, convex basal face, rounded A-P ends. Every size
+  // here is a display choice (length about equal to section width), not a measurement.
+  const SHAPE = (function () {
+    const L = 2.1, W = 2.1, HA = 1.05, HB = 1.45, G = 0.3, ER = 0.9;
+    const finite = (p) => [p.x, p.y, p.z].every(Number.isFinite);
+    // Strict membership: boundary points, the A-P end poles and non-finite input are not inside. EPS is a
+    // floating-point guard only, so points computed on the boundary never count as interior.
+    const EPS = 1e-9;
+    function insideStrict(p) {
+      if (!finite(p) || Math.abs(p.x) >= L - EPS) return false;
+      const e = Math.max(0, Math.abs(p.x) - (L - ER)), k = Math.sqrt(1 - (e / ER) ** 2);
+      if (!(Math.abs(p.z) < W * k - EPS)) return false;
+      const u = (p.z / (W * k)) ** 2;
+      return p.y > -HB * k * Math.sqrt(1 - u) + EPS && p.y < k * (HA - G * (1 - u)) - EPS;
+    }
+    // Boundary grid from the same profile, for the audit mesh and the body builder. Stations run pole to pole
+    // (x = -L and x = L with k = 0 are included); each ring runs along the apical groove for z = -Wk..Wk, then
+    // back along the basal face, so the partner-edge walls (y = 0..k*HA at |z| = Wk) are ring edges.
+    function grid(nMid, nEnd, n) {
+      const st = [], rings = [];
+      for (let i = nEnd; i >= 1; i--) { const t = i / nEnd * Math.PI / 2; st.push([-((L - ER) + ER * Math.sin(t)), i === nEnd ? 0 : Math.cos(t)]); }
+      for (let i = 0; i <= nMid; i++) st.push([-(L - ER) + 2 * (L - ER) * i / nMid, 1]);
+      for (let i = 1; i <= nEnd; i++) { const t = i / nEnd * Math.PI / 2; st.push([(L - ER) + ER * Math.sin(t), i === nEnd ? 0 : Math.cos(t)]); }
+      st[0][0] = -L; st[st.length - 1][0] = L;
+      st.forEach(([x, k]) => {
+        const r = [];
+        for (let j = 0; j <= n; j++) { const s = -Math.cos(Math.PI * j / n); r.push(V(x, k * (HA - G * (1 - s * s)), W * k * s)); }
+        for (let j = 0; j <= n; j++) { const a = Math.PI * j / n; r.push(V(x, -HB * k * Math.sin(a), W * k * Math.cos(a))); }
+        rings.push(r);
+      });
+      return rings;
+    }
+    const AUDIT_RES = [48, 24, 48];
+    let TRI = null;
+    function auditTris() {
+      if (TRI) return TRI;
+      const rings = grid(...AUDIT_RES), m = rings[0].length;
+      TRI = [];
+      for (let i = 0; i < rings.length - 1; i++) for (let j = 0; j < m; j++) {
+        const a = rings[i][j], b = rings[i][(j + 1) % m], c = rings[i + 1][j], d = rings[i + 1][(j + 1) % m];
+        [[a, c, b], [b, c, d]].forEach((v) => { const t = new THREE.Triangle(...v); if (t.getArea() > 1e-12) TRI.push(t); });
+      }
+      return TRI;
+    }
+    // Unsigned distance to the uncut audit mesh (scene units); NaN for non-finite input. Audit only, not per frame.
+    function boundaryDist(p) {
+      if (!finite(p)) return NaN;
+      const q = new THREE.Vector3(); let best = Infinity;
+      for (const t of auditTris()) { t.closestPointToPoint(p, q); best = Math.min(best, q.distanceToSquared(p)); }
+      return Math.sqrt(best);
+    }
+    const dist = (p) => { const d = boundaryDist(p); return insideStrict(p) ? -d : d; };
+    // Membrane-bound items must lie in a two-sided band around the membrane (brush-border label offset plus rim
+    // tube); everything else must be strictly inside. SURFACE_TOL is a display tolerance, not a measured thickness.
+    const SURFACE_TOL = 0.35;
+    return { dims: { L, W, HA, HB, G, ER }, EPS, AUDIT_RES, grid, insideStrict, boundaryDist, dist, SURFACE_TOL,
+      inside: (p, margin) => insideStrict(p) && (!margin || boundaryDist(p) > margin),
+      onSurface: (p) => Math.abs(dist(p)) <= SURFACE_TOL };
+  })();
+
   const cellGeo = organic(new THREE.SphereGeometry(1, 160, 110), 0.018, 5.5, 1.3);
   cellGeo.scale(AX.x, AX.y, AX.z);
   add(new THREE.Mesh(cellGeo, mat("plasma_membrane", {
@@ -11516,6 +11577,40 @@
   };
   window.__anatHit = (x, y) => { const h = hitTest({ clientX: x, clientY: y }); return h ? (h.anat ? "anat:" + h.anat : h.comp ? "comp:" + h.comp : "node:" + h.node) : null; };
   window.__anatScreen = (id) => { const p = ANAT_POS[id] && proj(ANAT_POS[id]); return p ? { x: p.x, y: p.y, ok: p.ok } : null; };
+  window.__shapeAudit = () => {
+    const SURF = new Set(["anchor:plasma_membrane", "anchor:apical_microvilli", "anat_pos:ceaj", "anat_label:terminal_web_endotube.bb"]);
+    MODEL.nodes.forEach((n) => { if (n.illustrative_compartment === "membrane") SURF.add("node:" + n.id); });
+    const out = [], row = (kind, id, p) => {
+      const surface = SURF.has(kind + ":" + id), d = SHAPE.dist(p);
+      out.push({ kind, id, pos: p.toArray().map((c) => +c.toFixed(4)), inside: insideCell(p, 1), kept: kept(p, 0),
+        contract: surface ? "surface" : "interior", target_dist: d, target_inside: SHAPE.insideStrict(p),
+        target_ok: surface ? SHAPE.onSurface(p) : SHAPE.inside(p) });
+    };
+    const witness = [[0, 0, 0], [2.2, 100, 100], [2.099, 100, 100], [2.1, 0, 0], [-2.1, 0, 0], [0, 0.75, 0], [0, -1.45, 0],
+      [0, 0.75 + 0.3, 0], [0, -1.45 - 0.3, 0], [NaN, 0, 0], [Infinity, 0, 0]].map((c) => {
+      const p = V(...c);
+      const d = SHAPE.dist(p);
+      return { pos: c.map(String), inside: SHAPE.inside(p), dist: Number.isFinite(d) ? d : String(d), on_surface: SHAPE.onSurface(p) };
+    });
+    const fine = SHAPE.grid(97, 47, 97);
+    let meshErr = 0, meshN = 0, meshFalseInside = 0;
+    fine.forEach((r, i) => r.forEach((p, j) => { if ((i * r.length + j) % 37) return; meshN++;
+      meshErr = Math.max(meshErr, SHAPE.boundaryDist(p)); if (SHAPE.insideStrict(p)) meshFalseInside++; }));
+    Object.keys(ANCHOR).forEach((id) => row("anchor", id, ANCHOR[id]));
+    Object.keys(ANAT_POS).forEach((id) => row("anat_pos", id, ANAT_POS[id]));
+    Object.keys(ANAT_LBL).forEach((id) => Object.keys(ANAT_LBL[id]).forEach((k) => { if (ANAT_LBL[id][k] && ANAT_LBL[id][k].isVector3) row("anat_label", id + "." + k, ANAT_LBL[id][k]); }));
+    Object.keys(nodeObj).forEach((id) => row("node", id, nodeObj[id].mesh.getWorldPosition(new THREE.Vector3())));
+    ((TOURS_DATA && TOURS_DATA.tours) || []).forEach((t) => (t.script || []).forEach((line, i) => {
+      if (line.kind === "off_route") return;
+      const pts = [...new Set(line.highlight_nodes || [])].map((id) => nodePos[id]).filter(Boolean);
+      if (pts.length) row("tour_target", t.id + ":" + (i + 1), pts.reduce((sum, p) => sum.add(p), V(0, 0, 0)).multiplyScalar(0.6 / pts.length));
+    }));
+    row("camera_target", "home", HOME.target);
+    return { body: { ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
+      target: { dims: SHAPE.dims, surface_tol: SHAPE.SURFACE_TOL, surface_ids: [...SURF], eps: SHAPE.EPS, audit_res: SHAPE.AUDIT_RES,
+        mesh_check: { analytic_boundary_samples: meshN, max_dist_to_audit_mesh: meshErr, samples_strictly_inside: meshFalseInside },
+        witnesses: witness }, points: out };
+  };
   window.__nodeSpheres = () => {
     const rc = new THREE.Raycaster();
     return DSPHERES.filter((d) => d.obj.userData.node).map((d) => {

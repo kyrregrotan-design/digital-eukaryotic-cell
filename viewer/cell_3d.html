@@ -10323,7 +10323,7 @@
 
   function showWholeCellOverview() {
     highlightedOrganelle = null;
-    if (!WHOLECELL) { setDetailPlain("Click an organelle, pathway node, or edge…"); return; }
+    if (!WHOLECELL) { setDetailPlain("Click an organelle, a gene or process, or an influence arrow…"); return; }
     detail.classList.add("detail-html");
     detail.innerHTML = wholeCellOverviewHtml();
     renderWholeCellPanel();
@@ -10396,7 +10396,7 @@
     },
     {
       title: "Step 6 — Pathway overlay",
-      caption: "Colored nodes/edges are the embedded literature model — toggle pathways in the sidebar.",
+      caption: "Colored genes, processes and influence arrows show the embedded literature model — toggle pathways in the sidebar.",
       organelle: null,
       camera: { yaw: 0.65, pitch: 0.35, dist: 4.5 },
       pathways: "all",
@@ -10436,7 +10436,7 @@
     },
     {
       title: "Step 11 — AMPK (Wave A)",
-      caption: "Energy stress → AAK-2; coupling into TOR/autophagy uses shared nodes (new edges may be [REF NEEDED]).",
+      caption: "Energy stress → AAK-2; coupling into TOR/autophagy uses shared genes and processes (new influence arrows may be [REF NEEDED]).",
       organelle: null,
       camera: { yaw: 0.25, pitch: -0.1, dist: 3.85 },
       pathways: "ampk_only",
@@ -10678,8 +10678,8 @@
     cascadeBadge.textContent = "Tracing from " + nodeId + "…";
     if (cascadeHint) {
       cascadeHint.textContent =
-        "Cascade from " + nodeId + ": " + built.edgeOrder.length +
-        " edge(s). Teaching animation only — not calibrated kinetics.";
+        "Cascade from " + nodeLabel(nodeId) + ": " + built.edgeOrder.length +
+        " influence arrow(s). Teaching animation only — not a kinetic, chemical-rate simulation.";
     }
     const n = nodeById[nodeId];
     if (n && n.position) {
@@ -10750,7 +10750,7 @@
       focusOrganelleCamera(step.organelle);
     } else {
       highlightedOrganelle = null;
-      setDetailPlain("Tour step: explore pathway nodes (click any colored node or edge for model citations).");
+      setDetailPlain("Tour step: explore pathway genes and processes (click a colored gene or process, or an influence arrow, for model citations).");
     }
     if (step.cascadeFrom) {
       selectedNodeId = step.cascadeFrom;
@@ -11357,7 +11357,7 @@
   // The classic viewer draws no schematic anatomy details, so they have no destination here.
   const SEARCH = (MODEL.search_index || []).filter((e) => e.type !== "anatomy_detail");
   const SEARCH_GROUPS = {
-    pathway_node: "Genes and model nodes", protein: "Atlas proteins", complex: "Complexes", carrier: "Carriers",
+    pathway_node: "Genes and processes", protein: "Atlas proteins", complex: "Complexes", carrier: "Carriers",
     pathway: "Pathways", compartment: "Compartments", atlas_compartment: "Atlas compartments",
     overview_process: "Processes (overview)", atlas_process: "Atlas processes",
   };
