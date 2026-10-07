@@ -311,21 +311,21 @@
       <div class="view-toggles">
         <label><input type="checkbox" id="vt-labels" checked /> Compartment labels</label>
         <label><input type="checkbox" id="vt-network" checked /> Pathway network</label>
-        <label><input type="checkbox" id="vt-nodelabels" /> Node names</label>
+        <label><input type="checkbox" id="vt-nodelabels" /> Gene and process names</label>
       </div>
       <div id="wc-list"></div>
       <button type="button" class="inline-btn" id="wc-overview">Whole-cell overview</button>
     </div>
     <div class="section">
       <p class="section-title">Detail</p>
-      <div id="detail">Click an organelle, pathway node, or edge…</div>
+      <div id="detail">Click an organelle, a gene or process, or an influence arrow…</div>
     </div>
     <div class="section">
       <p class="section-title">Pathways</p>
       <div class="pathway-toggles" id="pathway-toggles"></div>
     </div>
     <div class="section">
-      <p class="section-title">Edge evidence (model)</p>
+      <p class="section-title">Evidence for model arrows</p>
       <div class="evidence-legend" id="evidence-legend"></div>
     </div>
     <div class="section">
@@ -343,7 +343,7 @@
       <div class="learn-bar">
         <button type="button" id="cascade-run">Trace from selection</button>
         <button type="button" id="cascade-stop">Stop</button>
-        <span id="cascade-hint-label" style="flex:1 1 100%;font-size:0.72rem;color:var(--muted);margin-top:0.25rem;line-height:1.35;">Click a gene/process node, then Trace — signal walks outgoing edges step by step (teaching animation; not kinetics).</span>
+        <span id="cascade-hint-label" style="flex:1 1 100%;font-size:0.72rem;color:var(--muted);margin-top:0.25rem;line-height:1.35;">Click a gene or process, then Trace — the signal follows the model's influence arrows step by step (teaching animation; not a kinetic, chemical-rate simulation).</span>
       </div>
     </div>
     <div class="section">
@@ -363,12 +363,12 @@
     <div id="mode-badge">loading…</div>
     <div id="illus-badge">Organelle shapes: illustrative (not to scale)</div>
     <canvas id="c"></canvas>
-    <div id="hud">Drag orbit · wheel zoom · click organelle or node/edge · Trace for cascade</div>
+    <div id="hud">Drag orbit · wheel zoom · click an organelle, gene/process or arrow · Trace for cascade</div>
   </div>
 </div>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-05 19:10 (Europe/Oslo)",
+  "generated_at": "2026-10-07 08:17 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -2137,7 +2137,7 @@
       "label": "HSF-1 (heat-shock factor)",
       "role": "gene_product",
       "gene_id": "hsf-1",
-      "wormbase_id": null,
+      "wormbase_id": "WBGene00002004",
       "description": "Heat-shock transcription factor; proteostasis teaching hub (Wave B2).",
       "pathway_id": "hsf1_hsr",
       "pathways": [
@@ -2158,10 +2158,16 @@
       "gene_evidence": {
         "sources": [
           {
+            "citation": "NCBI Gene 173078 (hsf-1), nomenclature authority WormBase; Alliance of Genome Resources gene record WB:WBGene00002004",
+            "doi": null,
+            "url": "https://www.ncbi.nlm.nih.gov/gene/173078",
+            "note": "WBGene00002004 retrieved 2026-10-07 (NCBI Datasets v2 and Alliance API) and accepted by Kyrre 2026-10-07 (proposal_genome_layer_2026-10-07.md, pick 3). Locus: data/celegans/genome/gene_loci.json."
+          },
+          {
             "citation": "[REF NEEDED]",
             "doi": null,
             "url": null,
-            "note": "WBGene ID, functional and intestinal-expression evidence pending verification; left null rather than guessed."
+            "note": "Functional evidence still pending verification. Intestinal-expression evidence is now in data/celegans/genome/intestinal_expression.json (hsf-1)."
           }
         ],
         "evidence_level": "inferred",
@@ -7038,6 +7044,10 @@
         {
           "text": "hsf-1",
           "relation": "model gene ID"
+        },
+        {
+          "text": "WBGene00002004",
+          "relation": "WormBase gene ID"
         }
       ],
       "destination": {
@@ -10059,9 +10069,9 @@
   const pct = Math.round((st.verified_citation_share || 0) * 1000) / 10;
   document.getElementById("status").innerHTML = [
     ["Pathways", st.pathway_count],
-    ["Nodes", st.node_count],
-    ["Edges", st.edge_count],
-    ["Edges with verified citations", st.edges_with_verified_citations + " (" + pct + "%)"],
+    ["Genes, molecules and processes", st.node_count],
+    ["Influence arrows", st.edge_count],
+    ["Arrows with verified citations", st.edges_with_verified_citations + " (" + pct + "%)"],
     ["Last data update", st.last_data_update],
   ].map(([k, v]) => "<span>" + k + "</span><span>" + v + "</span>").join("");
 
@@ -10245,7 +10255,7 @@
     const cov = c.coverage;
     const yes = (b) => (b ? "yes" : "no");
     return '<p class="ev"><strong>Core processes (overview)</strong></p><ul class="ev">' + procs + "</ul>" +
-      (nodes.length ? '<p class="ev">Model nodes drawn here (illustrative placement): ' + esc(nodes.join(", ")) + "</p>" : "") +
+      (nodes.length ? '<p class="ev">Model genes and processes drawn here (illustrative placement): ' + esc(nodes.join(", ")) + "</p>" : "") +
       '<p class="ev">Coverage: overview ' + yes(cov.represented_in_overview) +
       " · source annotation " + yes(cov.source_annotation_attached) +
       " · adult-intestinal evidence " + yes(cov.adult_intestinal_evidence_checked) +
@@ -10307,7 +10317,7 @@
       '<p class="ped-note">' + esc(WHOLECELL.disclaimer) + "</p>" +
       '<p class="ev">' + n + " compartments · " + k.source_annotation_attached + " with source annotation · " +
       k.adult_intestinal_evidence_checked + " with adult-intestine evidence checked · " +
-      k.simulation_implemented + " covered by the qualitative simulation. Click a compartment (here, on a label in the view, or on the organelle) for its processes, model nodes, coverage and gaps.</p>" +
+      k.simulation_implemented + " covered by the qualitative simulation. Click a compartment (here, on a label in the view, or on the organelle) for its processes, the model genes drawn there, coverage and gaps.</p>" +
       rows;
   }
 
@@ -10640,7 +10650,7 @@
     cascadeBadge.textContent = "Cascade idle";
     if (cascadeHint) {
       cascadeHint.textContent =
-        "Click a gene/process node, then Trace — signal walks outgoing edges step by step (teaching animation; not kinetics).";
+        "Click a gene or process, then Trace — the signal follows the model's influence arrows step by step (teaching animation; not a kinetic, chemical-rate simulation).";
     }
   }
 
@@ -10651,7 +10661,7 @@
       stopCascade();
       if (cascadeHint) {
         cascadeHint.textContent =
-          "No outgoing visible edges from " + nodeId + ". Toggle pathways on or pick an upstream node." +
+          "No visible influence arrows lead out of " + nodeLabel(nodeId) + ". Turn pathways back on or pick a gene or process further upstream." +
           (NONPROP.some((r) => r.source === nodeId) ? " Its membership or atlas-only relations do not propagate; this is missing model coverage, not biological insensitivity." : "");
       }
       return;
@@ -10776,7 +10786,7 @@
   document.getElementById("cascade-run").addEventListener("click", () => {
     if (!selectedNodeId) {
       if (cascadeHint) {
-        cascadeHint.textContent = "Select a node first (click a colored gene/process in the 3D view).";
+        cascadeHint.textContent = "Select a gene or process first (click a colored one in the 3D view).";
       }
       return;
     }
@@ -10848,16 +10858,16 @@
         esc(n.wormbase_id) + "</a>"
       : "—";
     return (
-      '<span class="tag">Model node</span>' +
+      '<span class="tag">Signalling-model item</span>' +
       "<strong>" + esc(n.label) + "</strong> (" + esc(n.id) + ")<br/>" +
       "Role: " + esc(n.role) + (n.role === "complex" ? " (local label, not a database accession)" : "") + "<br/>" +
       "Pathway: " + esc((n.pathways || [n.pathway_id]).join(", ")) + "<br/>" +
       "WormBase: " + wb + "<br/>" +
-      "Node evidence: " + scoreText(n.evidence_level, n.confidence) + "<br/>" +
+      "Evidence for this model item: " + scoreText(n.evidence_level, n.confidence) + "<br/>" +
       "Illustrative compartment: " + esc(n.illustrative_compartment) + " (not measured)<br/>" +
-      "Node sources:<br/>" + sourcesListHtml(n.sources) +
+      "Sources for this model item:<br/>" + sourcesListHtml(n.sources) +
       (n.description ? ("<br/>Note: " + escL(n.description)) : "") +
-      (n.notes ? ("<br/>Node notes: " + escL(n.notes)) : "") +
+      (n.notes ? ("<br/>Model notes: " + escL(n.notes)) : "") +
       geneIdentityHtml(n.gene_evidence) +
       relationsHtml(n.id) +
       scopeNoteHtml(n.pathways || [n.pathway_id]) +
@@ -10867,7 +10877,7 @@
 
   function geneIdentityHtml(ge) {
     if (!ge) return "";
-    return '<p class="ped-note">Gene identity evidence (separate from the node): ' + scoreText(ge.evidence_level, ge.confidence) +
+    return '<p class="ped-note">Gene identity evidence (separate from this model item): ' + scoreText(ge.evidence_level, ge.confidence) +
       (ge.notes ? "<br/>Gene identity notes: " + escL(ge.notes) : "") +
       "<br/>Gene identity sources:<br/>" + sourcesListHtml(ge.sources) + "</p>";
   }
@@ -10894,7 +10904,7 @@
 
   function formatEdgeHtml(e) {
     return (
-      '<span class="tag">' + (e.transfer_rule ? "Component transfer rule" : "Model edge") + "</span>" +
+      '<span class="tag">' + (e.transfer_rule ? "Component transfer rule" : "Model influence arrow") + "</span>" +
       "<strong>" + esc(nodeLabel(e.source)) + " " + esc(VERB_LABEL[e.interaction] || String(e.interaction).replace(/_/g, " ")) + " " + esc(nodeLabel(e.target)) + "</strong><br/>" +
       "Pathway: " + esc(pathwayLabel(e.pathway_id)) + "<br/>" +
       (e.transfer_rule ? "Passes on a component change · gain " + esc(e.gain) + " · weight " + esc(e.weight) + "<br/>" : "") +
@@ -10964,7 +10974,7 @@
   const atlasSearch = document.getElementById("atlas-search");
   const atlasList = document.getElementById("atlas-list");
   const hudEl = document.getElementById("hud");
-  const HUD_CELL = "Drag orbit · wheel zoom · click organelle or node/edge · double-click mitochondria to go inside";
+  const HUD_CELL = "Drag orbit · wheel zoom · click an organelle, gene/process or arrow · double-click mitochondria to go inside";
 
   function currentScene() { return sceneStack[sceneStack.length - 1]; }
   function atlasActive() { return currentScene() !== "cell"; }
@@ -11267,7 +11277,7 @@
     const carriers = ATLAS.carriers.filter((c) => c.related_protein_ids.indexOf(p.id) >= 0);
     if (carriers.length) html += "<h4>Related carriers</h4>" + carriers.map((c) => btn("carrier", c.id, c.label)).join("");
     html += processesForHtml("protein", p.id);
-    html += "<h4>Pathway links (descriptive, not simulation edges)</h4>";
+    html += "<h4>Pathway links (descriptive, not model influence arrows)</h4>";
     if (!p.pathway_links.length) html += '<span class="ev">None curated yet.</span>';
     html += p.pathway_links.map((l) => {
       const n = nodeById[l.node_id];
@@ -11435,7 +11445,7 @@
     if (!p) return "";
     const ns = MODEL.nodes.filter((n) => (n.pathways || [n.pathway_id]).includes(id));
     return '<span class="tag">Signalling pathway</span><strong>' + esc(p.name) + "</strong>" + (p.summary ? "<p>" + escL(p.summary) + "</p>" : "") +
-      (ns.length ? "<h4>Nodes</h4>" + ns.map((n) => btn("node", n.id, n.label)).join("") : "") +
+      (ns.length ? "<h4>Genes and processes in this pathway</h4>" + ns.map((n) => btn("node", n.id, n.label)).join("") : "") +
       '<span class="ev">Only this pathway is shown now; tick the others again in the Pathways list.</span>';
   }
   function searchGo(e) {
@@ -13462,7 +13472,7 @@
         Math.floor(elapsed / cascade.stepMs) + 1
       );
       cascadeBadge.textContent =
-        "Cascade " + cascade.root + " · edge " +
+        "Cascade " + cascade.root + " · arrow " +
         Math.min(step, cascade.edgeOrder.length) + "/" + cascade.edgeOrder.length;
       if (elapsed > total + 1800) {
         // gentle idle after finish; keep highlights soft until Stop
