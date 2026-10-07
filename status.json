@@ -1,34 +1,34 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T09:00:05+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-07T09:05:07+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "qa-slice3 classic-view remainder + licence register",
-                                  "status":  "done",
-                                  "step":  5,
+                                  "task":  "Close qa-slice3, complete licence rows, start a2-shape-1",
+                                  "status":  "running",
+                                  "step":  4,
                                   "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Log finish and handoff",
+                                  "percent":  63.1,
+                                  "step_title":  "a2-shape-1 baseline harness",
                                   "steps":  [
-                                                "Apply six cell_3d replacements",
-                                                "Browser check changed paths",
-                                                "Reconcile licence register",
-                                                "Pytest",
-                                                "Log finish and handoff"
+                                                "Mark qa-slice3 done",
+                                                "Complete seven register rows",
+                                                "Read a2-shape-1 plan",
+                                                "a2-shape-1 baseline harness",
+                                                "Validate and log"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  136,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T08:51:19+02:00",
-                                  "last_run":  "2026-10-07T08:45:07+02:00",
+                                  "updated":  "2026-10-07T09:04:54+02:00",
+                                  "last_run":  "2026-10-07T09:01:13+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Final qa-slice3 and licence review",
-                                 "status":  "running",
+                                 "status":  "done",
                                  "step":  4,
                                  "total":  4,
-                                 "percent":  90,
+                                 "percent":  100,
                                  "step_title":  "Record verdict and handoff",
                                  "steps":  [
                                                "Verify six changed strings",
@@ -36,9 +36,9 @@
                                                "Check licence reconciliation",
                                                "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  53,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T08:58:43+02:00",
+                                 "updated":  "2026-10-07T09:01:01+02:00",
                                  "last_run":  "2026-10-07T08:52:05+02:00",
                                  "next_run":  null
                              }
@@ -47,12 +47,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  8,
+    "today_runs":  9,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Final qa-slice3 and licence review",
+                       "finished":  "2026-10-07T09:01:01+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "qa-slice3 classic-view remainder + licence register",
@@ -77,23 +82,18 @@
                        "agent":  "cursor",
                        "task":  "qa-slice3 jargon pass",
                        "finished":  "2026-10-07T07:51:22+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Aging corrections and side-asset review",
-                       "finished":  "2026-10-07T07:41:01+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  39.4,
+                      "percent":  40.4,
                       "total":  45,
-                      "done":  15,
-                      "in_progress":  3,
+                      "done":  16,
+                      "in_progress":  2,
                       "todo":  27,
-                      "remaining":  30,
+                      "remaining":  29,
                       "weight_total":  94,
-                      "weight_done":  37,
+                      "weight_done":  38,
                       "groups":  [
                                      "Ferdig i dag",
                                      "Nå",
@@ -210,7 +210,7 @@
                                         "id":  "qa-slice3",
                                         "group":  "Nå",
                                         "text":  "QA-retting 13–14: fremdriftstegn i turer, ordlyd og fokusring",
-                                        "status":  "in_progress",
+                                        "status":  "done",
                                         "weight":  1
                                     },
                                     {
@@ -382,7 +382,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-06T22:59:00+02:00",
+                      "updated":  "2026-10-07T09:03:00+02:00",
                       "updated_by":  "Cursor"
                   }
 }
