@@ -1,45 +1,40 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T14:15:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-07T14:20:05+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Part E answer + ER defect slice + FREMDRIFT item",
-                                  "status":  "done",
-                                  "step":  6,
-                                  "total":  6,
-                                  "percent":  100,
-                                  "step_title":  "Finish entry",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "Start entry",
-                                                "Read MOL-0014/0015, answer Q1-Q3",
-                                                "Locate ER/ribosome code",
-                                                "Measure defects on final meshes",
-                                                "Fix + after audit + browser check",
-                                                "Finish entry"
+
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  799,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-07T14:03:06+02:00",
-                                  "last_run":  "2026-10-07T13:53:25+02:00",
+                                  "last_run":  "2026-10-07T14:19:23+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "ER bug fix and side-asset review",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  72.5,
-                                 "step_title":  "Check candidate sources and queue",
+                                 "percent":  100,
+                                 "step_title":  "Record verdict and handoff",
                                  "steps":  [
                                                "Inspect changed ER code and audit",
                                                "Verify replica and live geometry",
                                                "Check candidate sources and queue",
                                                "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  165,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T14:10:41+02:00",
+                                 "updated":  "2026-10-07T14:19:10+02:00",
                                  "last_run":  "2026-10-07T14:03:35+02:00",
                                  "next_run":  null
                              }
@@ -54,6 +49,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "ER bug fix and side-asset review",
+                       "finished":  "2026-10-07T14:19:10+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Part E answer + ER defect slice + FREMDRIFT item",
@@ -78,11 +78,6 @@
                        "agent":  "codex",
                        "task":  "Licence rows and shape baseline review",
                        "finished":  "2026-10-07T09:19:03+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Close qa-slice3, complete licence rows, start a2-shape-1",
-                       "finished":  "2026-10-07T09:08:28+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
