@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T20:00:05+02:00",
+    "generated_at":  "2026-10-07T20:05:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "CeAJ view: fix camera bookmark lifecycle",
                                   "status":  "running",
-                                  "step":  2,
+                                  "step":  4,
                                   "total":  5,
-                                  "percent":  38,
-                                  "step_title":  "Add cjReleaseCamera and call sites",
+                                  "percent":  78,
+                                  "step_title":  "Audits and pytest",
                                   "steps":  [
                                                 "Read findings",
                                                 "Add cjReleaseCamera and call sites",
@@ -17,9 +17,9 @@
                                                 "Audits and pytest",
                                                 "Finish log"
                                             ],
-                                  "eta_seconds":  54,
+                                  "eta_seconds":  88,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T19:57:53+02:00",
+                                  "updated":  "2026-10-07T20:02:46+02:00",
                                   "last_run":  "2026-10-07T19:57:08+02:00",
                                   "next_run":  null
                               },
