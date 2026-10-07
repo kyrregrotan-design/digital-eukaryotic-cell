@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T16:25:04+02:00",
+    "generated_at":  "2026-10-07T16:30:06+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 preview: Golgi triangle spacing",
-                                  "status":  "running",
-                                  "step":  1,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  15,
-                                  "step_title":  "Read request and code",
+                                  "percent":  100,
+                                  "step_title":  "Finish log entry",
                                   "steps":  [
                                                 "Read request and code",
                                                 "Triangle-to-capsule narrow phase in fitter and audit",
@@ -18,29 +18,26 @@
                                                 "Run pytest",
                                                 "Finish log entry"
                                             ],
-                                  "eta_seconds":  911,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T16:21:23+02:00",
+                                  "updated":  "2026-10-07T16:29:01+02:00",
                                   "last_run":  "2026-10-07T16:20:15+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Review preview organelle spacing",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Inspect placement constraints",
-                                               "Reproduce preview and default audits",
-                                               "Verify geometry bounds and witnesses",
-                                               "Record verdict and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  530,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-07T16:20:01+02:00",
-                                 "last_run":  "2026-10-07T16:08:01+02:00",
+                                 "last_run":  "2026-10-07T16:29:54+02:00",
                                  "next_run":  null
                              }
                },
@@ -54,6 +51,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-1 preview: Golgi triangle spacing",
+                       "finished":  "2026-10-07T16:29:01+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review preview organelle spacing",
@@ -78,11 +80,6 @@
                        "agent":  "codex",
                        "task":  "Review shape1 preview milestone",
                        "finished":  "2026-10-07T15:04:39+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "a2-shape-1 body swap: SHAPE body behind preview switch",
-                       "finished":  "2026-10-07T14:42:40+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
