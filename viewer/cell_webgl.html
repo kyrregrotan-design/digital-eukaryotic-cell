@@ -11135,6 +11135,46 @@
     for (let i = CJ_ST.length - 2; i >= 1; i--) pts.push(subAp(CJ_ST[i][0], CJ_ST[i][1], -1, CJ_D));
     return pts;
   })() : null;
+  // a2-shape-1 preview, option A of proposal_ceaj_selection_view_2026-10-07.md (Kyrre 2026-10-07 19:19, Codex AGREE):
+  // while the CeAJ is selected, the plasma membrane and brush border fade in a band around the belt so the belt reads
+  // in place from above. Band radii, faded opacity and fade time are display choices, not measurements.
+  const CJ_FADE = ANAT.ceaj && BODY_SHAPE1 ? { R0: 0.3, R1: 0.5, T: 0.35, u: { cjFade: { value: 0 }, cjAlpha: { value: 0.25 } }, mats: [], meshes: [], mvW: null, on: false, cam: null } : null;
+  function beltDist(p) {
+    let best = Infinity;
+    const ab = new THREE.Vector3(), ap = new THREE.Vector3();
+    for (let i = 0; i < BELT.length; i++) {
+      const a = BELT[i], b = BELT[(i + 1) % BELT.length];
+      ab.subVectors(b, a); ap.subVectors(p, a);
+      const t = Math.max(0, Math.min(1, ap.dot(ab) / Math.max(1e-12, ab.lengthSq())));
+      best = Math.min(best, ap.addScaledVector(ab, -t).length());
+    }
+    return best;
+  }
+  const cjBandAt = (p) => 1 - THREE.MathUtils.smoothstep(beltDist(p), CJ_FADE.R0, CJ_FADE.R1);
+  function cjCompile(sh) {
+    Object.assign(sh.uniforms, CJ_FADE.u);
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nattribute float cjBand;\nvarying float vCjBand;\n")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvCjBand = cjBand;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nuniform float cjFade;\nuniform float cjAlpha;\nvarying float vCjBand;\n")
+      .replace("#include <color_fragment>", "#include <color_fragment>\ndiffuseColor.a *= mix(1.0, cjAlpha, cjFade * vCjBand);");
+  }
+  function cjKey() { return "cjband"; }
+  if (CJ_FADE) {
+    const memb = pickables.find((o) => o.userData.comp === "plasma_membrane" && o.geometry === cellGeo);
+    const mv = pickables.find((o) => o.userData.comp === "apical_microvilli" && o.isInstancedMesh);
+    const pa = memb.geometry.attributes.position, mw = new Float32Array(pa.count), q = new THREE.Vector3();
+    for (let i = 0; i < pa.count; i++) mw[i] = cjBandAt(q.fromBufferAttribute(pa, i));
+    memb.geometry.setAttribute("cjBand", new THREE.BufferAttribute(mw, 1));
+    const iw = new Float32Array(mv.count), M4 = new THREE.Matrix4();
+    for (let i = 0; i < mv.count; i++) { mv.getMatrixAt(i, M4); iw[i] = cjBandAt(q.setFromMatrixPosition(M4)); }
+    mv.geometry.setAttribute("cjBand", new THREE.InstancedBufferAttribute(iw, 1));
+    CJ_FADE.mvW = iw;
+    CJ_FADE.meshes.push(memb, mv);
+    CJ_FADE.mats.push(memb.material, mv.material);
+    CJ_FADE.mats.forEach((m) => { m.onBeforeCompile = cjCompile; m.customProgramCacheKey = cjKey; });
+    CJ_FADE.info = { R0: CJ_FADE.R0, R1: CJ_FADE.R1, alpha: CJ_FADE.u.cjAlpha.value, fadeSeconds: CJ_FADE.T,
+      membraneVerts: pa.count, membraneInBand: mw.filter((w) => w > 0.5).length, microvilli: mv.count, microvilliInBand: iw.filter((w) => w > 0.5).length };
+  }
   if (ANAT.ceaj && BODY_SHAPE1) {
     // Faint neighbouring-cell membrane over the +x rounded end, below the belt (wall, basal arc, wall), offset outward.
     const rows = CJ_ST.filter(([x]) => x >= SD.L - SD.ER - 1e-9), WALL = 4, ARC = 24, pos = [], idx = [];
@@ -11680,7 +11720,10 @@
     if (mode === depthMode) return 0;
     depthMode = mode;
     DC_MATS.forEach((m) => {
-      if (mode === "off") { delete m.onBeforeCompile; delete m.customProgramCacheKey; }
+      const cj = CJ_FADE && CJ_FADE.mats.includes(m);
+      if (mode === "off" && cj) { m.onBeforeCompile = cjCompile; m.customProgramCacheKey = cjKey; }
+      else if (mode === "off") { delete m.onBeforeCompile; delete m.customProgramCacheKey; }
+      else if (cj) { m.onBeforeCompile = (sh) => { dcCompile(sh); cjCompile(sh); }; m.customProgramCacheKey = () => cjKey() + "-" + dcKey(); }
       else { m.onBeforeCompile = dcCompile; m.customProgramCacheKey = dcKey; }
       m.needsUpdate = true;
     });
@@ -11688,7 +11731,7 @@
   }
   window.__depthCues = () => ({
     mode: depthMode, under: DC_U.dcUnder.value, rim: DC_U.dcRim.value, materials: DC_MATS.length,
-    patched: DC_MATS.filter((m) => Object.prototype.hasOwnProperty.call(m, "onBeforeCompile")).length,
+    patched: DC_MATS.filter((m) => Object.prototype.hasOwnProperty.call(m, "onBeforeCompile") && (depthMode !== "off" || !(CJ_FADE && CJ_FADE.mats.includes(m)))).length,
     compartments: [...new Set(Object.keys(compMats).filter((c) => compMats[c].some((m) => DC_MATS.includes(m))))].sort(),
   });
   // Test hook: scales the cue strength (0 = same shaders with a neutral factor) to isolate the cue in renders.
@@ -12090,7 +12133,8 @@
         not_checked: "rough ER sheets, free ribosomes, cytoskeleton, chromatin, motion vesicles; spheres are tested by radius, not by mesh" };
     }
     return { body: { shape: BODY_SHAPE1 ? "shape1" : "ellipsoid", ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
-      parts_vs_shape: parts, body_fit: BODY_FIT, spacing, ...(BODY_SHAPE1 ? { node_shift: NODE_SHIFT } : {}),
+      parts_vs_shape: parts, body_fit: BODY_FIT, spacing, ...(BODY_SHAPE1 ? { node_shift: NODE_SHIFT, home_fit: { hx: +HOME_FIT.hx.toFixed(4), hy: +HOME_FIT.hy.toFixed(4),
+        right: HOME_FIT.box.right.map((c) => +c.toFixed(4)), up: HOME_FIT.box.up.map((c) => +c.toFixed(4)), dist: +HOME.dist.toFixed(4) } } : {}),
       target: { dims: SHAPE.dims, surface_tol: SHAPE.SURFACE_TOL, surface_ids: [...SURF], eps: SHAPE.EPS, audit_res: SHAPE.AUDIT_RES,
         mesh_check: { analytic_boundary_samples: meshN, max_dist_to_audit_mesh: meshErr, samples_strictly_inside: meshFalseInside },
         witnesses: witness }, points: out };
@@ -12264,14 +12308,76 @@
   }
   function selectAnat(id, fly) {
     if (!ANAT[id]) return;
+    if (id !== "ceaj") cjReleaseCamera();
     selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail();
-    if (fly && !inside && ANAT_LBL[id]) frameAnatSection(id);
+    if (fly && !inside && id === "ceaj" && CJ_FADE) frameCeaj();
+    else if (fly && !inside && ANAT_LBL[id]) frameAnatSection(id);
     else if (fly && !inside && ANAT_POS[id]) flyTo(ANAT_POS[id], 0.8);
   }
+  // Preview option A: a view from above the apical face at the home yaw, sized to the belt; the band fade does the rest.
+  // The previous camera goal is restored on deselect unless the learner has moved the camera since.
+  const CJ_PITCH = 1.1, CJ_ZOOM = 0.6;
+  function frameCeaj() {
+    const goal = (g) => ({ yaw: g.yaw, pitch: g.pitch, dist: g.dist, target: g.target.clone() });
+    const prev = CJ_FADE.cam ? CJ_FADE.cam.prev : goal(camGoal), prevZoomed = CJ_FADE.cam ? CJ_FADE.cam.zoomed : userZoomed;
+    const lo = V(Infinity, Infinity, Infinity), hi = V(-Infinity, -Infinity, -Infinity);
+    BELT.forEach((p) => { lo.min(p); hi.max(p); });
+    const w = window.innerWidth, h = window.innerHeight, { L, R } = panelEdges();
+    const avail = Math.max(240, w - L - R - 30), t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const hx = (hi.x - lo.x) / 2 + 0.25, hy = (hi.z - lo.z) / 2 * Math.sin(CJ_PITCH) + 0.4;
+    userZoomed = true;
+    camGoal.yaw = HOME.yaw; camGoal.pitch = CJ_PITCH;
+    // Closer than the whole-belt fit, aimed just inside the middle of the kept -z partner edge, so the tube reads.
+    const edge = BELT.filter((p) => p.z < 0).sort((a, b) => Math.abs(a.x) - Math.abs(b.x))[0];
+    camGoal.dist = Math.min(16, Math.max(3, CJ_ZOOM * Math.max(hx / (t * (w / h) * (avail / w)), hy / (t * ((h - 90) / h)))));
+    camGoal.target.set(edge.x, edge.y, edge.z + 0.35);
+    CJ_FADE.cam = { prev, zoomed: prevZoomed, goal: goal(camGoal) };
+  }
+  function cjUpdate(dt) {
+    if (!CJ_FADE) return;
+    const want = !inside && !tourCur && anatGroup.visible && !!(selected && selected.anat === "ceaj");
+    const u = CJ_FADE.u.cjFade;
+    u.value = Math.max(0, Math.min(1, u.value + (want ? dt : -dt) / CJ_FADE.T));
+    const on = u.value > 0;
+    if (on !== CJ_FADE.on) {
+      // Faded parts draw last among transparent objects with depth writes kept, so sorting is fixed and nothing flickers.
+      CJ_FADE.on = on;
+      CJ_FADE.mats.forEach((m) => { m.transparent = on; m.needsUpdate = true; });
+      CJ_FADE.meshes.forEach((o) => { o.renderOrder = on ? 1 : 0; });
+    }
+    if (!want && CJ_FADE.cam && !inside && !tourCur) cjReleaseCamera();
+  }
+  // Must run before any new selection camera, tour or interior snapshot, so they start from the restored goal.
+  function cjReleaseCamera() {
+    if (!CJ_FADE || !CJ_FADE.cam) return;
+    const c = CJ_FADE.cam, g = c.goal;
+    const still = Math.abs(camGoal.yaw - g.yaw) < 1e-9 && Math.abs(camGoal.pitch - g.pitch) < 1e-9 && Math.abs(camGoal.dist - g.dist) < 1e-9 && camGoal.target.distanceTo(g.target) < 1e-9;
+    if (still) { camGoal.yaw = c.prev.yaw; camGoal.pitch = c.prev.pitch; camGoal.dist = c.prev.dist; camGoal.target.copy(c.prev.target); userZoomed = c.zoomed; }
+    CJ_FADE.cam = null;
+  }
+  window.__ceajView = () => CJ_FADE && Object.assign({ fade: CJ_FADE.u.cjFade.value, on: CJ_FADE.on, transparent: CJ_FADE.mats.map((m) => m.transparent),
+    renderOrder: CJ_FADE.meshes.map((o) => o.renderOrder), cam: CJ_FADE.cam && { goal: { yaw: CJ_FADE.cam.goal.yaw, pitch: CJ_FADE.cam.goal.pitch, dist: +CJ_FADE.cam.goal.dist.toFixed(4), target: CJ_FADE.cam.goal.target.toArray().map((x) => +x.toFixed(4)) } },
+    camGoal: { yaw: camGoal.yaw, pitch: camGoal.pitch, dist: +camGoal.dist.toFixed(4), target: camGoal.target.toArray().map((x) => +x.toFixed(4)) } }, CJ_FADE.info);
+  // Test hooks: pick at the screen position of every kept belt point on screen; deselect to the overview.
+  window.__ceajPick = () => {
+    if (!CJ_FADE) return null;
+    const tally = {};
+    let n = 0;
+    BELT.filter((p) => kept(p, 0.02)).forEach((p) => {
+      const s = proj(p);
+      if (!s.ok || s.x < 0 || s.y < 0 || s.x > window.innerWidth || s.y > window.innerHeight) return;
+      n++;
+      const h = hitTest({ clientX: s.x, clientY: s.y }), k = !h ? "none" : h.anat ? "anat:" + h.anat : h.node ? "node" : "comp:" + h.comp;
+      tally[k] = (tally[k] || 0) + 1;
+    });
+    return { fade: CJ_FADE.u.cjFade.value, onScreen: n, tally };
+  };
+  window.__ceajDeselect = () => { showOverview(); return !selected; };
   // Face-on view of the cutaway at the apical cap, so the layered section reads under the brush border.
   function frameAnatSection(id) {
     const L = ANAT_LBL[id];
     if (!L || inside) return;
+    cjReleaseCamera();
     const d = cut.normal.clone().negate();
     userZoomed = true;
     camGoal.yaw = Math.atan2(d.x, d.z);
@@ -12397,13 +12503,15 @@
     pickHtml = null; write();
     if (document.getElementById("open-right").classList.contains("ready")) detailReady(true);
   }
-  function showOverview() { selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
+  function showOverview() { cjReleaseCamera(); selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
   function selectComp(id, fly) {
+    cjReleaseCamera();
     selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons(); openDetail();
     if (inside) isel = { t: "comp", id }; else if (fly) flyTo(ANCHOR[id], 0.8);
   }
   function selectNode(id, fly) {
     const n = NODE[id]; if (!n) return;
+    cjReleaseCamera();
     openDetail();
     if (!nodeVisible(id)) { (n.pathways || [n.pathway_id]).forEach((p) => { pwVisible[p] = true; }); renderPwList(); refreshPathwayStyles(); }
     selected = { node: id }; detail.innerHTML = nodeHtml(id); setPerturbButtons();
@@ -12426,6 +12534,25 @@
   const cam = { yaw: 0.32, pitch: 0.38, dist: 8.2, target: V(0, -0.05, 0) };
   const camGoal = { yaw: cam.yaw, pitch: cam.pitch, dist: cam.dist, target: cam.target.clone() };
   const HOME = { yaw: 0.32, pitch: 0.38, dist: 8.2, target: V(0, -0.05, 0) };
+  // Half-sizes on screen at the home angle that fitDist fits. The ellipsoid keeps its hand-set values. The SHAPE
+  // preview projects the profile grid plus brush-border tips (0.36 along the apical normal) and centres the target on
+  // that box; the 0.2 and 0.15 margins are display choices.
+  const HOME_FIT = { hx: 2.45, hy: 1.9 };
+  if (BODY_SHAPE1) {
+    const f = V(Math.cos(HOME.pitch) * Math.sin(HOME.yaw), Math.sin(HOME.pitch), Math.cos(HOME.pitch) * Math.cos(HOME.yaw));
+    const r = V(Math.cos(HOME.yaw), 0, -Math.sin(HOME.yaw)), u = f.clone().cross(r);
+    const lo = [Infinity, Infinity], hi = [-Infinity, -Infinity];
+    const addP = (p) => { const a = p.dot(r), b = p.dot(u); lo[0] = Math.min(lo[0], a); hi[0] = Math.max(hi[0], a); lo[1] = Math.min(lo[1], b); hi[1] = Math.max(hi[1], b); };
+    const half = (SHAPE.AUDIT_RES[2] + 1);
+    SHAPE.grid(...SHAPE.AUDIT_RES).forEach((ring) => ring.forEach((p, j) => {
+      addP(p);
+      if (j < half && Math.abs(p.z) < SHAPE.dims.W * SHAPE.apical(p.x, 0).k) addP(p.clone().addScaledVector(SHAPE.apical(p.x, p.z).n, 0.36));
+    }));
+    HOME_FIT.hx = (hi[0] - lo[0]) / 2 + 0.2; HOME_FIT.hy = (hi[1] - lo[1]) / 2 + 0.15;
+    HOME.target = r.multiplyScalar((hi[0] + lo[0]) / 2).addScaledVector(u, (hi[1] + lo[1]) / 2).addScaledVector(f, f.dot(HOME.target));
+    cam.target.copy(HOME.target); camGoal.target.copy(HOME.target);
+    HOME_FIT.box = { right: [lo[0], hi[0]], up: [lo[1], hi[1]] };
+  }
   const leftP = document.getElementById("left"), rightP = document.getElementById("right");
   let userZoomed = false;
   function panelEdges() {
@@ -12439,12 +12566,13 @@
     const { L, R } = panelEdges();
     const avail = Math.max(240, w - L - R - (showLabels ? 280 : 30));
     const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const dW = 2.45 / (t * (w / h) * (avail / w));
-    const dH = 1.9 / (t * ((h - 90) / h));
+    const dW = HOME_FIT.hx / (t * (w / h) * (avail / w));
+    const dH = HOME_FIT.hy / (t * ((h - 90) / h));
     return Math.min(18, Math.max(dW, dH));
   }
   function flyTo(p, factor) {
     if (!p) return;
+    cjReleaseCamera();
     userZoomed = true;
     camGoal.target.copy(p).multiplyScalar(0.6);
     camGoal.dist = HOME.dist * factor;
@@ -12525,7 +12653,8 @@
     const nh = ray.intersectObjects(nodeMeshes.filter((m) => m.visible), false);
     if (nh.length) return { node: nh[0].object.userData.node };
     const hits = ray.intersectObjects(pickables.filter((o) => !o.userData.anat || anatGroup.visible), false).filter((h) =>
-      !(h.object.material && h.object.material.clippingPlanes && h.object.material.clippingPlanes.some((pl) => pl.distanceToPoint(h.point) < 0)));
+      !(h.object.material && h.object.material.clippingPlanes && h.object.material.clippingPlanes.some((pl) => pl.distanceToPoint(h.point) < 0)) &&
+      !(CJ_FADE && CJ_FADE.u.cjFade.value > 0.5 && CJ_FADE.meshes.includes(h.object) && (h.instanceId != null ? CJ_FADE.mvW[h.instanceId] : cjBandAt(h.point)) > 0.5));
     if (!hits.length) return null;
     // thin filaments criss-cross the whole cytoplasm; a solid organelle just behind one should win
     const solid = hits.find((h) => !h.object.isLine);
@@ -15009,6 +15138,7 @@
     if (transition) { pendingNav = () => enterInterior(id, after); return; }
     if (inside && inside.id === id) { if (after) after(); return; }
     if (tourCur) tourClose(true);
+    cjReleaseCamera();
     transition = true;
     hideTip();
     if (!inside) {
@@ -15886,6 +16016,7 @@
     const t = TOUR_LIST.find((x) => x.id === id);
     if (!t) return;
     if (tourCur) tourClose();
+    cjReleaseCamera();
     resetCascade();
     tourCur = { t, i: 0, playing: false, tok: 0, timers: [], hl: new Set(), prevFocus: focusPw, rate: Number(tourEl("tp-rate").value) || 1,
       prevVisible: { ...pwVisible }, prevCam: { yaw: camGoal.yaw, pitch: camGoal.pitch, dist: camGoal.dist, target: camGoal.target.clone(), userZoomed } };
@@ -16247,6 +16378,7 @@
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (inside !== qInside) { qInside = inside; QUALITY.settle(now); }
     QUALITY.frame(now);
+    cjUpdate(dt);
     updateCamera(dt);
     if (inside) {
       inside.updaters.forEach((f) => f(now, dt));
