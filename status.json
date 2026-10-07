@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T16:10:04+02:00",
+    "generated_at":  "2026-10-07T16:15:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,18 +25,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review SHAPE preview fit milestone",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Review preview organelle spacing",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  38.9,
+                                 "step_title":  "Reproduce preview and default audits",
                                  "steps":  [
-
+                                               "Inspect placement constraints",
+                                               "Reproduce preview and default audits",
+                                               "Verify geometry bounds and witnesses",
+                                               "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  357,
+                                 "eta_seconds":  664,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T15:56:22+02:00",
+                                 "updated":  "2026-10-07T16:12:32+02:00",
                                  "last_run":  "2026-10-07T16:08:01+02:00",
                                  "next_run":  null
                              }
@@ -45,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  22,
+    "today_runs":  23,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
