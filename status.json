@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T18:25:05+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-07T18:30:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 item (c): node remaps in SHAPE preview",
@@ -25,22 +25,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review CeAJ and terminal-web geometry",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review SHAPE pathway node remaps",
+                                 "status":  "running",
+                                 "step":  1,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and queue handoff",
+                                 "percent":  2.2,
+                                 "step_title":  "Check new task and standing decisions",
                                  "steps":  [
                                                "Check new task and standing decisions",
-                                               "Verify belt and sheet geometry",
-                                               "Reproduce preview and default audits",
+                                               "Verify layout and report differences",
+                                               "Reproduce preview and default in memory",
                                                "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  774,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T17:47:07+02:00",
-                                 "last_run":  "2026-10-07T17:36:35+02:00",
+                                 "updated":  "2026-10-07T18:29:43+02:00",
+                                 "last_run":  "2026-10-07T18:27:57+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  30,
+    "today_runs":  31,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
