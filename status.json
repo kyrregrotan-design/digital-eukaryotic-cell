@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T23:00:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-07T23:05:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 (e): motion check on SHAPE preview",
@@ -25,19 +25,19 @@
                               },
                    "codex":  {
                                  "task":  "Review SHAPE motion fix",
-                                 "status":  "running",
-                                 "step":  2,
+                                 "status":  "done",
+                                 "step":  3,
                                  "total":  3,
-                                 "percent":  46.4,
-                                 "step_title":  "Reproduce preview and default routes",
+                                 "percent":  100,
+                                 "step_title":  "Compare audits and conclude",
                                  "steps":  [
                                                "Inspect scope and motion code",
                                                "Reproduce preview and default routes",
                                                "Compare audits and conclude"
                                            ],
-                                 "eta_seconds":  243,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T22:59:04+02:00",
+                                 "updated":  "2026-10-07T23:03:15+02:00",
                                  "last_run":  "2026-10-07T22:56:33+02:00",
                                  "next_run":  null
                              }
@@ -52,6 +52,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Review SHAPE motion fix",
+                       "finished":  "2026-10-07T23:03:15+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "a2-shape-1 (e): motion check on SHAPE preview",
@@ -76,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "a2-shape-1 (e): tour, interior, picking checks (preview)",
                        "finished":  "2026-10-07T21:26:43+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review CeAJ labels",
-                       "finished":  "2026-10-07T21:18:06+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
