@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T09:45:04+02:00",
+    "generated_at":  "2026-10-07T09:50:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,18 +25,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Licence rows and shape baseline review",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Licensing and shape contract review",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  72.5,
+                                 "step_title":  "Verify shape contract and audit coverage",
                                  "steps":  [
-
+                                               "Read coordination and loop guards",
+                                               "Check licensing decision application",
+                                               "Verify shape contract and audit coverage",
+                                               "Record findings and Cursor handoff"
                                            ],
-                                 "eta_seconds":  385,
+                                 "eta_seconds":  48,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T09:19:03+02:00",
+                                 "updated":  "2026-10-07T09:47:10+02:00",
                                  "last_run":  "2026-10-07T09:43:29+02:00",
                                  "next_run":  null
                              }
@@ -45,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  11,
+    "today_runs":  12,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
