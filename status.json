@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T15:15:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-07T15:20:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1: apical normal fix + organelle remap (preview)",
@@ -26,15 +26,18 @@
                               },
                    "codex":  {
                                  "task":  "Review shape1 preview milestone",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "status":  "done",
+                                 "step":  4,
+                                 "total":  4,
+                                 "percent":  100,
+                                 "step_title":  "Record verdict and handoff",
                                  "steps":  [
-
+                                               "Read task and standing decisions",
+                                               "Check default branch and body geometry",
+                                               "Verify preview evidence read-only",
+                                               "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  322,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-07T15:04:39+02:00",
                                  "last_run":  "2026-10-07T15:12:26+02:00",
