@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T21:05:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T21:10:05+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 (e): home size and CeAJ label overlap (preview)",
@@ -25,22 +25,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review preview host-index node separation",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review CeAJ labels",
+                                 "status":  "running",
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and queue handoff",
+                                 "percent":  64.6,
+                                 "step_title":  "Reproduce labels and release paths",
                                  "steps":  [
-                                               "Inspect bounded layout change",
-                                               "Verify audit and distance evidence",
-                                               "Reproduce five pointer picks",
+                                               "Inspect label condition and saved evidence",
+                                               "Compare exact preview/default audits",
+                                               "Reproduce labels and release paths",
                                                "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  139,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T20:54:54+02:00",
-                                 "last_run":  "2026-10-07T20:48:48+02:00",
+                                 "updated":  "2026-10-07T21:09:06+02:00",
+                                 "last_run":  "2026-10-07T21:05:50+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  42,
+    "today_runs":  43,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
