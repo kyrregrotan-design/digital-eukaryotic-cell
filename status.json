@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T19:45:04+02:00",
+    "generated_at":  "2026-10-07T19:50:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,18 +26,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Assess CeAJ selection-view option A",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Review CeAJ selection view",
+                                 "status":  "running",
+                                 "step":  4,
+                                 "total":  4,
+                                 "percent":  81.9,
+                                 "step_title":  "Reproduce restore paths and verdict",
                                  "steps":  [
-
+                                               "Confirm scope and history",
+                                               "Inspect fade and interaction code",
+                                               "Compare audits and browser evidence",
+                                               "Reproduce restore paths and verdict"
                                            ],
-                                 "eta_seconds":  408,
+                                 "eta_seconds":  82,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T19:26:34+02:00",
+                                 "updated":  "2026-10-07T19:49:32+02:00",
                                  "last_run":  "2026-10-07T19:43:52+02:00",
                                  "next_run":  null
                              }
@@ -46,7 +49,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  36,
+    "today_runs":  37,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
