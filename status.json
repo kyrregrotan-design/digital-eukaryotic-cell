@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T19:20:06+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-07T19:25:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 item (d): CeAJ selection framing (preview)",
@@ -25,22 +25,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review SHAPE home-camera fit",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and queue handoff",
+                                 "task":  "Assess CeAJ selection-view option A",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  3,
+                                 "percent":  50.9,
+                                 "step_title":  "Assess display and interaction concerns",
                                  "steps":  [
-                                               "Inspect changed code and reports",
-                                               "Recompute home fit and audit comparisons",
-                                               "Reproduce browser audits read-only",
-                                               "Record verdict and queue handoff"
+                                               "Check approval and log history",
+                                               "Assess display and interaction concerns",
+                                               "Record verdict and Cursor handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  266,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T18:54:33+02:00",
-                                 "last_run":  "2026-10-07T18:47:04+02:00",
+                                 "updated":  "2026-10-07T19:23:28+02:00",
+                                 "last_run":  "2026-10-07T19:20:28+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  34,
+    "today_runs":  35,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
