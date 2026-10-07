@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T09:05:07+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T09:10:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Close qa-slice3, complete licence rows, start a2-shape-1",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  63.1,
-                                  "step_title":  "a2-shape-1 baseline harness",
+                                  "percent":  100,
+                                  "step_title":  "Validate and log",
                                   "steps":  [
                                                 "Mark qa-slice3 done",
                                                 "Complete seven register rows",
@@ -17,29 +17,26 @@
                                                 "a2-shape-1 baseline harness",
                                                 "Validate and log"
                                             ],
-                                  "eta_seconds":  136,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T09:04:54+02:00",
+                                  "updated":  "2026-10-07T09:08:28+02:00",
                                   "last_run":  "2026-10-07T09:01:13+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Final qa-slice3 and licence review",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Verify six changed strings",
-                                               "Check browser evidence",
-                                               "Check licence reconciliation",
-                                               "Record verdict and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  369,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-07T09:01:01+02:00",
-                                 "last_run":  "2026-10-07T08:52:05+02:00",
+                                 "last_run":  "2026-10-07T09:09:12+02:00",
                                  "next_run":  null
                              }
                },
@@ -53,6 +50,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Close qa-slice3, complete licence rows, start a2-shape-1",
+                       "finished":  "2026-10-07T09:08:28+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Final qa-slice3 and licence review",
@@ -77,11 +79,6 @@
                        "agent":  "codex",
                        "task":  "Review WebGL learner wording",
                        "finished":  "2026-10-07T08:04:26+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "qa-slice3 jargon pass",
-                       "finished":  "2026-10-07T07:51:22+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -89,8 +86,8 @@
                       "percent":  40.4,
                       "total":  45,
                       "done":  16,
-                      "in_progress":  2,
-                      "todo":  27,
+                      "in_progress":  3,
+                      "todo":  26,
                       "remaining":  29,
                       "weight_total":  94,
                       "weight_done":  38,
@@ -217,7 +214,7 @@
                                         "id":  "a2-shape-1",
                                         "group":  "Neste",
                                         "text":  "A2-form 1: tarmcellekropp, børstesøm, CeAJ-belte, kamera og omplassering (godkjent 10:31)",
-                                        "status":  "todo",
+                                        "status":  "in_progress",
                                         "weight":  3
                                     },
                                     {
@@ -382,7 +379,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-07T09:03:00+02:00",
+                      "updated":  "2026-10-07T09:08:00+02:00",
                       "updated_by":  "Cursor"
                   }
 }
