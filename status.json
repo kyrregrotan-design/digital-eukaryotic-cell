@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T08:11:39+02:00",
+    "generated_at":  "2026-10-07T08:15:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
@@ -49,7 +49,8 @@
                  },
     "today_runs":  5,
     "queue":  [
-
+                  "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
+                  "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
                    {
