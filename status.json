@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T22:30:05+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T22:35:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 (e): option A label rows (preview)",
@@ -24,23 +24,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Option A and SHAPE interaction review",
-                                 "status":  "done",
-                                 "step":  5,
-                                 "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "task":  "Review option A label rows",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  45.1,
+                                 "step_title":  "Reproduce layout and panel switching",
                                  "steps":  [
-                                               "Assess approved option A",
-                                               "Inspect interaction evidence",
-                                               "Reproduce tours and interiors",
-                                               "Verify picking and audits",
-                                               "Record verdict and handoff"
+                                               "Inspect changes and saved evidence",
+                                               "Reproduce layout and panel switching",
+                                               "Verify picking and audit comparisons",
+                                               "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  327,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T22:11:08+02:00",
-                                 "last_run":  "2026-10-07T22:00:49+02:00",
+                                 "updated":  "2026-10-07T22:33:04+02:00",
+                                 "last_run":  "2026-10-07T22:30:35+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  46,
+    "today_runs":  47,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
