@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T08:05:04+02:00",
+    "generated_at":  "2026-10-07T08:11:39+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "qa-slice3 jargon pass",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "qa-slice3 flux caveat + tour narration",
+                                  "status":  "running",
+                                  "step":  4,
+                                  "total":  5,
+                                  "percent":  78,
+                                  "step_title":  "Browser check and pytest",
                                   "steps":  [
-
+                                                "Apply flux DISCLAIM fix",
+                                                "Tour narration wording in fil",
+                                                "Regenerate tour export and tests",
+                                                "Browser check and pytest",
+                                                "Log finish and handoff"
                                             ],
-                                  "eta_seconds":  820,
+                                  "eta_seconds":  11,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T07:51:22+02:00",
+                                  "updated":  "2026-10-07T08:08:13+02:00",
                                   "last_run":  "2026-10-07T08:04:43+02:00",
                                   "next_run":  null
                               },
@@ -43,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  4,
+    "today_runs":  5,
     "queue":  [
 
               ],
