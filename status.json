@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T14:25:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T14:30:05+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "ER_FIT 0.97 correction + actual-body evidence + part E relay",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  65,
-                                  "step_title":  "Refresh audit + live probe",
+                                  "percent":  100,
+                                  "step_title":  "Finish entry",
                                   "steps":  [
                                                 "Start entry",
                                                 "Apply ER_FIT 0.97 in viewer and replica",
@@ -18,29 +18,29 @@
                                                 "Relay part E/MOL-0001 corrections",
                                                 "Finish entry"
                                             ],
-                                  "eta_seconds":  32,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T14:22:29+02:00",
+                                  "updated":  "2026-10-07T14:25:23+02:00",
                                   "last_run":  "2026-10-07T14:19:23+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "ER bug fix and side-asset review",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Accept ER membrane-clearance correction",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "percent":  28.5,
+                                 "step_title":  "Reproduce containment reports",
                                  "steps":  [
-                                               "Inspect changed ER code and audit",
-                                               "Verify replica and live geometry",
-                                               "Check candidate sources and queue",
-                                               "Record verdict and handoff"
+                                               "Inspect exact correction",
+                                               "Reproduce containment reports",
+                                               "Verify live geometry",
+                                               "Record acceptance and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  648,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T14:19:10+02:00",
-                                 "last_run":  "2026-10-07T14:03:35+02:00",
+                                 "updated":  "2026-10-07T14:29:31+02:00",
+                                 "last_run":  "2026-10-07T14:25:45+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,12 +48,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  16,
+    "today_runs":  17,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "ER_FIT 0.97 correction + actual-body evidence + part E relay",
+                       "finished":  "2026-10-07T14:25:23+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "ER bug fix and side-asset review",
@@ -78,11 +83,6 @@
                        "agent":  "cursor",
                        "task":  "a2-shape-1: harness corrections and SHAPE module",
                        "finished":  "2026-10-07T09:43:06+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Licence rows and shape baseline review",
-                       "finished":  "2026-10-07T09:19:03+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
