@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T19:05:05+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-07T19:10:07+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 item (d): CeAJ selection framing (preview)",
