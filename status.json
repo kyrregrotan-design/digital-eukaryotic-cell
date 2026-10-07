@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T22:05:04+02:00",
+    "generated_at":  "2026-10-07T22:10:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -27,10 +27,10 @@
                    "codex":  {
                                  "task":  "Option A and SHAPE interaction review",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  5,
-                                 "percent":  41.2,
-                                 "step_title":  "Reproduce tours and interiors",
+                                 "percent":  78,
+                                 "step_title":  "Verify picking and audits",
                                  "steps":  [
                                                "Assess approved option A",
                                                "Inspect interaction evidence",
@@ -38,9 +38,9 @@
                                                "Verify picking and audits",
                                                "Record verdict and handoff"
                                            ],
-                                 "eta_seconds":  363,
+                                 "eta_seconds":  151,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T22:04:56+02:00",
+                                 "updated":  "2026-10-07T22:07:52+02:00",
                                  "last_run":  "2026-10-07T22:00:49+02:00",
                                  "next_run":  null
                              }
