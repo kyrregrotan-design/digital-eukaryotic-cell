@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-07T07:55:04+02:00",
+    "generated_at":  "2026-10-07T08:00:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,19 +25,19 @@
                    "codex":  {
                                  "task":  "Review WebGL learner wording",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  27,
-                                 "step_title":  "Verify caveats and tour link labels",
+                                 "percent":  88,
+                                 "step_title":  "Record verdict and queue handoff",
                                  "steps":  [
                                                "Read changed wording and evidence",
                                                "Verify caveats and tour link labels",
                                                "Run read-only verification",
                                                "Record verdict and queue handoff"
                                            ],
-                                 "eta_seconds":  454,
+                                 "eta_seconds":  64,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-07T07:54:51+02:00",
+                                 "updated":  "2026-10-07T07:58:54+02:00",
                                  "last_run":  "2026-10-07T07:52:16+02:00",
                                  "next_run":  null
                              }
