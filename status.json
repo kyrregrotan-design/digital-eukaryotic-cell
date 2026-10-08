@@ -1,24 +1,24 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T08:25:04+02:00",
+    "generated_at":  "2026-10-08T08:30:05+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "TCA L1 step navigation (tca-l1-steps)",
                                   "status":  "running",
-                                  "step":  1,
+                                  "step":  3,
                                   "total":  4,
-                                  "percent":  10.5,
-                                  "step_title":  "Inspect current TCA view",
+                                  "percent":  72.5,
+                                  "step_title":  "Browser check",
                                   "steps":  [
                                                 "Inspect current TCA view",
                                                 "Build player and step card",
                                                 "Browser check",
                                                 "Pytest and finish entry"
                                             ],
-                                  "eta_seconds":  1005,
+                                  "eta_seconds":  61,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T08:22:58+02:00",
+                                  "updated":  "2026-10-08T08:26:27+02:00",
                                   "last_run":  "2026-10-08T08:21:49+02:00",
                                   "next_run":  null
                               },
