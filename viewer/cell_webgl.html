@@ -324,6 +324,7 @@
     <p class="title">About this view</p>
     <div class="note" id="disclaimer"></div>
     <div class="note">Organelle shapes, sizes and positions are illustrative (not to scale). Rendering: Three.js 0.158 (MIT).</div>
+    <div class="note" id="shape-note" hidden>Shape: schematic, proportions not measured. The cell is drawn as one half of a gut ring, cut at a schematic, near-transverse angle; its length, groove depth and number of microvilli are display choices.</div>
   </div>
 </div>
 
@@ -339,6 +340,7 @@
     <button class="b" id="cap-mode-flow">Continuous flow</button>
     <span class="sep"></span>
     <button class="b" id="cap-prev" title="Previous step">‹</button>
+    <button class="b" id="cap-replay" title="Replay this step" hidden>↺</button>
     <button class="b" id="cap-play">❚❚ Pause</button>
     <button class="b" id="cap-next" title="Next step">›</button>
     <select id="cap-speed" title="Animation speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
@@ -10225,7 +10227,10 @@
   const kept = (p, margin) => cut.distanceToPoint(p) >= (margin || 0);
   // a2-shape-1 preview: ?body=shape1 draws the SHAPE body. The default view stays the ellipsoid until every remap
   // (brush border, CeAJ belt, terminal web, listed anchors and nodes) passes the harness.
-  const BODY_SHAPE1 = /(?:^|[?&])body=shape1(?:&|$)/.test(location.search);
+  // A2-shape-2 centring slice is a separate preview; shape1 and the default retain their accepted placements.
+  const BODY_SHAPE2 = /(?:^|[?&])body=shape2(?:&|$)/.test(location.search);
+  const BODY_SHAPE1 = BODY_SHAPE2 || /(?:^|[?&])body=shape1(?:&|$)/.test(location.search);
+  if (BODY_SHAPE1) document.getElementById("shape-note").hidden = false;
   const insideCell = (p, s) => BODY_SHAPE1 ? SHAPE.insideStrict(p.clone().divideScalar(s))
     : (p.x / (AX.x * s)) ** 2 + (p.y / (AX.y * s)) ** 2 + (p.z / (AX.z * s)) ** 2 < 1;
 
@@ -10413,7 +10418,10 @@
 
   // ---------------------------------------------------------------- nucleus
   // SHAPE preview: the nucleus sits 0.22 lower so its envelope clears the apical groove (display choice).
-  const NC = BODY_SHAPE1 ? V(-0.4, -0.1, -0.25) : V(-0.4, 0.12, -0.25), NR = 0.74;
+  // Shape2: centre on the A-P / partner-edge axes, retaining the groove clearance and radius from shape1.
+  // Position and size are display choices. All attached ER, anchors and pathway nodes derive from NC.
+  // The second-nucleus display twin is a subsequent slice; this does not add a model compartment.
+  const NC = BODY_SHAPE2 ? V(0, -0.1, 0) : BODY_SHAPE1 ? V(-0.4, -0.1, -0.25) : V(-0.4, 0.12, -0.25), NR = 0.74;
   const PORE_R = 0.03, PORE_T = 0.011, NRIM_T = 0.03;
   const nN = V(0.35, -0.45, -1).normalize();
   const nq = NC.clone().add(V(0.05, 0.08, 0.1));
@@ -10694,7 +10702,10 @@
     }
     return o.sort((a, b) => a[0] - b[0] || a[1] - b[1]).map((x) => x[2]);
   })() : [];
-  if (BODY_SHAPE1) OBST.push(NUC, placed("polysomes", 0, POLY, polyPts.map((p) => { const a = p.clone().sub(POLY); return { a, b: a, r: 0.022 }; })));
+  if (BODY_SHAPE1) {
+    OBST.push(NUC);
+    if (!BODY_SHAPE2) OBST.push(placed("polysomes", 0, POLY, polyPts.map((p) => { const a = p.clone().sub(POLY); return { a, b: a, r: 0.022 }; })));
+  }
   const r4 = (x) => +x.toFixed(4), r3v = (v) => v.toArray().map((c) => +c.toFixed(3));
   const relVerts = (obj) => {
     obj.updateMatrixWorld(true);
@@ -10728,6 +10739,16 @@
       bound_radius: r4(me.R), nucleus_clearance: r4(clearance(me, NUC)), tightest: tight && { with: tight.id, clearance: r4(tight.d), need: tight.g } });
     OBST.push(me);
     return p;
+  }
+
+  if (BODY_SHAPE2) {
+    // Polysomes were a fixed obstacle in shape1. Fit their actual ribosome spheres around the centred nucleus,
+    // then carry the points and label anchor together; all later organelles clear this fitted cluster.
+    const from = POLY.clone(), rel = polyPts.map((p) => p.clone().sub(from));
+    const caps = rel.map((a) => ({ a, b: a, r: 0.022 }));
+    fitInBody("polysomes", POLY, rel.flatMap((p) => relSphere(0.022).map((q) => q.add(p))), caps);
+    const delta = POLY.clone().sub(from);
+    polyPts.forEach((p) => p.add(delta));
   }
 
   // ---------------------------------------------------------------- smooth ER
@@ -12156,7 +12177,9 @@
         nucleus_bound: NUC_BOUND, min_clearance: r4(min), below_gap: below,
         not_checked: "rough ER sheets, free ribosomes, cytoskeleton, chromatin, motion vesicles; spheres are tested by radius, not by mesh" };
     }
-    return { body: { shape: BODY_SHAPE1 ? "shape1" : "ellipsoid", ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
+    return { body: { shape: BODY_SHAPE2 ? "shape2" : BODY_SHAPE1 ? "shape1" : "ellipsoid", ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
+      // Report the actual primary centre separately from its offset label anchor; display units, not nm.
+      primary_nucleus: { center: NC.toArray(), radius: NR },
       parts_vs_shape: parts, body_fit: BODY_FIT, spacing, ...(BODY_SHAPE1 ? { node_shift: NODE_SHIFT, home_fit: { hx: +HOME_FIT.hx.toFixed(4), hy: +HOME_FIT.hy.toFixed(4),
         right: HOME_FIT.box.right.map((c) => +c.toFixed(4)), up: HOME_FIT.box.up.map((c) => +c.toFixed(4)), dist: +HOME.dist.toFixed(4) } } : {}),
       target: { dims: SHAPE.dims, surface_tol: SHAPE.SURFACE_TOL, surface_ids: [...SURF], eps: SHAPE.EPS, audit_res: SHAPE.AUDIT_RES,
@@ -12608,6 +12631,17 @@
     ["legend", "tour-player"].forEach((id) => { const el = document.getElementById(id); if (el && el.offsetWidth) y = Math.min(y, el.getBoundingClientRect().top - 14); });
     return y;
   }
+  // In SHAPE the canvas badges and the top label row stack below the visible status pill, which drops under the buttons on phones.
+  // Each 20 px pill is centred 14 px below the bottom of the one above; the old fixed centres stay as minima.
+  function topStack(anat) {
+    const motion = motionGroup.visible && !tourCur, el = document.getElementById("status-pill");
+    let bottom = BODY_SHAPE1 && el && el.offsetWidth && getComputedStyle(el).visibility !== "hidden" ? el.getBoundingClientRect().bottom : 0;
+    const motionY = Math.max(62, bottom + 14);
+    if (motion) bottom = motionY + 10;
+    const anatY = Math.max(88, bottom + 14);
+    if (anat) bottom = anatY + 10;
+    return { motionY, anatY, rowY: Math.max(anat ? 112 : motion ? 86 : 70, bottom + 14) };
+  }
   function fitDist() {
     const w = window.innerWidth, h = window.innerHeight;
     const { L, R } = panelEdges();
@@ -12616,7 +12650,7 @@
     if (rowsOn) {
       const ws = WC.compartments.map((c) => pillWidth(compLabelText(c), false)).sort((a, b) => b - a);
       const k = rowCount(ws.slice(0, Math.ceil(ws.length / 2)), w - L - R - 20);
-      reserveH = 2 * Math.max(86 + ROW_STEP * (k - 1) + 20, h - rowBottom(h) + ROW_STEP * (k - 1) + 20);
+      reserveH = 2 * Math.max(Math.max(86, topStack(false).rowY) + ROW_STEP * (k - 1) + 20, h - rowBottom(h) + ROW_STEP * (k - 1) + 20);
     }
     const avail = Math.max(240, w - L - R - (showLabels && !rowsOn ? 280 : 30));
     const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -12697,7 +12731,7 @@
   ray.params.Line.threshold = 0.025;
   ray.params.Points.threshold = 0.06;
   const ndc = new THREE.Vector2();
-  let labelBoxes = [], labelRowState = null;
+  let labelBoxes = [], labelRowState = null, tagBoxes = [], tagRec = false;
   function hitTest(e) {
     const x = e.clientX, y = e.clientY;
     const lb = labelBoxes.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
@@ -12789,7 +12823,7 @@
       pill(it.text, x0, ly, false, it.col, onLeft ? "right" : "left");
       anatLabelsShown.push(it.k);
     });
-    pill("Schematic section: layer thickness, spacing and colours are display choices, not measurements", (leftEdge + rightEdge) / 2, 88, false, null, "center");
+    pill("Schematic section: layer thickness, spacing and colours are display choices, not measurements", (leftEdge + rightEdge) / 2, topStack(false).anatY, false, null, "center");
   }
   function drawOverlay() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -12801,7 +12835,7 @@
     const edges = panelEdges();
     const leftEdge = edges.L, rightEdge = W - edges.R;
     if (inside) { drawInteriorOverlay(W, H, leftEdge, rightEdge); return; }
-    if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, 62, false, null, "center");
+    if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, topStack(false).motionY, false, null, "center");
     drawAnatSectionLabels(leftEdge, rightEdge);
     // The CeAJ close-up hides the compartment columns: at this zoom they clamp to the panel edges and cover the cell.
     labelRowState = null;
@@ -12810,7 +12844,7 @@
       items.forEach((it) => { it.active = (hover && hover.comp === it.id) || (selected && selected.comp === it.id); it.w = pillWidth(it.text, it.active); });
       items.sort((a, b) => a.p.y - b.p.y);
       const half = Math.ceil(items.length / 2), minX = leftEdge + 10, maxX = rightEdge - 10;
-      const top0 = anatLabelsShown.length ? 112 : motionGroup.visible && !tourCur ? 86 : 70, bot0 = rowBottom(H);
+      const top0 = topStack(anatLabelsShown.length > 0).rowY, bot0 = rowBottom(H);
       const bands = [[items.slice(0, half), top0, 1], [items.slice(half), bot0, -1]];
       const drawn = [];
       labelRowState = { k: [], free: [Math.round(minX), Math.round(maxX)] };
@@ -14825,20 +14859,22 @@
 
     // TCA cycle, layer 1: one marker per mapped step in textbook order. Arrows give step order only, not a
     // computed flux direction; no size, speed or brightness encodes a flux value.
-    const tcaTags = [];
+    const tcaTags = [], tcaMarks = [];
+    let tcaAt = null, tcaTok = null;
     if (TCA_STEPS.length) {
       const tIp = { t: "tca", id: "cycle" }, n = TCA_STEPS.length;
       const ang = (k) => Math.PI / 2 - (k / n) * Math.PI * 2;
       const onRing = (a, rr) => TC.clone().add(V(Math.cos(a) * rr, Math.sin(a) * rr, 0));
+      tcaAt = (k) => onRing(ang(k), TR);
+      tcaTok = glowSprite(0xbff5ec, 0.32); tcaTok.visible = false; s.add(tcaTok);
       const ringM = ctx.m(0x6fd6c8, { roughness: 0.35, emissive: new THREE.Color(0x0e4a42), emissiveIntensity: 0.5, transparent: true, opacity: 0.8 });
       const ring = new THREE.Mesh(new THREE.TorusGeometry(TR, 0.018, 8, 64), ringM);
       ring.position.copy(TC); ctx.add(ring, tIp);
       const arrM = ctx.m(0x9ff0e4, { roughness: 0.35, emissive: new THREE.Color(0x0e4a42), emissiveIntensity: 0.5 });
       TCA_STEPS.forEach((stp, k) => {
         const m = new THREE.Mesh(new THREE.SphereGeometry(0.085, 20, 14), ctx.m(0x2fb8a6, { roughness: 0.3, clearcoat: 1, emissive: new THREE.Color(0x0c5a50), emissiveIntensity: 0.5 }));
-        m.position.copy(onRing(ang(k), TR)); ctx.add(m, { t: "tcastep", id: String(stp.step) });
-        tcaTags.push({ text: String(stp.step), pos: onRing(ang(k), TR + 0.17), color: "#bff5ec", dy: -6 });
-        const a = ang(k + 0.5), cone = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 10), arrM);
+        m.position.copy(onRing(ang(k), TR)); ctx.add(m, { t: "tcastep", id: String(stp.step) }); tcaMarks.push(m);
+        tcaTags.push({ text: String(stp.step), pos: onRing(ang(k), TR + 0.17), color: "#bff5ec", dy: -6 });        const a = ang(k + 0.5), cone = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 10), arrM);
         cone.position.copy(onRing(a, TR)); cone.rotation.z = a + Math.PI;
         ctx.add(cone, tIp);
       });
@@ -15021,8 +15057,20 @@
       { title: "Working together on the DNA", ref: pr("cps-6"), cam: [-4.2, 1.6, 0.6], text: ds[2] || "", tracks: [{ obj: "wah", path: "wahOut", a: 0, b: 0.001, hold: true }], dur: 6 },
       { title: "Where this is known", ref: { t: "ap", id: "apoptotic_factor_reserve" }, cam: [-3.6, 0.6, 0.8], text: ds[3] || "", tracks: [{ obj: "wah", path: "wahOut", a: 0, b: 0.001, hold: true }], dur: 6 },
     ];
+    // TCA L1 (Kyrre 2026-10-06 07:41): step order only. Text comes only from the TCA display map; the pace is the
+    // fixed default step duration and never uses FVA values.
+    const TCA_QUAL = "qualitative illustration, not a kinetic simulation";
+    const tcaEq = (r) => r.equation_names + (r.forward_cycle_flux_multiplier === -1 ? " (written as stored in the model, opposite to the cycle direction)" : "");
+    const TCA_TOUR = TCA_STEPS.map((s, k) => ({
+      title: s.step + ". " + s.label, ref: { t: "tcastep", id: String(s.step) }, tca: k, tgt: TC, dz: 0.32, tracks: [],
+      text: (s.reactions.length === 1 ? "Model reaction: " + tcaEq(s.reactions[0]) + "." :
+        s.reactions.length + " model reactions represent this step. They are alternatives or parts of one route, so their ranges must not be added together. " +
+        s.reactions.map((r) => r.label + " (" + r.role_or_alternative + "): " + tcaEq(r) + ".").join(" ")) +
+        " The moving dot shows the order of the steps at a fixed pace, not a flux. Open the step card for gene rules and model flux ranges.",
+    }));
     const TOURS = {
       proton_gradient: { name: "Electron transport chain", steps: STEPS, then: "flow" },
+      tca_steps: { name: "TCA cycle step by step", badge: TCA_QUAL, steps: TCA_TOUR },
       cytochrome_c_shuttle: { name: "Cytochrome c shuttle", steps: STEPS.slice(4, 7) },
       complex_iv_oxygen_reduction: { name: "Complex IV oxygen reduction", steps: [STEPS[6]] },
       apoptotic_factor_reserve: { name: "Cell-death factors", steps: DEATH },
@@ -15080,13 +15128,14 @@
     function caption() {
       if (inside !== ctx) return;
       const S = mode === "tour" ? tour.steps[si] : null;
-      $("cap-step").textContent = S ? tour.name + " · step " + (si + 1) + " of " + tour.steps.length : "Continuous flow · everything at once";
+      $("cap-step").textContent = S ? tour.name + " · step " + (si + 1) + " of " + tour.steps.length + (tour.badge ? " · " + tour.badge : "") : "Continuous flow · everything at once";
       $("cap-title").textContent = S ? S.title : flowTitle();
       $("cap-text").textContent = S ? S.text : flowText();
       $("cap-play").textContent = playing ? "❚❚ Pause" : "▶ Play";
       $("cap-mode-tour").classList.toggle("primary", mode === "tour");
       $("cap-mode-flow").classList.toggle("primary", mode === "flow");
       $("cap-prev").disabled = mode !== "tour"; $("cap-next").disabled = mode !== "tour";
+      $("cap-replay").hidden = mode !== "tour";
       document.querySelectorAll("#cap-kd [data-kd]").forEach((b) => b.classList.toggle("kd-on", !!KD[b.getAttribute("data-kd")]));
     }
     function clearAll() { dropTracks(tracks); tracks = []; cycles.forEach((c) => dropTracks(c.tracks)); cycles = []; }
@@ -15107,7 +15156,8 @@
         }
         if (si === 0) openDetail(true);
       });
-      if (S.cam) { camGoal.target.set(S.cam[0] * 0.75, S.cam[1] * 0.6 - 0.1, 0.4); camGoal.dist = ctx.home.dist * Math.min(1, S.cam[2] * 1.45); }
+      if (S.tgt) { camGoal.target.copy(S.tgt); camGoal.dist = ctx.home.dist * S.dz; }
+      else if (S.cam) { camGoal.target.set(S.cam[0] * 0.75, S.cam[1] * 0.6 - 0.1, 0.4); camGoal.dist = ctx.home.dist * Math.min(1, S.cam[2] * 1.45); }
       caption();
     }
     function playTour(name, i) { clearAll(); mode = "tour"; tour = TOURS[name] || TOURS.proton_gradient; playing = true; stopAfter = false; pickHtml = null; startStep(i || 0); }
@@ -15134,6 +15184,8 @@
       },
       next() { if (mode === "tour") { stopAfter = false; startStep(si + 1); } },
       prev() { if (mode === "tour") { stopAfter = false; startStep(si - 1); } },
+      replay() { if (mode === "tour") { playing = true; stopAfter = true; startStep(si); } },
+      tourState: () => ({ mode, tour: Object.keys(TOURS).find((k) => TOURS[k] === tour) || null, step: si, n: tour.steps.length, st, playing }),
       speed(v) { speed = v; },
       kd(id) {
         KD[id] = !KD[id];
@@ -15144,7 +15196,7 @@
       stepIndexFor: (ref) => STEPS.findIndex((S) => S.ref && S.ref.t === ref.t && S.ref.id === ref.id),
     };
     ctx.onEnter = () => { gr = 0; playTour("proton_gradient", 0); };
-    ctx.onExit = () => { clearAll(); stuckSp.visible = false; };
+    ctx.onExit = () => { clearAll(); stuckSp.visible = false; $("cap-replay").hidden = true; };
 
     ctx.on((now, dt) => {
       ctx.tags.length = 0;
@@ -15184,6 +15236,15 @@
         if (block) { stuckSp.position.copy(block); stuckSp.scale.setScalar(0.45 + 0.15 * Math.sin(now / 200)); }
       }
       if (playing) rotor.rotation.y += rotVel * dt * speed;
+      const tk = mode === "tour" ? tour.steps[si].tca : null;
+      if (tcaTok) {
+        tcaTok.visible = tk != null;
+        tcaMarks.forEach((m, j) => m.scale.setScalar(j === tk ? 1.5 : 1));
+        if (tk != null) {
+          tcaTok.position.copy(tcaAt(tk + Math.min(st, 1)));
+          ctx.tags.push({ text: "Qualitative illustration, not a kinetic simulation", pos: TC.clone().add(V(0, -TR - 0.42, 0)), color: "#c8d2d6", reserve: true });
+        }
+      }
       Object.keys(RES).forEach((key) => {
         if (driven.has(key)) return;
         const R = RES[key];
@@ -15375,7 +15436,11 @@
   }
   function drawInteriorOverlay(W, H, leftEdge, rightEdge) {
     const L = inside;
-    const bottom = L.api ? captionEl.getBoundingClientRect().top - 14 : H - 40;
+    const capTop = L.api ? captionEl.getBoundingClientRect().top : H - 26;
+    // Small screens draw the ring too small to fit a caveat between the step numbers and the labels under it,
+    // so a "reserve" tag gets its own strip above the caption bar, kept free of label pills.
+    const reserve = document.body.classList.contains("cap-small") && L.tags.some((t) => t.reserve);
+    const bottom = capTop - 14 - (reserve ? 18 : 0);
     const isAct = (ip) => !!ip && [ihover, isel, ifocus].some((x) => x && ipKey(x) === ipKey(ip));
     const c0 = proj(L.home.target);
     const placed = [], inlineBoxes = [];
@@ -15419,15 +15484,21 @@
     octx.font = "600 12px " + FONT;
     octx.textAlign = "center";
     octx.shadowColor = "rgba(0,0,0,0.85)"; octx.shadowBlur = 4;
+    tagBoxes = [];
     L.tags.concat(L.statics).forEach((tg) => {
       if (tg.alpha === 0) return;
-      const p = proj(tg.pos);
+      const res = reserve && tg.reserve;
+      const p = res ? { ok: true, x: (leftEdge + rightEdge) / 2, y: capTop - 6 } : proj(tg.pos);
       if (!p.ok) return;
       octx.globalAlpha = tg.alpha == null ? 1 : tg.alpha;
       octx.fillStyle = tg.color || "#fff";
       octx.font = (tg.text.length <= 1 ? "700 18px " : "600 12px ") + FONT;
       octx.textAlign = tg.align || "center";
-      octx.fillText(tg.text, p.x + (tg.dx || 0), p.y - (tg.dy != null ? tg.dy : 14));
+      const x = p.x + (tg.dx || 0), y = p.y - (res ? 0 : tg.dy != null ? tg.dy : 14);
+      octx.fillText(tg.text, x, y);
+      if (!tagRec) return;
+      const mt = octx.measureText(tg.text);
+      tagBoxes.push({ text: tg.text, x0: x - mt.actualBoundingBoxLeft, x1: x + mt.actualBoundingBoxRight, y0: y - mt.actualBoundingBoxAscent, y1: y + mt.actualBoundingBoxDescent, reserved: res });
     });
     octx.restore();
   }
@@ -15546,6 +15617,8 @@
       "<p>The eight steps of the citric acid (TCA) cycle, each mapped onto reactions of the WormJam whole-animal metabolic reconstruction of <i>C. elegans</i>. " +
       "For every reaction the panel shows its flux variability range: the lowest and highest flux the model allows while still reaching its optimum. Click a step for its reactions, genes and ranges.</p>" +
       '<p class="warnbox">' + tcaCaveat(/\bcaps?\b/i).concat(tcaCaveat(/Whole-animal/)).map(esc).join(" ") + "</p>" +
+      '<div class="row" style="margin:6px 0"><button class="b primary" data-mtour="tca_steps">▶ Step through the cycle</button></div>' +
+      '<p class="muted" style="font-size:0.74rem">Back, next and replay in the bar at the bottom. Qualitative illustration, not a kinetic simulation: the pace is fixed and does not use the flux ranges.</p>' +
       '<p class="muted" style="font-size:0.74rem">In the drawing, the ring and arrows show the textbook order of the steps only. Many ranges below span both directions, so the model does not fix a direction of flow; nothing in the drawing encodes a flux value.</p>' +
       "<h3>Steps</h3>" + TCA_STEPS.map((s) => {
         const f = tcaStepFlags(s), nr = s.reactions.length;
@@ -15767,7 +15840,7 @@
       '<p class="muted" style="font-size:0.74rem">Click any complex, carrier, protein or membrane to read what it does and which worm genes encode it. The bar at the bottom pauses, steps, changes speed and knocks parts down.</p>' +
       "<h3>Compartments</h3><div>" + ["outer_membrane", "intermembrane_space", "inner_membrane", "matrix"].filter((x) => AC[x]).map((x) => ipChip({ t: "ac", id: x }, AC[x].label)).join("") + "</div>" +
       "<h3>Electron transport chain</h3><div>" + (ATLAS.complexes || []).map((c) => ipChip({ t: "cx", id: c.id }, c.label)).join("") + (ATLAS.carriers || []).map((c) => ipChip({ t: "cr", id: c.id }, c.label)).join("") + "</div>" +
-      (TCA_STEPS.length ? "<h3>TCA cycle (model flux ranges)</h3><div>" + ipChip({ t: "tca", id: "cycle" }, "Overview of the 8 steps") +
+      (TCA_STEPS.length ? "<h3>TCA cycle (model flux ranges)</h3><div>" + '<button class="chip" data-mtour="tca_steps">▶ Step through the cycle</button>' + ipChip({ t: "tca", id: "cycle" }, "Overview of the 8 steps") +
         TCA_STEPS.map((s) => ipChip({ t: "tcastep", id: String(s.step) }, s.step + ". " + s.label)).join("") +
         '</div><p class="note">Flux balance analysis (FBA) ranges from the WormJam whole-animal metabolic model (two sourced scenarios), not measured intestinal rates; units [VERIFY].</p>' : "") +
       "<h3>Processes (sourced)</h3>" + (ATLAS.processes || []).map((p) => '<div class="step"><a href="#" data-ip="' + ipAttr({ t: "ap", id: p.id }) + '">' + esc(p.label) + '</a> <button class="chip" data-mtour="' + esc(p.id) + '">▶ play</button><br/><span class="muted">' + esc(p.summary) + "</span></div>").join("") +
@@ -15805,7 +15878,7 @@
         '<p class="title" style="margin-top:14px">Parts</p><div>' + (ATLAS.complexes || []).map((x) => ipChip({ t: "cx", id: x.id }, x.label.replace(/\s*\(.*\)$/, ""))).join("") +
         (ATLAS.carriers || []).map((x) => ipChip({ t: "cr", id: x.id }, x.label)).join("") + "</div>" +
         '<p class="title" style="margin-top:14px">Processes</p><div>' + (ATLAS.processes || []).map((x) => ipChip({ t: "ap", id: x.id }, x.label)).join("") + "</div>" +
-        (TCA_STEPS.length ? '<p class="title" style="margin-top:14px">TCA cycle</p><div>' + ipChip({ t: "tca", id: "cycle" }, "Model flux ranges (8 steps)") + "</div>" : "");
+        (TCA_STEPS.length ? '<p class="title" style="margin-top:14px">TCA cycle</p><div><button class="chip" data-mtour="tca_steps">▶ Step by step</button>' + ipChip({ t: "tca", id: "cycle" }, "Model flux ranges (8 steps)") + "</div>" : "");
     } else if (inside.sideHtml) {
       h += inside.sideHtml();
     } else if (c) {
@@ -16035,6 +16108,7 @@
       if (b.id === "cap-play") a.toggle();
       else if (b.id === "cap-next") a.next();
       else if (b.id === "cap-prev") a.prev();
+      else if (b.id === "cap-replay" && a.replay) a.replay();
       else if (b.id === "cap-mode-tour") a.modeTour();
       else if (b.id === "cap-mode-flow") a.setFlow();
       else if (b.id === "cap-more") { compactUser.cap = !document.body.classList.contains("cap-compact"); resize(); }
@@ -16372,12 +16446,25 @@
   window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
   window.__tapIp = (t, id) => { selectIp({ t, id }, true); return true; };
   window.__insideId = () => (inside ? inside.id : null);
+  window.__mitoTour = () => (inside && inside.mito && inside.api.tourState ? inside.api.tourState() : null);
   window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
   window.__geneLabels = () => JSON.parse(JSON.stringify(geneLabelState));
   window.__labelRows = () => labelRowState && { ...labelRowState, homeDist: +HOME.dist.toFixed(4) };
+  window.__topStack = () => Object.assign(topStack(anatLabelsShown.length > 0), { motion: motionGroup.visible && !tourCur, anat: anatLabelsShown.length > 0 });
+  window.__tagBoxes = () => {
+    tagRec = true;
+    return { tags: tagBoxes.map((b) => ({ ...b })), pills: labelBoxes.filter((b) => b.ip).map((b) => ({ ip: b.ip.t + ":" + b.ip.id, x0: b.x, x1: b.x + b.w, y0: b.y, y1: b.y + b.h })) };
+  };
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
   window.__viewState = () => ({ cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: +camGoal.dist.toFixed(3), target: camGoal.target.toArray().map((v) => +v.toFixed(3)) },
     userZoomed, focus: focusPw, visible: Object.keys(pwVisible).filter((k) => pwVisible[k]).sort() });
+  // Same-camera captures: sets and snaps the camera; userZoomed keeps resize() from refitting the distance.
+  window.__setCam = (c) => {
+    userZoomed = true;
+    ["yaw", "pitch", "dist"].forEach((k) => { cam[k] = camGoal[k] = +c[k]; });
+    cam.target.set(...c.target); camGoal.target.set(...c.target);
+    return window.__viewState().cam;
+  };
   window.__interiorLabels = () => inside ? { edges: panelEdges(), w: window.innerWidth, labels: inside.labels.map((l) => { const p = proj(l.pos); return { text: l.text, x: Math.round(p.x), y: Math.round(p.y), ok: p.ok }; }) } : null;
   window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
 
