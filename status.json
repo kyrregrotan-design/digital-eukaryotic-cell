@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T20:35:04+02:00",
+    "generated_at":  "2026-10-08T20:40:05+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Opinion: Golgi camera + Cinematic re-check",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "Cinematic close-out and hover Stage 1 opinions",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  5,
+                                  "percent":  38,
+                                  "step_title":  "Re-run Cinematic smoke and Stage 1 probe",
                                   "steps":  [
-
+                                                "Read handoff and evidence",
+                                                "Re-run Cinematic smoke and Stage 1 probe",
+                                                "Inspect Stage 1 diff/contract",
+                                                "Write Cinematic and Stage 1 opinions",
+                                                "STATUS, finish handoff"
                                             ],
-                                  "eta_seconds":  214,
+                                  "eta_seconds":  166,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T20:04:51+02:00",
+                                  "updated":  "2026-10-08T20:35:27+02:00",
                                   "last_run":  "2026-10-08T20:33:37+02:00",
                                   "next_run":  null
                               },
@@ -44,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  36,
+    "today_runs":  37,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
