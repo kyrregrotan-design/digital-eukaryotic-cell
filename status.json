@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T18:25:04+02:00",
+    "generated_at":  "2026-10-08T18:30:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,18 +25,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Molecular review follow-up and approved queue",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Cinematic build and layered navigation opinion",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  5,
+                                 "percent":  35,
+                                 "step_title":  "Build optional Golgi Cinematic look",
                                  "steps":  [
-
+                                               "Confirm approved scope",
+                                               "Build optional Golgi Cinematic look",
+                                               "Verify looks tiers picking restoration",
+                                               "Write layered navigation proposal",
+                                               "Self review and handoff"
                                            ],
-                                 "eta_seconds":  371,
+                                 "eta_seconds":  758,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T18:14:15+02:00",
+                                 "updated":  "2026-10-08T18:27:48+02:00",
                                  "last_run":  "2026-10-08T18:23:15+02:00",
                                  "next_run":  null
                              }
@@ -45,7 +49,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  30,
+    "today_runs":  31,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
