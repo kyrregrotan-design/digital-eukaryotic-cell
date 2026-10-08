@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T20:50:04+02:00",
+    "generated_at":  "2026-10-08T20:55:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,7 +28,7 @@
                                  "status":  "running",
                                  "step":  2,
                                  "total":  4,
-                                 "percent":  29.6,
+                                 "percent":  47.5,
                                  "step_title":  "Write Stage 2 specification",
                                  "steps":  [
                                                "Read current navigation and approval contracts",
@@ -36,7 +36,7 @@
                                                "Assess atlas checklist and sources",
                                                "Peer-check contracts and record handoff"
                                            ],
-                                 "eta_seconds":  1075,
+                                 "eta_seconds":  774,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-08T20:48:53+02:00",
                                  "last_run":  "2026-10-08T20:42:32+02:00",
