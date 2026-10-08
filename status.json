@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T09:00:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-08T09:05:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "TCA L1: phone caveat label placement fix",
@@ -25,23 +25,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Review TCA L1 step player",
-                                 "status":  "done",
-                                 "step":  5,
-                                 "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "task":  "TCA L1 caveat placement review",
+                                 "status":  "running",
+                                 "step":  1,
+                                 "total":  4,
+                                 "percent":  0.1,
+                                 "step_title":  "Read context and placement diff",
                                  "steps":  [
-                                               "Check history and scope",
-                                               "Inspect source and player logic",
-                                               "Reproduce desktop and phone controls",
-                                               "Inspect visual evidence",
-                                               "Record verdict and handoff"
+                                               "Read context and placement diff",
+                                               "Reproduce label bounds",
+                                               "Inspect screenshots and conclude",
+                                               "Write verdict and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  205,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T08:45:54+02:00",
-                                 "last_run":  "2026-10-08T08:35:40+02:00",
+                                 "updated":  "2026-10-08T09:05:03+02:00",
+                                 "last_run":  "2026-10-08T09:00:29+02:00",
                                  "next_run":  null
                              }
                },
@@ -49,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  9,
+    "today_runs":  10,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
