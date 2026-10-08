@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T17:40:04+02:00",
+    "generated_at":  "2026-10-08T17:45:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "MOL-0001/0014 viewer integration",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  4,
                                  "total":  5,
-                                 "percent":  38,
-                                 "step_title":  "Integrate approved assets and lazy detail",
+                                 "percent":  73,
+                                 "step_title":  "Self-review and evidence",
                                  "steps":  [
                                                "Verify releases and loader contract",
                                                "Integrate approved assets and lazy detail",
@@ -37,9 +37,9 @@
                                                "Self-review and evidence",
                                                "Finish Cursor handoff"
                                            ],
-                                 "eta_seconds":  955,
+                                 "eta_seconds":  367,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T17:34:02+02:00",
+                                 "updated":  "2026-10-08T17:42:07+02:00",
                                  "last_run":  "2026-10-08T17:28:33+02:00",
                                  "next_run":  null
                              }
