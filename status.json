@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T18:20:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-08T18:25:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Scoped opinion: mol wording + depthcue cache",
-                                  "status":  "running",
-                                  "step":  5,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  81.7,
-                                  "step_title":  "Run depthcue cache probe",
+                                  "percent":  100,
+                                  "step_title":  "Write opinions STATUS handoff",
                                   "steps":  [
                                                 "Start log and progress",
                                                 "Review molecular wording diff",
@@ -18,31 +18,26 @@
                                                 "Run depthcue cache probe",
                                                 "Write opinions STATUS handoff"
                                             ],
-                                  "eta_seconds":  5,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T18:17:30+02:00",
+                                  "updated":  "2026-10-08T18:22:38+02:00",
                                   "last_run":  "2026-10-08T18:15:20+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Molecular review follow-up and approved queue",
-                                 "status":  "done",
-                                 "step":  6,
-                                 "total":  6,
-                                 "percent":  100,
-                                 "step_title":  "Write handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Read review and approved scope",
-                                               "Apply provenance and pick wording",
-                                               "Verify visible molecular UI",
-                                               "Repair depth-cue shader cache",
-                                               "Verify regression",
-                                               "Write handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  371,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-08T18:14:15+02:00",
-                                 "last_run":  "2026-10-08T17:57:00+02:00",
+                                 "last_run":  "2026-10-08T18:23:15+02:00",
                                  "next_run":  null
                              }
                },
@@ -56,6 +51,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Scoped opinion: mol wording + depthcue cache",
+                       "finished":  "2026-10-08T18:22:38+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Molecular review follow-up and approved queue",
@@ -80,11 +80,6 @@
                        "agent":  "codex",
                        "task":  "Private enterocyte graphics opinion",
                        "finished":  "2026-10-08T17:20:08+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Fixed MOL-0012/MOL-0015 matching opinion",
-                       "finished":  "2026-10-08T17:04:44+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
