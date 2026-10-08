@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T16:40:04+02:00",
+    "generated_at":  "2026-10-08T16:45:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-2-twin full opinion",
-                                  "status":  "running",
-                                  "step":  1,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  3.9,
-                                  "step_title":  "Read contract and conditions",
+                                  "percent":  100,
+                                  "step_title":  "Write opinion and handoff",
                                   "steps":  [
                                                 "Read contract and conditions",
                                                 "Inspect twin implementation",
@@ -17,9 +17,9 @@
                                                 "Review mobile/Bunne notes",
                                                 "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  980,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T16:39:21+02:00",
+                                  "updated":  "2026-10-08T16:44:39+02:00",
                                   "last_run":  "2026-10-08T16:38:23+02:00",
                                   "next_run":  null
                               },
@@ -54,6 +54,11 @@
               ],
     "recent":  [
                    {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-2-twin full opinion",
+                       "finished":  "2026-10-08T16:44:39+02:00"
+                   },
+                   {
                        "agent":  "codex",
                        "task":  "a2-shape-2 display twin",
                        "finished":  "2026-10-08T16:29:48+02:00"
@@ -77,22 +82,17 @@
                        "agent":  "codex",
                        "task":  "Bunne virtual-cell ideas: six verdicts",
                        "finished":  "2026-10-08T15:41:43+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "a2-shape-2 FREMDRIFT approval text",
-                       "finished":  "2026-10-08T10:39:10+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  41.2,
-                      "total":  46,
+                      "percent":  37.7,
+                      "total":  52,
                       "done":  17,
                       "in_progress":  4,
-                      "todo":  25,
-                      "remaining":  29,
-                      "weight_total":  97,
+                      "todo":  31,
+                      "remaining":  35,
+                      "weight_total":  106,
                       "weight_done":  40,
                       "groups":  [
                                      "Ferdig i dag",
@@ -230,7 +230,7 @@
                                     {
                                         "id":  "a2-shape-2",
                                         "group":  "Neste",
-                                        "text":  "A2-form 2: sentrert kjerne og visningstvilling nr. 2 bygd i shape2-preview (Kyrre 8.10 kl. 09:58; i…",
+                                        "text":  "A2-form 2: sentrert kjerne og visningstvilling nr. 2 i shape2-preview (Kyrre 8.10 kl. 09:58; Cursor…",
                                         "status":  "in_progress",
                                         "weight":  1
                                     },
@@ -382,7 +382,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-08T16:27:54+02:00",
-                      "updated_by":  "Codex"
+                      "updated":  "2026-10-08T16:43:00+02:00",
+                      "updated_by":  "Cursor"
                   }
 }
