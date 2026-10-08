@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T21:05:04+02:00",
+    "generated_at":  "2026-10-08T21:10:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Stage 2 controller and snapshots",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  7.1,
-                                 "step_title":  "Read approved contract",
+                                 "percent":  47.5,
+                                 "step_title":  "Implement value snapshots and controller",
                                  "steps":  [
                                                "Read approved contract",
                                                "Implement value snapshots and controller",
                                                "Verify races and restoration",
                                                "Self-review and Cursor handoff"
                                            ],
-                                 "eta_seconds":  904,
+                                 "eta_seconds":  252,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T21:03:46+02:00",
+                                 "updated":  "2026-10-08T21:05:09+02:00",
                                  "last_run":  "2026-10-08T21:02:08+02:00",
                                  "next_run":  null
                              }
