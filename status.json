@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T22:50:04+02:00",
+    "generated_at":  "2026-10-08T22:55:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,10 +25,10 @@
                    "codex":  {
                                  "task":  "Stage 2 live navigation continuation",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  3,
                                  "total":  5,
-                                 "percent":  8.4,
-                                 "step_title":  "Context and unload fix",
+                                 "percent":  50.9,
+                                 "step_title":  "Implement coherent dispatcher slice",
                                  "steps":  [
                                                "Context and unload fix",
                                                "Map live room adapters",
@@ -36,9 +36,9 @@
                                                "Run tests and browser probes",
                                                "Document evidence and handoff"
                                            ],
-                                 "eta_seconds":  994,
+                                 "eta_seconds":  489,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T22:48:22+02:00",
+                                 "updated":  "2026-10-08T22:53:15+02:00",
                                  "last_run":  "2026-10-08T22:46:37+02:00",
                                  "next_run":  null
                              }
