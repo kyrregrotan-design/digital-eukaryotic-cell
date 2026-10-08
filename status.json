@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T09:50:06+02:00",
+    "generated_at":  "2026-10-08T09:55:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "MOL verdicts and A2-shape-2 slice",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "a2-shape-2 review follow-up: true-centre gate and contract clarity",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  56.5,
+                                 "step_title":  "Verify corrected evidence",
                                  "steps":  [
-
+                                               "Inspect Cursor requirements",
+                                               "Clarify gate and proposal",
+                                               "Verify corrected evidence",
+                                               "Record handoff"
                                            ],
-                                 "eta_seconds":  432,
+                                 "eta_seconds":  267,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T09:42:13+02:00",
+                                 "updated":  "2026-10-08T09:54:23+02:00",
                                  "last_run":  "2026-10-08T09:49:16+02:00",
                                  "next_run":  null
                              }
