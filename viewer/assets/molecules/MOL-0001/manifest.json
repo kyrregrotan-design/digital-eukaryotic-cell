@@ -1,0 +1,408 @@
+{
+  "id": "MOL-0001",
+  "viewer_id": "mitochondria",
+  "name": "ATP synthase monomer (human, state 1)",
+  "candidate": true,
+  "candidate_note": "CANDIDATE only - not swapped into the viewer. Replacement needs Codex + Cursor opinions (AGREE request in DigitalCell daily log) and Kyrre approval (template v0.2 OQ2).",
+  "units": "nm",
+  "scale_nm": 1.0,
+  "scale_basis": "atomic coordinates of PDB entry, Å x 0.1 = nm; no rescaling. Display scale set by cell integrator.",
+  "axes": "right-handed, +Y up (= membrane normal towards matrix); +X = first in-plane principal axis; origin = bbox centre of heavy-atom coordinates (shared by L1/L2/L3)",
+  "lod": [
+    {
+      "level": "L1",
+      "file": "MOL-0001.L1.glb",
+      "triangles": 3998,
+      "vertices": 1983,
+      "bytes": 107712,
+      "bbox_nm": {
+        "min": [
+          -6.291,
+          -11.15,
+          -5.497
+        ],
+        "max": [
+          6.286,
+          10.916,
+          5.498
+        ]
+      },
+      "material_slots": [
+        "protein"
+      ]
+    },
+    {
+      "level": "L2",
+      "file": "MOL-0001.L2.glb",
+      "triangles": 19996,
+      "vertices": 9933,
+      "bytes": 522292,
+      "bbox_nm": {
+        "min": [
+          -6.735,
+          -11.74,
+          -6.06
+        ],
+        "max": [
+          6.638,
+          11.318,
+          5.79
+        ]
+      },
+      "material_slots": [
+        "protein"
+      ]
+    },
+    {
+      "level": "L3",
+      "file": "MOL-0001.L3.glb",
+      "triangles": 778600,
+      "vertices": 467160,
+      "bytes": 22428636,
+      "bbox_nm": {
+        "min": [
+          -6.822,
+          -11.857,
+          -6.176
+        ],
+        "max": [
+          6.824,
+          11.857,
+          6.163
+        ]
+      },
+      "material_slots": [
+        "ligand",
+        "protein"
+      ]
+    }
+  ],
+  "bbox_nm": {
+    "min": [
+      -6.822,
+      -11.857,
+      -6.176
+    ],
+    "max": [
+      6.824,
+      11.857,
+      6.163
+    ]
+  },
+  "organism": {
+    "structure": [
+      "Homo sapiens"
+    ],
+    "target": "Caenorhabditis elegans",
+    "homolog_reason": "No experimental C. elegans structure of this complex found in PDB (RCSB search 2026-10-07); used Homo sapiens structure 8H9S as closest high-resolution homolog. Subunit composition and C. elegans-specific subunits may differ [VERIFY]."
+  },
+  "species": "Caenorhabditis elegans (target); structure from Homo sapiens",
+  "cell_types": [
+    "intestinal epithelial cell"
+  ],
+  "cell_type": null,
+  "added": "2026-10-07",
+  "sources": [
+    {
+      "type": "PDB",
+      "id": "8H9S",
+      "citation": "Human ATP synthase state 1 (combined)",
+      "note": "mmCIF from files.rcsb.org; EM, [2.53] Å",
+      "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+      "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+      "commercial_use": true
+    },
+    {
+      "type": "EMDB",
+      "id": "EMD-34580",
+      "citation": null,
+      "note": "map for the PDB model (from RCSB metadata)",
+      "licence": "Free of all copyright restrictions (CC0-equivalent) for non-commercial and commercial use; author-provided map images may be copyrighted",
+      "terms_url": "https://www.ebi.ac.uk/emdb/faq",
+      "commercial_use": true
+    },
+    {
+      "type": "DOI",
+      "id": "10.1016/j.molcel.2023.04.029",
+      "citation": "Lai, Y. et al. (2023) Structure of the human ATP synthase. Mol.Cell",
+      "note": "primary citation (RCSB); cited as reference only",
+      "licence": "citation (facts only)",
+      "terms_url": null,
+      "commercial_use": true
+    },
+    {
+      "type": "UniProt",
+      "id": [
+        "O75947",
+        "O75964",
+        "P00846",
+        "P03928",
+        "P05496",
+        "P06576",
+        "P18859",
+        "P24539",
+        "P25705",
+        "P30049",
+        "P36542",
+        "P48047",
+        "P56134",
+        "P56378",
+        "P56381",
+        "P56385",
+        "Q9UII2"
+      ],
+      "citation": "UniProt Consortium",
+      "note": "accessions of the structure's chains (RCSB); TM + topological-domain features used for membrane orientation",
+      "licence": "CC-BY-4.0",
+      "terms_url": "https://www.uniprot.org/help/license",
+      "commercial_use": true
+    },
+    {
+      "type": "UniProt",
+      "id": "atp-1 Q9XXK1;atp-2 P46561",
+      "citation": "UniProt Consortium",
+      "note": "C. elegans homolog genes/accessions (UniProt query 2026-10-07)",
+      "licence": "CC-BY-4.0",
+      "terms_url": "https://www.uniprot.org/help/license",
+      "commercial_use": true
+    },
+    {
+      "type": "PDB",
+      "id": "7AJB",
+      "role": "dimer template",
+      "citation": "bovine ATP synthase dimer state1:state1",
+      "note": "Cryo-EM 9.2 Å, Bos taurus, full F1Fo dimer (RCSB API verified 2026-10-07). Chosen by the mitochondria bot as dimer template. Not used in the current geometry (8H9S monomer = atomic geometry); EMD-18991/52266/52268 = C. elegans shape reference.",
+      "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+      "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+      "commercial_use": true
+    },
+    {
+      "type": "EMDB",
+      "id": "EMD-11428",
+      "role": "dimer template (map for 7AJB)",
+      "citation": null,
+      "note": "map for 7AJB (RCSB metadata)",
+      "licence": "Free of all copyright restrictions (CC0-equivalent) for non-commercial and commercial use",
+      "terms_url": "https://www.ebi.ac.uk/emdb/faq",
+      "commercial_use": true
+    }
+  ],
+  "geometry_basis": "homolog",
+  "evidence_level": "inferred",
+  "confidence": null,
+  "confidence_note": "[VERIFY] confidence not set - to be decided by Codex/Cursor/Kyrre (models.py Evidence requires a float 0-1; null only allowed for UNSCORED_* allow-list ids)",
+  "notes": "evidence_level=inferred (homology: non-C. elegans structure). confidence pending [VERIFY].",
+  "membrane": {
+    "normal": "+Y (towards matrix / N-side)",
+    "midplane_y_nm": -7.183,
+    "tm_helix_extent_nm": 3.49,
+    "tm_helix_extent_definition": "5th-95th percentile range of c-ring UniProt TM-segment CA projections on the normal (descriptive; not a hydrophobic thickness)",
+    "method": "c-ring axis (normal of best-fit plane through the 8 c-subunit centroids; open data) - chosen after audit: UniProt subunit-a TM ranges include in-membrane horizontal helices that skewed the all-TM normal by 13° - organeller-shared/tools/rebuild_mol0001_cring.py (wraps membrane_orient.py)",
+    "n_tm_segments": 16,
+    "helix_axis_mean_deviation_deg": 5.8,
+    "side_method": "marker subunit(s) ['P25705', 'P06576'] (UniProt topology insufficient: N=0, P=0); sign kept from the all-TM normal",
+    "qa_vs_previous_OPM_orientation_deg": 15.4,
+    "reoriented": "2026-10-07 08:08 - previous OPM-based orientation replaced by the open UniProt-based method (done while the OPM licence looked unclear; OPM was later confirmed CC BY 3.0 and is kept as a QA reference); 2026-10-07 09:50 - normal changed from all-TM average to c-ring axis after the AGREE orientation audit (12.9° change; angle vs OPM 20.0° -> 15.4°). Review: organeller-shared/reviews/MOL-0001_orientation_audit.md",
+    "helix_axis_mean_deviation_note": "mean angle of the 16 c-ring TM helices to the c-ring axis (outer helices ~8.7°, inner ~2.8°)",
+    "opm_half_thickness_nm": 1.29,
+    "opm_note": "OPM 8H9S: 1/2 bilayer thickness 12.9 Å (CC BY 3.0, Lomize et al. 2012), cross-check only",
+    "audit_angles_deg": {
+      "ours vs OPM": 20.0,
+      "c-ring axis vs ours": 12.9,
+      "c-ring axis vs OPM": 15.4,
+      "gamma axis vs ours": 23.0,
+      "gamma axis vs OPM": 16.2,
+      "gamma axis vs c-ring axis": 10.3,
+      "stalk (c-ring->F1) vs c-ring axis": 2.5,
+      "stalk vs ours": 14.2,
+      "stalk vs OPM": 17.7
+    }
+  },
+  "polarity": "+Y = mitochondrial matrix (N-side)",
+  "label_anchor_nm": [
+    0.0,
+    11.857,
+    0.0
+  ],
+  "material_slots": [
+    "ligand",
+    "protein"
+  ],
+  "vertex_attributes": {
+    "_CHAIN": "float index into mesh.extras.chains (auth_asym_id, description, UniProt)"
+  },
+  "instancing": "one mesh per LOD (one primitive per material slot), suitable for InstancedMesh",
+  "build": {
+    "script": "organeller-shared/tools/build_complex_assets.py (+ membrane_orient.py)",
+    "date": "2026-10-07",
+    "L1": "as L2 but resolution 20.0 Å, grid 4.0 Å, decimated to <= 4000 tris",
+    "L2": "Gaussian density of heavy atoms (atomic weights), resolution 10.0 Å (sigma=0.225*res), grid 2.5 Å, iso-level enclosing mass x 1.21 Å^3/Da, marching cubes (scikit-image), quadric decimation to <= 20000 tris; slot/chain from nearest protein atom",
+    "L3": "one low-poly sphere per heavy atom at element vdW radius (gemmi); icosphere(0)=20 tris/atom if atoms <= 50000, else octahedron=8 tris/atom; budget <= 1000000 tris; waters/H removed",
+    "normals": "explicitly normalised vertex normals",
+    "validation": "Khronos glTF-Validator (npm gltf-validator 2.0.0-dev.3.10): 0 errors, 0 warnings for L1/L2/L3",
+    "n_atoms": 38930,
+    "n_chains": 28,
+    "compression": "none"
+  },
+  "status": "agree",
+  "built_by": "Grok Bot (builder role)",
+  "reviewed_by": "Codex + Cursor (AGREE 2026-10-08)",
+  "license": {
+    "asset": {
+      "licence": "All rights reserved (© Kyrre Grøtan)",
+      "terms_url": null,
+      "commercial_use": "reserved by owner",
+      "decided": "2026-10-07 (Kyrre)",
+      "note": "Decided by Kyrre 2026-10-07: All rights reserved (© Kyrre Grøtan) until further notice (keeps commercialisation open); a possible open release (e.g. CC BY-NC) may come later. Applies to our own 3D assets/manifests only; every source keeps its own licence and attribution."
+    },
+    "data_sources": {
+      "wwPDB/RCSB PDB": {
+        "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+        "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+        "commercial_use": true
+      },
+      "EMDB": {
+        "licence": "Free of all copyright restrictions (CC0-equivalent) for non-commercial and commercial use; author-provided map images may be copyrighted",
+        "terms_url": "https://www.ebi.ac.uk/emdb/faq",
+        "commercial_use": true
+      },
+      "UniProt": {
+        "licence": "CC-BY-4.0",
+        "terms_url": "https://www.uniprot.org/help/license",
+        "commercial_use": true
+      }
+    },
+    "not_used": "PDBTM (non-commercial only)",
+    "qa_reference": {
+      "source": "OPM",
+      "use": "QA only: angle vs previous OPM orientation; no OPM coordinates in geometry",
+      "licence": "CC BY 3.0 (site footer 'License' link -> creativecommons.org/licenses/by/3.0/, '© 2005-2019 The Regents of the University of Michigan'; verified in site main.js 2026-10-07). No separate terms page. The NAR 2012 paper text is CC BY-NC 3.0 (applies to the article only).",
+      "terms_url": "https://opm.phar.umich.edu/ (footer 'License') -> https://creativecommons.org/licenses/by/3.0/",
+      "commercial_use": true,
+      "attribution": "Lomize MA et al. Nucleic Acids Res. 2012;40:D370-6; opm.phar.umich.edu, CC BY 3.0"
+    },
+    "tools": [
+      {
+        "tool": "gemmi",
+        "licence": "MPL-2.0",
+        "url": "https://github.com/project-gemmi/gemmi",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "numpy",
+        "licence": "BSD-3-Clause (+bundled 0BSD/MIT/Zlib/CC0)",
+        "url": "https://numpy.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "scipy",
+        "licence": "BSD-3-Clause",
+        "url": "https://scipy.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "scikit-image (marching cubes)",
+        "licence": "BSD-3-Clause",
+        "url": "https://scikit-image.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "trimesh",
+        "licence": "MIT",
+        "url": "https://github.com/mikedh/trimesh",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "fast-simplification",
+        "licence": "MIT",
+        "url": "https://github.com/pyvista/fast-simplification",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "pygltflib",
+        "licence": "MIT",
+        "url": "https://gitlab.com/dodgyville/pygltflib",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "requests",
+        "licence": "Apache-2.0",
+        "url": "https://github.com/psf/requests",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "glTF-Transform CLI",
+        "licence": "MIT",
+        "url": "https://github.com/donmccurdy/glTF-Transform",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "Khronos glTF-Validator",
+        "licence": "Apache-2.0",
+        "url": "https://github.com/KhronosGroup/glTF-Validator",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "matplotlib (previews)",
+        "licence": "Matplotlib License (PSF-based, BSD-compatible)",
+        "url": "https://matplotlib.org/stable/project/license.html",
+        "commercial_use": true,
+        "output_encumbered": false
+      }
+    ],
+    "summary": "All inputs open (CC0 / CC-BY-4.0; QA reference OPM CC BY 3.0); all tools OSI-licensed; no tool licence encumbers the output."
+  },
+  "roles": {
+    "atomic_geometry": "8H9S (human monomer, homolog)",
+    "dimer_template": "7AJB (bovine dimer, EMD-11428)",
+    "c_elegans_shape_reference": [
+      "EMD-18991",
+      "EMD-52266",
+      "EMD-52268"
+    ]
+  },
+  "c_elegans_reference_maps": [
+    {
+      "emdb": "EMD-18991",
+      "title": "Sub-tomogram average of the C. elegans ATP synthase dimer",
+      "organism": "Caenorhabditis elegans (N2), inner mitochondrial membrane",
+      "method": "subtomogram averaging",
+      "resolution_A": 38.6,
+      "released": "2024-01-17",
+      "citation": "Buzzard E et al. Biochem J 2024, PMID 38164968, doi:10.1042/BCJ20230450 (article CC BY 4.0)",
+      "fitted_pdb_model": null
+    },
+    {
+      "emdb": "EMD-52266",
+      "title": "Sub-tomogram average of the wild-type C. elegans ATP synthase dimer (narrow membrane curvature)",
+      "organism": "Caenorhabditis elegans (N2)",
+      "method": "subtomogram averaging",
+      "resolution_A": 32.0,
+      "released": "2025-12-17",
+      "citation": "Buzzard E et al., To Be Published",
+      "fitted_pdb_model": null
+    },
+    {
+      "emdb": "EMD-52268",
+      "title": "Sub-tomogram average of the wild-type C. elegans ATP synthase dimer (wide membrane curvature)",
+      "organism": "Caenorhabditis elegans (N2)",
+      "method": "subtomogram averaging",
+      "resolution_A": 32.0,
+      "released": "2025-12-17",
+      "citation": "Buzzard E et al., To Be Published",
+      "fitted_pdb_model": null
+    }
+  ],
+  "c_elegans_reference_maps_note": "Verified via EMDB API 2026-10-07. Not used in the current geometry (which is the human 8H9S monomer); reference for C. elegans dimer angle/shape. Licence: EMDB CC0-equivalent, https://www.ebi.ac.uk/emdb/faq, commercial use OK; attribute authors + EMD id.",
+  "status_note": "AGREE from Codex and Cursor on 2026-10-08. Still CANDIDATE: not adopted into the viewer; adoption requires Kyrre's confirmation."
+}

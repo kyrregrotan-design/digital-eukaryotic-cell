@@ -1,0 +1,515 @@
+{
+  "id": "MOL-0014",
+  "viewer_id": "ribosomes",
+  "hosts": [
+    "ribosomes",
+    "rough_er (anchor variant)"
+  ],
+  "name": "C. elegans 80S ribosome (9BH5, class 1)",
+  "candidate": true,
+  "candidate_note": "CANDIDATE only - not swapped into the viewer. Replacement needs Codex + Cursor (AGREE) and Kyrre approval (template v0.2 OQ2).",
+  "units": "nm",
+  "scale_nm": 1.0,
+  "scale_basis": "atomic coordinates Å x 0.1; no rescaling",
+  "axes": "right-handed; same axes for standard and anchor files: +Y = membrane normal pointing from the ER membrane into the cytosol (from Sec61 in 3J7R superposed on 9BH5), +X = in-plane direction from the tunnel exit towards the 40S centroid, Z = X x Y. Standard files: origin = bbox centre. Anchor files (*.anchor.glb): origin = Sec61 pore axis at the cytosolic membrane boundary (see anchor; revised 2026-10-07 09:59).",
+  "lod": [
+    {
+      "level": "L1",
+      "file": "MOL-0014.L1.glb",
+      "triangles": 4994,
+      "vertices": 3622,
+      "bytes": 170976,
+      "bbox_nm": {
+        "min": [
+          -12.853,
+          -12.412,
+          -11.638
+        ],
+        "max": [
+          12.46,
+          12.271,
+          11.696
+        ]
+      },
+      "material_slots": [
+        "protein",
+        "rRNA"
+      ]
+    },
+    {
+      "level": "L2",
+      "file": "MOL-0014.L2.glb",
+      "triangles": 49996,
+      "vertices": 30917,
+      "bytes": 1475272,
+      "bbox_nm": {
+        "min": [
+          -13.263,
+          -12.864,
+          -12.242
+        ],
+        "max": [
+          13.147,
+          12.879,
+          12.092
+        ]
+      },
+      "material_slots": [
+        "protein",
+        "rRNA"
+      ]
+    },
+    {
+      "level": "L3",
+      "file": "MOL-0014.L3.glb",
+      "triangles": 747392,
+      "vertices": 747392,
+      "bytes": 29905344,
+      "bbox_nm": {
+        "min": [
+          -13.251,
+          -12.956,
+          -12.223
+        ],
+        "max": [
+          13.251,
+          12.945,
+          12.233
+        ]
+      },
+      "material_slots": [
+        "protein",
+        "rRNA"
+      ]
+    }
+  ],
+  "lod_anchor": [
+    {
+      "level": "L1",
+      "file": "MOL-0014.L1.anchor.glb",
+      "triangles": 4994,
+      "vertices": 3622,
+      "bytes": 171040,
+      "bbox_nm": {
+        "min": [
+          -11.052,
+          0.593,
+          -11.059
+        ],
+        "max": [
+          14.261,
+          25.276,
+          12.275
+        ]
+      },
+      "material_slots": [
+        "protein",
+        "rRNA"
+      ]
+    },
+    {
+      "level": "L2",
+      "file": "MOL-0014.L2.anchor.glb",
+      "triangles": 49996,
+      "vertices": 30917,
+      "bytes": 1475340,
+      "bbox_nm": {
+        "min": [
+          -11.462,
+          0.14,
+          -11.663
+        ],
+        "max": [
+          14.948,
+          25.883,
+          12.671
+        ]
+      },
+      "material_slots": [
+        "protein",
+        "rRNA"
+      ]
+    },
+    {
+      "level": "L3",
+      "file": "MOL-0014.L3.anchor.glb",
+      "triangles": 747392,
+      "vertices": 747392,
+      "bytes": 29905408,
+      "bbox_nm": {
+        "min": [
+          -11.449,
+          0.049,
+          -11.644
+        ],
+        "max": [
+          15.052,
+          25.95,
+          12.812
+        ]
+      },
+      "material_slots": [
+        "protein",
+        "rRNA"
+      ]
+    }
+  ],
+  "anchor": {
+    "files": "MOL-0014.<LOD>.anchor.glb",
+    "requested_by": "rough_er (ER bot)",
+    "revised": "2026-10-07 09:59 - origin moved from the uL23/uL29 exit estimate to the Sec61 pore axis (AGREE feedback: old origin sat 2 nm (X) / 4.4 nm (Z) beside Sec61)",
+    "origin": "Sec61 pore axis ∩ cytosolic membrane boundary (3J7R, carried into 9BH5)",
+    "y": "+Y = membrane normal into the cytosol",
+    "x": "+X towards the 40S (unchanged rotation; same axes as the standard files)",
+    "method": [
+      "Membrane normal n: membrane_orient.py on 3J7R (10 UniProt TM segments of Sec61alpha A0A4X1TV07; sign towards ribosome uL23).",
+      "Pore axis: line along n through the side-chain centroid of the Sec61alpha pore-ring residues Ile81, Val85, Ile179, Ile183, Ile292, Leu449 (pig numbering = UniProt; position 449 is Leu in pig, Ile in the mammalian reference numbering). Ring centroid is 0.36 nm from the Sec61alpha CA centroid.",
+      "Origin: pore axis at the cytosolic boundary = Sec61 TM midplane + tm_extent/2 (descriptive TM-helix span) [VERIFY].",
+      "3J7R -> 9BH5 by large-subunit superposition (42 chains, core RMSD 1.15 Å over 8065 pairs)."
+    ],
+    "membrane_midplane_y_nm": -1.68,
+    "cytosolic_boundary_y_nm": 0.0,
+    "lumenal_boundary_y_nm": -3.36,
+    "old_origin": {
+      "position_in_new_frame_nm": [
+        -2.02,
+        -0.0,
+        4.42
+      ],
+      "lateral_from_pore_axis_nm": 4.86,
+      "method": "centroid of 28S + uL23 + uL29 atoms within 20 Å of the uL23/uL29 midpoint (superseded)"
+    },
+    "exit_tunnel_check": {
+      "ptc_position_nm": [
+        -0.02,
+        10.45,
+        0.03
+      ],
+      "ptc_lateral_from_pore_axis_nm": 0.04,
+      "ptc_definition": "3'-terminal nucleotide of the A/P tRNA in 3J7R (chain S5)",
+      "lining_atom_exit": {
+        "ptc": "3J7R A/P tRNA (chain S5) 3'-terminal nucleotide",
+        "lining": {
+          "uL23": "X",
+          "uL24": "Y",
+          "uL29": "h",
+          "eL39": "l"
+        },
+        "n_lining_atoms": 560,
+        "ptc_to_exit_A": 83.0,
+        "tunnel_axis_vs_membrane_normal_deg": 18.9,
+        "exit_lateral_to_pore_axis_nm": 2.72,
+        "tunnel_line_at_cytosolic_boundary_lateral_to_pore_axis_nm": 3.61,
+        "exit_height_above_cytosolic_boundary_nm": 2.6
+      },
+      "void_trace": {
+        "method": "free grid points >= 4.5 Å from 60S atoms, buried (>350 60S atoms within 18 Å), connected to the PTC; slice centroids 20-80 Å from the PTC along -n, line fit",
+        "slice_lateral_to_pore_axis_nm": [
+          2.96,
+          1.44,
+          1.06,
+          0.1,
+          1.27,
+          3.21
+        ],
+        "slice_height_above_cyt_boundary_nm": [
+          7.96,
+          6.89,
+          6.0,
+          4.89,
+          4.0,
+          2.93
+        ],
+        "line_vs_membrane_normal_deg": 45.8,
+        "line_at_cytosolic_boundary_lateral_to_pore_axis_nm": 6.51,
+        "note": "lower slices (< ~3 nm above the boundary) merge with the vestibule/ribosome-Sec61 gap and are excluded"
+      },
+      "summary": "PTC lies on the pore axis (0.04 nm). Void-traced tunnel centroids pass 0.1-1.4 nm from the pore axis at 4-7 nm above the boundary. The lining-atom centroid of uL23/uL24/uL29/eL39 sits 2.7 nm off, biased towards the protein wall. A straight-line fit through the void slices is unreliable (side cavities)."
+    },
+    "clash": {
+      "method": "vdW-sphere voxel overlap, 1.5 Å grid; atom pairs < 2.2 Å",
+      "sec61_volume_nm3": 39.2,
+      "vs_9BH5_ribosome": {
+        "overlap_nm3": 0.07,
+        "sec61_atoms_within_2_2A": 9
+      },
+      "vs_native_3J7R_ribosome": {
+        "overlap_nm3": 0.03,
+        "sec61_atoms_within_2_2A": 1
+      },
+      "sec61_y_range_new_frame_nm": [
+        -4.66,
+        3.35
+      ],
+      "mesh_overlap_voxel_0.2nm": {
+        "L1": {
+          "watertight_ribosome": false,
+          "watertight_sec61": true,
+          "sec61_mesh_volume_nm3": 74.8,
+          "overlap_nm3": 0.03,
+          "overlap_y_range_nm": [
+            2.4,
+            3.0
+          ]
+        },
+        "L2": {
+          "watertight_ribosome": false,
+          "watertight_sec61": true,
+          "sec61_mesh_volume_nm3": 80.0,
+          "overlap_nm3": 0.66,
+          "overlap_y_range_nm": [
+            0.6,
+            3.0
+          ]
+        }
+      }
+    },
+    "transform_9BH5_mmcif_to_anchor": {
+      "R": [
+        [
+          0.3118169203365603,
+          -0.3230438953588432,
+          0.8935395066046089
+        ],
+        [
+          0.08672522935317341,
+          0.9461781867203924,
+          0.3118101562940977
+        ],
+        [
+          -0.946175957623878,
+          -0.019735264018880955,
+          0.3230504241889219
+        ]
+      ],
+      "origin_A_in_9BH5": [
+        227.04,
+        121.85,
+        172.24
+      ]
+    }
+  },
+  "bbox_nm": {
+    "min": [
+      -13.263,
+      -12.864,
+      -12.242
+    ],
+    "max": [
+      13.147,
+      12.879,
+      12.092
+    ]
+  },
+  "organism": {
+    "structure": [
+      "Caenorhabditis elegans"
+    ],
+    "target": "Caenorhabditis elegans"
+  },
+  "species": "Caenorhabditis elegans",
+  "cell_types": [
+    "intestinal epithelial cell"
+  ],
+  "added": "2026-10-07",
+  "sources": [
+    {
+      "type": "PDB",
+      "id": "9BH5",
+      "citation": "High-resolution C. elegans 80S ribosome structure - class 1",
+      "note": "EM [2.63] Å; mmCIF files.rcsb.org",
+      "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+      "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+      "commercial_use": true
+    },
+    {
+      "type": "EMDB",
+      "id": "EMD-44533",
+      "note": "map for the PDB model",
+      "licence": "Free of all copyright restrictions (CC0-equivalent) for non-commercial and commercial use; author-provided map images may be copyrighted",
+      "terms_url": "https://www.ebi.ac.uk/emdb/faq",
+      "commercial_use": true
+    },
+    {
+      "type": "DOI",
+      "id": "10.1261/rna.080103.124",
+      "citation": "Sehgal, E. et al. 2024 Rna",
+      "note": "primary citation; facts only",
+      "licence": "citation (facts only)",
+      "terms_url": null,
+      "commercial_use": true
+    },
+    {
+      "type": "PDB",
+      "id": "9CAI",
+      "role": "cross-check (class 1, independent deposition)",
+      "note": "superposed: RMSD 0.20 Å; exit point shift 0.04 Å",
+      "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+      "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+      "commercial_use": true
+    },
+    {
+      "type": "PDB",
+      "id": "3J7R",
+      "role": "membrane normal for anchor frame (Sec61 superposed)",
+      "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+      "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+      "commercial_use": true
+    },
+    {
+      "type": "UniProt",
+      "id": [
+        "A0A4X1TV07",
+        "A0A480KZ98"
+      ],
+      "role": "TM features (Sec61alpha) + side marker (uL23)",
+      "licence": "CC-BY-4.0",
+      "terms_url": "https://www.uniprot.org/help/license",
+      "commercial_use": true
+    }
+  ],
+  "excluded_chains": {
+    "DB": "tRNA",
+    "DC": "mRNA",
+    "DA": "tRNA"
+  },
+  "excluded_note": "tRNA/mRNA of the translating state and ligands/ions removed; polymer rRNA + ribosomal proteins only",
+  "geometry_basis": "measured",
+  "evidence_level": "[VERIFY]",
+  "confidence": null,
+  "confidence_note": "[VERIFY] confidence not set - to be decided by Codex/Cursor/Kyrre (models.py Evidence requires float 0-1)",
+  "notes": "C. elegans experimental structure (measured). evidence_level/confidence left for Codex/Cursor/Kyrre.",
+  "material_slots": [
+    "protein",
+    "rRNA"
+  ],
+  "vertex_attributes": {
+    "_CHAIN": "float index into mesh.extras.chains"
+  },
+  "instancing": "one mesh per LOD (one primitive per slot), InstancedMesh-friendly",
+  "build": {
+    "script": "organeller-shared/tools/build_ribo_sec61_nuc.py (reuses build_complex_assets.py gaussian_surface/unit_normals/write_glb and membrane_orient.py)",
+    "date": "2026-10-07",
+    "L1": "Gaussian density 20 Å / grid 4 Å, quadric decimation",
+    "L2": "Gaussian density 10 Å (sigma 0.225*res) / grid 2.5 Å, iso-level enclosing mass x 1.21 Å^3/Da, marching cubes, quadric decimation",
+    "normals": "explicitly normalised",
+    "postprocess": "gltf-transform dedup --materials false + prune --keep-attributes true",
+    "validation": "Khronos glTF-Validator: 0 errors, 0 warnings (all LODs incl. anchor)",
+    "compression": "none",
+    "L3": "one tetrahedron per heavy atom (4 tris/atom, vdW radius) to stay <= 1M triangles (186848 atoms)",
+    "n_atoms": 186848,
+    "n_chains": 77,
+    "anchor_fix": "organeller-shared/tools/anchor_fix_0014_0015.py (only *.anchor.glb rebuilt); validator 0 errors/0 warnings"
+  },
+  "status": "agree",
+  "built_by": "Grok Bot",
+  "reviewed_by": "Codex + Cursor (AGREE 2026-10-08)",
+  "license": {
+    "asset": {
+      "licence": "All rights reserved (© Kyrre Grøtan)",
+      "terms_url": null,
+      "commercial_use": "reserved by owner",
+      "decided": "2026-10-07 (Kyrre)",
+      "note": "Decided by Kyrre 2026-10-07: All rights reserved (© Kyrre Grøtan) until further notice (keeps commercialisation open); a possible open release (e.g. CC BY-NC) may come later. Applies to our own 3D assets/manifests only; every source keeps its own licence and attribution."
+    },
+    "data_sources": {
+      "wwPDB/RCSB PDB": {
+        "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+        "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+        "commercial_use": true
+      },
+      "EMDB": {
+        "licence": "Free of all copyright restrictions (CC0-equivalent) for non-commercial and commercial use; author-provided map images may be copyrighted",
+        "terms_url": "https://www.ebi.ac.uk/emdb/faq",
+        "commercial_use": true
+      },
+      "UniProt": {
+        "licence": "CC-BY-4.0",
+        "terms_url": "https://www.uniprot.org/help/license",
+        "commercial_use": true
+      }
+    },
+    "not_used": "PDBTM (non-commercial only)",
+    "tools": [
+      {
+        "tool": "gemmi",
+        "licence": "MPL-2.0",
+        "url": "https://github.com/project-gemmi/gemmi",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "numpy",
+        "licence": "BSD-3-Clause (+bundled 0BSD/MIT/Zlib/CC0)",
+        "url": "https://numpy.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "scipy",
+        "licence": "BSD-3-Clause",
+        "url": "https://scipy.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "scikit-image (marching cubes)",
+        "licence": "BSD-3-Clause",
+        "url": "https://scikit-image.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "trimesh",
+        "licence": "MIT",
+        "url": "https://github.com/mikedh/trimesh",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "fast-simplification",
+        "licence": "MIT",
+        "url": "https://github.com/pyvista/fast-simplification",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "pygltflib",
+        "licence": "MIT",
+        "url": "https://gitlab.com/dodgyville/pygltflib",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "requests",
+        "licence": "Apache-2.0",
+        "url": "https://github.com/psf/requests",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "glTF-Transform CLI",
+        "licence": "MIT",
+        "url": "https://github.com/donmccurdy/glTF-Transform",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "Khronos glTF-Validator",
+        "licence": "Apache-2.0",
+        "url": "https://github.com/KhronosGroup/glTF-Validator",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "matplotlib (previews)",
+        "licence": "Matplotlib License (PSF-based, BSD-compatible)",
+        "url": "https://matplotlib.org/stable/project/license.html",
+        "commercial_use": true,
+        "output_encumbered": false
+      }
+    ],
+    "summary": "All inputs CC0 / CC BY (commercial use allowed); no NC/academic-only source. Own asset: All rights reserved (© Kyrre Grøtan). "
+  },
+  "status_note": "AGREE from Codex and Cursor on 2026-10-08. Still CANDIDATE: not adopted into the viewer; adoption requires Kyrre's confirmation."
+}

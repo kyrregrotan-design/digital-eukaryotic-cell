@@ -16,6 +16,7 @@
   html, body { margin: 0; height: 100%; overflow: hidden; background: radial-gradient(ellipse at 45% 40%, var(--bg1), var(--bg0) 75%); color: var(--text); font-family: var(--font); }
   #gl, #overlay { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   #overlay { pointer-events: none; }
+  #gl { touch-action: none; }
   .panel {
     position: fixed; z-index: 5; background: var(--glass); border: 1px solid var(--glass-border);
     backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -70,6 +71,7 @@
   .tag { display: inline-block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 7px; border-radius: 6px; background: var(--accent-dim); color: var(--accent); }
   .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--glass-border); margin: 0 4px 4px 0; cursor: pointer; background: rgba(255,255,255,0.03); color: var(--text); font-family: inherit; }
   .chip:hover { background: var(--accent-dim); }
+  .chip[data-molecule-identity] { max-width: 100%; text-align: left; }
   .chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .muted { color: var(--muted); }
   .cov { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; font-size: 0.74rem; }
@@ -79,7 +81,7 @@
   #tooltip {
     position: fixed; z-index: 10; pointer-events: none; padding: 6px 10px; border-radius: 9px;
     background: rgba(10, 14, 20, 0.88); border: 1px solid var(--glass-border); font-size: 0.78rem;
-    white-space: nowrap; transform: translate(14px, 12px); opacity: 0; transition: opacity 0.12s;
+    white-space: normal; overflow-wrap: anywhere; width: max-content; max-width: min(340px, calc(100vw - 16px)); opacity: 0; transition: opacity 0.12s;
   }
   #tooltip.on { opacity: 1; }
   #tooltip small { display: block; color: var(--muted); font-size: 0.68rem; margin-top: 1px; }
@@ -237,7 +239,7 @@
 <canvas id="gl"></canvas>
 <canvas id="overlay"></canvas>
 <div id="fade"></div>
-<div id="tooltip"></div>
+<div id="tooltip" role="tooltip"></div>
 
 <button class="panel opener" id="open-left" title="Show the pathway panel">☰ Pathways</button>
 <button class="panel opener" id="open-right" title="Show the detail panel">Details ☰</button>
@@ -305,6 +307,7 @@
       <select id="g-look">
         <option value="advanced">Advanced (depth and surface detail)</option>
         <option value="standard">Standard (simpler surfaces)</option>
+        <option value="cinematic" title="Artistic lighting; shapes and sizes are not measurements">Cinematic (illustrative)</option>
       </select>
     </label>
     <label class="gfx">Rendering quality
@@ -318,7 +321,7 @@
     <div class="note" id="g-status" aria-live="polite"></div>
     <div class="row" style="margin-top:6px"><button class="b" id="g-reset" title="Back to Advanced look and Auto quality, and forget the saved choice">Reset graphics settings</button></div>
     <div class="note" id="g-saved" aria-live="polite" hidden></div>
-    <div class="note" id="g-note">Both looks show the same model, data and controls; colours and shading are teaching conventions, not measurements. Auto picks Light, Balanced or High from how smoothly this device draws the scene (measured time between frames, not graphics-card timings). Choices are saved in this browser only.</div>
+    <div class="note" id="g-note">All looks show the same model, data and controls; colours and shading are teaching conventions, not measurements. Auto picks Light, Balanced or High from how smoothly this device draws the scene (measured time between frames, not graphics-card timings). Choices are saved in this browser only.</div>
   </div>
   <div class="section">
     <p class="title">About this view</p>
@@ -389,6 +392,7 @@
 </div></div>
 
 <script src="vendor/three.min.js"></script>
+<script src="molecular_assets.js"></script>
 <script id="model-data" type="application/json">
 {
   "generated_at": "2026-10-07 08:17 (Europe/Oslo)",
@@ -10420,8 +10424,11 @@
   // SHAPE preview: the nucleus sits 0.22 lower so its envelope clears the apical groove (display choice).
   // Shape2: centre on the A-P / partner-edge axes, retaining the groove clearance and radius from shape1.
   // Position and size are display choices. All attached ER, anchors and pathway nodes derive from NC.
-  // The second-nucleus display twin is a subsequent slice; this does not add a model compartment.
+  // Shape2 adds a smaller schematic display copy, never a second model compartment (contract in docs/a2_shape2_twin_contract.md).
   const NC = BODY_SHAPE2 ? V(0, -0.1, 0) : BODY_SHAPE1 ? V(-0.4, -0.1, -0.25) : V(-0.4, 0.12, -0.25), NR = 0.74;
+  const TWIN_SCALE = 0.55, TWIN_OFFSET = V(1.25, -0.1, -0.8);
+  const TWIN_CENTER = BODY_SHAPE2 ? NC.clone().add(TWIN_OFFSET) : null;
+  const nuclearVisualStart = pickables.length, TWIN_VISUALS = [], TWIN_MATERIALS = [];
   const PORE_R = 0.03, PORE_T = 0.011, NRIM_T = 0.03;
   const nN = V(0.35, -0.45, -1).normalize();
   const nq = NC.clone().add(V(0.05, 0.08, 0.1));
@@ -10477,6 +10484,38 @@
   nlGeo.translate(NUCLEOLUS.x, NUCLEOLUS.y, NUCLEOLUS.z);
   add(new THREE.Mesh(nlGeo, mat("nucleolus", { color: 0x6a2f8f, roughness: 0.85, emissive: new THREE.Color(0x30104a), emissiveIntensity: 0.6 })), "nucleolus");
 
+  if (BODY_SHAPE2) {
+    // Source geometry and instance matrices already use world coordinates. Apply one affine transform to each
+    // copy AND its local cut plane; leave every primary object, material, anchor, ER sheet and pathway unchanged.
+    const xf = new THREE.Matrix4().makeTranslation(TWIN_CENTER.x, TWIN_CENTER.y, TWIN_CENTER.z)
+      .multiply(new THREE.Matrix4().makeScale(TWIN_SCALE, TWIN_SCALE, TWIN_SCALE))
+      .multiply(new THREE.Matrix4().makeTranslation(-NC.x, -NC.y, -NC.z));
+    pickables.slice(nuclearVisualStart).forEach((source) => {
+      const copy = source.clone(); copy.applyMatrix4(xf);
+      const m = source.material.clone(), planes = (source.material.clippingPlanes || []).map((p) => p.clone().applyMatrix4(xf));
+      m.clippingPlanes = planes; copy.material = m;
+      // Follow the live source after look, quality, depth-cue and selection updates, preserving the twin's plane.
+      // Keep clones outside compMats so approved material snapshots/primary choices retain their exact hashes.
+      copy.userData.displayTwin = true; copy.userData.sourceComp = source.userData.comp;
+      add(copy, "nucleus"); TWIN_VISUALS.push(copy); TWIN_MATERIALS.push({ source: source.material, copy: m, planes, version: -1 });
+    });
+    document.getElementById("shape-note").textContent += " The smaller second nucleus is an illustrative display copy linked to the same nucleus explanation; its size and spacing are not measured. Nuclear count varies: int1/int2 have one, int3–int7 two, and int8/int9 vary. Pathways and ER are shown on the primary nucleus.";
+  }
+
+  function syncTwinMaterials() {
+    // Synchronize even culled/offscreen copies, after all source appearance changes and before scene rendering.
+    TWIN_MATERIALS.forEach((entry) => {
+      const { source, copy, planes } = entry;
+      copy.copy(source); copy.clippingPlanes = planes;
+      copy.onBeforeCompile = source.onBeforeCompile; copy.customProgramCacheKey = source.customProgramCacheKey;
+      if (entry.version !== source.version) {
+        // r158 can reuse a cached shader without rebuilding its custom uniform map after a look switch.
+        // Release only the twin's old program on source changes so its depth-cue uniforms are rebuilt.
+        copy.dispose(); entry.version = source.version; copy.needsUpdate = true;
+      }
+    });
+  }
+
   // ---------------------------------------------------------------- rough ER
   const erMat = mat("rough_er", { color: 0x4d6fd6, roughness: 0.45, clearcoat: 0.5, sheen: 0.6, sheenColor: new THREE.Color(0xa9c0ff), emissive: new THREE.Color(0x000000), side: THREE.DoubleSide, clippingPlanes: [cut] });
   const ER_PHI0 = -1.5, ER_PHIL = 2.0, ER_TH0 = 0.5, ER_THL = 1.75;
@@ -10517,7 +10556,8 @@
       if (!kept(p) || !insideCell(p, ER_FIT)) continue;
       ms.push(placeM(p, RR));
     }
-    dsph(instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes"), true);
+    const erRibs = dsph(instanced(new THREE.SphereGeometry(1, 8, 6), mat("ribosomes", { color: 0xd8506a, roughness: 0.4, emissive: new THREE.Color(0x000000) }), ms, "ribosomes"), true);
+    erRibs.userData.erAttached = true;
   })();
 
   // ---------------------------------------------------------------- SHAPE preview fit
@@ -10561,6 +10601,8 @@
   const placed = (comp, idx, c, S) => { if (Array.isArray(S)) S = mkShape(S); return { comp, idx, c: c.clone(), R: S.R, S }; };
   const sphereCaps = (r) => { const o = V(0, 0, 0); return [{ a: o, b: o, r }]; };
   const NUC = placed("nucleus", 0, NC, sphereCaps(NUC_BOUND));
+  const NUC_TWIN = TWIN_CENTER && placed("nucleus", 1, TWIN_CENTER, sphereCaps(NUC_BOUND * TWIN_SCALE));
+  const NUC_OBSTACLES = NUC_TWIN ? [NUC, NUC_TWIN] : [NUC];
   const gapFor = (A, B) => A.comp === "nucleus" || B.comp === "nucleus" ? GAP_NUC : GAP;
   const _tri = new THREE.Triangle(), _cp = new THREE.Vector3(), _e1 = new THREE.Vector3(), _e2 = new THREE.Vector3(),
     _pv = new THREE.Vector3(), _tv = new THREE.Vector3(), _qv = new THREE.Vector3(), _dir = new THREE.Vector3();
@@ -10703,7 +10745,7 @@
     return o.sort((a, b) => a[0] - b[0] || a[1] - b[1]).map((x) => x[2]);
   })() : [];
   if (BODY_SHAPE1) {
-    OBST.push(NUC);
+    OBST.push(...NUC_OBSTACLES);
     if (!BODY_SHAPE2) OBST.push(placed("polysomes", 0, POLY, polyPts.map((p) => { const a = p.clone().sub(POLY); return { a, b: a, r: 0.022 }; })));
   }
   const r4 = (x) => +x.toFixed(4), r3v = (v) => v.toArray().map((c) => +c.toFixed(3));
@@ -10779,6 +10821,9 @@
   // ---------------------------------------------------------------- Golgi
 
   const GOLGI = V(0.85, 0.2, -0.15);
+  const GOLGI_RIM = { originals: [], instanced: null };
+  const GOLGI_BOUNDS = new THREE.Box3(), GOLGI_OUTLINE = new THREE.Group();
+  GOLGI_OUTLINE.visible = false;
   (function () {
     const m = mat("golgi", { color: 0x5cbf5e, roughness: 0.35, clearcoat: 0.7, sheen: 0.6, sheenColor: new THREE.Color(0xc0ffb0), emissive: new THREE.Color(0x000000) });
     const group = new THREE.Group();
@@ -10803,6 +10848,7 @@
       const a = r() * Math.PI * 2, rad = 0.62 + r() * 0.2;
       const s = pickable(dsph(new THREE.Mesh(new THREE.SphereGeometry(0.045 + r() * 0.035, 20, 14), vm)), "golgi");
       s.position.set(Math.cos(a) * rad * 1.1, 0.15 + r() * 0.45, Math.sin(a) * rad * 0.6);
+      s.userData.golgiRim = true; GOLGI_RIM.originals.push(s);
       group.add(s);
     }
     group.position.copy(GOLGI);
@@ -10831,6 +10877,21 @@
       GOLGI.copy(fitInBody("golgi", group.position, relVerts(group), mkShape(ves, tris, solids)));
       group.position.copy(GOLGI);
     }
+    group.updateMatrixWorld(true);
+    GOLGI_BOUNDS.setFromObject(group);
+    // Selection-only, depth-tested outlines of the existing cisternae. No pick targets or biological surfaces added.
+    const outlineMat = new THREE.LineBasicMaterial({ color: 0xb4fff0, depthTest: true, depthWrite: false, clippingPlanes: [cut] });
+    group.children.filter((o) => o.geometry.type === "LatheGeometry").forEach((o) => {
+      const line = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 10), outlineMat);
+      line.matrixAutoUpdate = false; line.matrix.copy(o.matrixWorld); GOLGI_OUTLINE.add(line);
+    });
+    scene.add(GOLGI_OUTLINE);
+    // Same existing display spheres, shared unit sphere + per-instance radius. Only Cinematic renders this path;
+    // Standard/Advanced keep their original meshes and geometry. Fit/collision inputs above remain unchanged.
+    const rim = pickable(dsph(new THREE.InstancedMesh(new THREE.SphereGeometry(1, 20, 14), vm, GOLGI_RIM.originals.length)), "golgi");
+    GOLGI_RIM.originals.forEach((o, i) => rim.setMatrixAt(i, placeM(o.position, o.geometry.parameters.radius)));
+    rim.instanceMatrix.needsUpdate = true; rim.userData.golgiRim = true; rim.visible = false;
+    group.add(rim); GOLGI_RIM.instanced = rim;
     scene.add(group);
   })();
 
@@ -10920,7 +10981,7 @@
     const r = rng(91), ms = [];
     for (let i = 0; i < 1400; i++) {
       const p = V((r() * 2 - 1) * BOX.x, (r() * 2 - 1) * BOX.y, (r() * 2 - 1) * BOX.z);
-      if (!insideCell(p, 0.9) || !kept(p) || p.distanceTo(NC) < NR + 0.75) continue;
+      if (!insideCell(p, 0.9) || !kept(p) || p.distanceTo(NC) < NR + 0.75 || (NUC_TWIN && p.distanceTo(NUC_TWIN.c) < NUC_TWIN.R + 0.018)) continue;
       ms.push(placeM(p, 0.018));
     }
     polyPts.forEach((p) => ms.push(placeM(p, 0.022)));
@@ -11001,7 +11062,19 @@
     const trans = cis === faceLo ? faceHi : faceLo;
     const clearNuc = (p) => { const a = p.clone().sub(NC), d = a.length(); if (d < NR + 0.3) p.copy(NC).addScaledVector(a.normalize(), NR + 0.3); return p; };
     const via = (a, b, lift) => clearNuc(a.clone().add(b).multiplyScalar(0.5).add(lift));
-    const curve = (a, b, lift) => new THREE.CatmullRomCurve3([a.clone(), via(a, b, lift), b.clone()]);
+    const curve = (a, b, lift) => {
+      const mid = via(a, b, lift), make = (m) => new THREE.CatmullRomCurve3([a.clone(), m, b.clone()]);
+      const original = make(mid);
+      if (!NUC_TWIN || original.getSpacedPoints(160).every((p) => p.distanceTo(NUC_TWIN.c) >= NUC_TWIN.R + 0.07)) return original;
+      // Bounded display-route search: fit the full curve, not just its midpoint, around the new display obstacle.
+      // 0.07 includes the largest route sphere (0.044) plus schematic clearance; it is not a physical parameter.
+      for (let step = 1; step <= 8; step++) for (const d of [V(0, 1, 0), V(0, 0, 1), V(0, -1, 0), V(0, 0, -1), V(-1, 0, 0), V(1, 0, 0)]) {
+        const candidate = make(clearNuc(mid.clone().addScaledVector(d, step * 0.15)));
+        if (candidate.getSpacedPoints(160).every((p) => insideCell(p, 0.985) && kept(p, 0.04) &&
+          p.distanceTo(NUC_TWIN.c) >= NUC_TWIN.R + 0.07 && p.distanceTo(NC) >= NR + 0.05)) return candidate;
+      }
+      return original; // Diagnostics expose any unresolved route rather than claiming clearance.
+    };
     // Preview: the first exit of the ray from the body centre through SHAPE (march, then bisect), same 0.955 depth.
     const shapeExit = (d) => {
       let lo = 0, hi = 0;
@@ -11044,7 +11117,8 @@
       const y = 1 - 2 * (i + 0.5) / 96, a = i * 2.399963, s = Math.sqrt(1 - y * y);
       const d = V(s * Math.cos(a), y, s * Math.sin(a));
       const S = A0.clone().addScaledVector(d, 0.6), M = A0.clone().addScaledVector(d, 0.4);
-      if (!kept(S, 0.15) || !kept(M, 0.12) || !insideCell(S, 0.85) || S.distanceTo(NC) < NR + 0.25) continue;
+      if (!kept(S, 0.15) || !kept(M, 0.12) || !insideCell(S, 0.85) || S.distanceTo(NC) < NR + 0.25 ||
+        (NUC_TWIN && Array.from({ length: 21 }, (_, j) => S.clone().lerp(A0, j / 20)).some((p) => p.distanceTo(NUC_TWIN.c) < NUC_TWIN.R + LR))) continue;
       const score = Math.min(...others.map((o) => Math.min(o.distanceTo(S), o.distanceTo(M))));
       if (score > fscore) { fscore = score; fdir = d; }
     }
@@ -11126,7 +11200,7 @@
     for (let tries = 0; gr.length < 9 && tries < 4000; tries++) {
       const p = V((r() * 2 - 1) * BOX.x, (r() * 2 - 1) * BOX.y * 0.75, (r() * 2 - 1) * BOX.z);
       const rad = 0.06 + r() * 0.025;
-      if (!insideCell(p, 0.82) || !kept(p, rad + 0.08) || p.distanceTo(NC) < NR + 0.3) continue;
+      if (!insideCell(p, 0.82) || !kept(p, rad + 0.08) || p.distanceTo(NC) < NR + 0.3 || (NUC_TWIN && p.distanceTo(NUC_TWIN.c) < NUC_TWIN.R + rad + 0.08)) continue;
       if (occupied.some(([q, qr]) => p.distanceTo(q) < qr + rad + 0.08)) continue;
       if (routePts.some((q) => p.distanceTo(q) < rad + 0.1)) continue;
       if (gr.some((g) => p.distanceTo(g.p) < g.r + rad + 0.25)) continue;
@@ -11529,6 +11603,7 @@
   const pwVisible = {};
   MODEL.pathways.forEach((p) => { pwVisible[p.id] = true; });
   let focusPw = null, selected = null, hover = null;
+  let golgiView = null;
   let showLabels = true, showGenes = false, ambient = true, spin = false;
   const nodeState = {};
   let simRunning = false;
@@ -11547,12 +11622,12 @@
       o.dim = !inFocus;
     });
     Object.values(edgeObj).forEach((eo) => {
-      const vis = edgeVisible(eo.edge);
+      const vis = !golgiView && edgeVisible(eo.edge);
       eo.tube.visible = vis; if (eo.head) eo.head.visible = vis;
       eo.dim = focusPw && eo.edge.pathway_id !== focusPw;
     });
     relObj.forEach((ro) => {
-      ro.line.visible = edgeVisible(ro.rel);
+      ro.line.visible = !golgiView && edgeVisible(ro.rel);
       ro.line.material.opacity = focusPw && ro.rel.pathway_id !== focusPw ? 0.15 : 0.6;
     });
   }
@@ -11708,9 +11783,22 @@
     return look;
   }
   LOOKS.advanced = buildAdvanced(LOOKS.standard);
-  let lookCur = "standard";
+  // Explicitly derive a third look; the two existing snapshots stay byte-identical. Golgi-only art direction.
+  LOOKS.cinematic = JSON.parse(JSON.stringify(LOOKS.advanced));
+  LOOKS.cinematic.mats.golgi.forEach((m, i) => {
+    m.color = new THREE.Color(i === 0 ? "#D2A879" : "#E8C494").toArray();
+    m.roughness = 0.42; m.clearcoat = 0.2;
+    if (m.sheenColor) m.sheenColor = new THREE.Color("#F4DABB").toArray();
+    if (m.transmission !== undefined) m.transmission = 0;
+  });
+  let lookCur = "standard", lookWanted = "standard";
+  function activateLook(T) {
+    const name = lookWanted === "cinematic" && T.id === "light" ? "advanced" : lookWanted;
+    if (name === lookCur) return 0;
+    const n = applyLook(LOOKS[name]); lookCur = name; return n;
+  }
   window.__look = () => ({
-    current: lookCur, presets: Object.keys(LOOKS), hash: lookHash(captureLook()), standardHash: lookHash(LOOKS.standard), advancedHash: lookHash(LOOKS.advanced),
+    current: lookCur, requested: lookWanted, cinematicHash: lookHash(LOOKS.cinematic), presets: Object.keys(LOOKS), hash: lookHash(captureLook()), standardHash: lookHash(LOOKS.standard), advancedHash: lookHash(LOOKS.advanced),
     compartments: Object.keys(LOOKS.standard.mats).length, materials: Object.values(LOOKS.standard.mats).reduce((n, a) => n + a.length, 0),
   });
   window.__lookDetail = () => Object.keys(compMats).sort().map((c) => {
@@ -11720,8 +11808,8 @@
       colours: compMats[c].map((x) => "#" + x.color.getHexString()) };
   });
   window.__shells = () => SHELLS.map((s) => ({ c: s.c, uuid: s.m.uuid, base: s.base, ratio: +s.ratio.toFixed(4), opacity: s.m.opacity, transparent: s.m.transparent, depthWrite: s.m.depthWrite }));
-  window.__applyLook = (name) => { if (!LOOKS[name]) return null; const n = applyLook(LOOKS[name]); lookCur = name; QUALITY.applyMaterials(); QUALITY.applyGeometry(); return n; };
-  window.__renderDataURL = () => { renderer.render(scene, camera); return canvas.toDataURL("image/png"); };
+  window.__applyLook = (name) => { if (!LOOKS[name]) return null; lookWanted = name; const n = QUALITY.applyMaterials(); QUALITY.applyGeometry(); return n; };
+  window.__renderDataURL = () => { syncTwinMaterials(); renderer.render(scene, camera); return canvas.toDataURL("image/png"); };
 
   // ---------------------------------------------------------------- cheap depth cues (Stage A, Advanced look only)
   // visual spec v1 tiers.depth_cue: Light "subtle vertex-colour underside/rim contrast only"; Balanced/High "modest
@@ -11746,7 +11834,7 @@
   }
   function dcKey() { return "depthcue-" + depthMode; }
   function applyDepthCues(T) {
-    const mode = lookCur === "standard" ? "off" : T.depthCue.mode;
+    const mode = lookCur === "advanced" ? T.depthCue.mode : "off";
     DC_U.dcUnder.value = mode === "off" ? 0 : T.depthCue.under * dcScale;
     DC_U.dcRim.value = mode === "off" ? 0 : T.depthCue.rim * dcScale;
     if (mode === depthMode) return 0;
@@ -11757,6 +11845,9 @@
       else if (mode === "off") { delete m.onBeforeCompile; delete m.customProgramCacheKey; }
       else if (cj) { m.onBeforeCompile = (sh) => { dcCompile(sh); cjCompile(sh); }; m.customProgramCacheKey = () => cjKey() + "-" + dcKey(); }
       else { m.onBeforeCompile = dcCompile; m.customProgramCacheKey = dcKey; }
+      // r158 can reuse this material's old program without rebuilding its uniform map.
+      // Release renderer-side state on a mode change so onBeforeCompile binds DC_U again.
+      m.dispose();
       m.needsUpdate = true;
     });
     return DC_MATS.length;
@@ -11768,6 +11859,70 @@
   });
   // Test hook: scales the cue strength (0 = same shaders with a neutral factor) to isolate the cue in renders.
   window.__depthCueScale = (k) => { dcScale = Math.max(0, Math.min(1, +k || 0)); QUALITY.applyMaterials(); return window.__depthCues(); };
+  // Regression hook: inspect the actual compiled program and material uniform bindings.
+  window.__depthCueBindings = () => {
+    const rows = DC_MATS.map((m) => {
+      const p = renderer.properties.get(m), program = p.currentProgram;
+      const linked = program && program.getUniforms().map, u = p.uniforms || {};
+      return { compiled: !!program, linked: !!(linked && linked.dcUnder && linked.dcRim),
+        shared: u.dcUnder === DC_U.dcUnder && u.dcRim === DC_U.dcRim,
+        maps: !!(u.dcUnder || u.dcRim), cj: !!(CJ_FADE && CJ_FADE.mats.includes(m)),
+        cjShared: !CJ_FADE || !CJ_FADE.mats.includes(m) ||
+          (u.cjFade === CJ_FADE.u.cjFade && u.cjAlpha === CJ_FADE.u.cjAlpha) };
+    }).filter((r) => r.compiled);
+    return { mode: depthMode, compiled: rows.length, linked: rows.filter((r) => r.linked).length,
+      shared: rows.filter((r) => r.shared).length, maps: rows.filter((r) => r.maps).length,
+      cjCompiled: rows.filter((r) => r.cj).length, cjShared: rows.filter((r) => r.cj && r.cjShared).length,
+      programs: renderer.info.programs.length, memory: { ...renderer.info.memory } };
+  };
+
+  // Cinematic: bounded single-pass wrap/fresnel on the existing Golgi only. Constants are art direction,
+  // never optical measurements or real subsurface scattering. No textures, transmission or post-processing.
+  const GC_U = { gcWrap: { value: 0.18 }, gcRim: { value: 0.12 } };
+  let cinematicOn = false;
+  function gcCompile(sh) {
+    Object.assign(sh.uniforms, GC_U);
+    const vary = "varying vec3 vGcN;\nvarying vec3 vGcV;\n";
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\n" + vary)
+      .replace("#include <project_vertex>", "#include <project_vertex>\nvGcN = transformedNormal; vGcV = -mvPosition.xyz;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\n" + vary + "uniform float gcWrap;\nuniform float gcRim;\n")
+      .replace("#include <opaque_fragment>", "{ vec3 gn = normalize(vGcN); if (!gl_FrontFacing) gn = -gn; " +
+        "vec3 gv = normalize(vGcV); float gr = 1.0 - abs(dot(gn, gv)); " +
+        "float gw = 0.5 + 0.5 * dot(gn, " + DC_UP + "); " +
+        "outgoingLight += diffuseColor.rgb * (gcWrap * gw * gw + gcRim * gr * gr * gr); }\n#include <opaque_fragment>");
+  }
+  function applyCinematic() {
+    const want = lookCur === "cinematic";
+    GOLGI_RIM.originals.forEach((o) => { o.visible = !want; });
+    GOLGI_RIM.instanced.visible = want;
+    if (want === cinematicOn) return 0;
+    cinematicOn = want;
+    compMats.golgi.forEach((m) => {
+      if (want) { m.onBeforeCompile = gcCompile; m.customProgramCacheKey = () => "golgi-cinematic-v1"; }
+      else if (m.onBeforeCompile === gcCompile) { delete m.onBeforeCompile; delete m.customProgramCacheKey; }
+      m.dispose(); m.needsUpdate = true;
+    });
+    return compMats.golgi.length;
+  }
+  window.__cinematic = () => ({ on: cinematicOn, requested: lookWanted, effective: lookCur,
+    originalsVisible: GOLGI_RIM.originals.filter((o) => o.visible).length,
+    instancesVisible: GOLGI_RIM.instanced.visible ? GOLGI_RIM.instanced.count : 0,
+    bindings: compMats.golgi.map((m) => { const p = renderer.properties.get(m), u = p.uniforms || {};
+      const linked = p.currentProgram && p.currentProgram.getUniforms().map;
+      return { compiled: !!p.currentProgram, linked: !!(linked && linked.gcWrap && linked.gcRim),
+        wrap: u.gcWrap === GC_U.gcWrap, rim: u.gcRim === GC_U.gcRim }; }),
+    geometryMatches: GOLGI_RIM.originals.every((o, i) => { const m = new THREE.Matrix4(); GOLGI_RIM.instanced.getMatrixAt(i, m);
+      return m.elements.every((v, j) => Math.abs(v - placeM(o.position, o.geometry.parameters.radius).elements[j]) < 1e-7); }),
+    centre: GOLGI.toArray(),
+    camera: window.__viewState ? window.__viewState() : null });
+  window.__golgiRimAudit = () => GOLGI_RIM.originals.map((o, i) => {
+    const centre = o.getWorldPosition(new THREE.Vector3()), screen = proj(centre);
+    ndc.set(screen.x / window.innerWidth * 2 - 1, -(screen.y / window.innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(cinematicOn ? GOLGI_RIM.instanced : o, false)[0];
+    const original = ray.intersectObjects(GOLGI_RIM.originals, false)[0];
+    return { i, screen, hit: !!hit, instanceId: hit && hit.instanceId,
+      expectedInstanceId: original ? GOLGI_RIM.originals.indexOf(original.object) : null, comp: hitTest({ clientX: screen.x, clientY: screen.y }) };
+  });
 
   // ---------------------------------------------------------------- rendering quality tiers (Stage A)
   // Budgets and adaptation thresholds from codex_inputs/visual_spec_2026-10-04/visual_spec_v1.json (tiers, adaptation):
@@ -11796,8 +11951,9 @@
       return Math.min(window.devicePixelRatio || 1, T.prCap, Math.sqrt(T.pxCap / Math.max(1, w * h)));
     }
     function applyMaterials() {
-      const T = QTIERS[tier], look = LOOKS[lookCur];
-      let changed = 0;
+      const T = QTIERS[tier];
+      let changed = activateLook(T);
+      const look = LOOKS[lookCur];
       Object.keys(compMats).forEach((c) => compMats[c].forEach((m, i) => {
         const s = look.mats[c] && look.mats[c][i];
         if (!s || s.clearcoat === undefined) return;
@@ -11808,7 +11964,7 @@
         const want = lookCur === "standard" ? s.base : Math.round(T.shellOpacity * s.ratio * 1e4) / 1e4;
         if (s.m.opacity !== want) { s.m.opacity = want; changed++; }
       });
-      return changed + applyDepthCues(T);
+      return changed + applyDepthCues(T) + applyCinematic();
     }
     function applyExtraMaterials(root) {
       const light = QTIERS[tier].id === "light", comp = new Set(Object.values(compMats).flat());
@@ -11837,7 +11993,7 @@
       return vs.get(k);
     }
     function applyGeometry() {
-      const T = QTIERS[tier], capped = T.id === "light" || lookCur !== "standard";
+      const T = QTIERS[tier], capped = T.id === "light" || lookCur === "advanced" || lookCur === "cinematic";
       let changed = 0;
       DSPHERES.forEach((d) => {
         const want = capped ? sphereFor(d.base, d.small ? T.smallSphere : T.sphere) : d.base;
@@ -11876,6 +12032,7 @@
       const from = tier;
       tier = Math.max(0, Math.min(QTIERS.length - 1, i));
       resize(); applyMaterials(); applyAllExtra(); applyGeometry(); applyPool();
+      Object.values(interiorCache).forEach((it) => { if (it.moleculeRefresh) it.moleculeRefresh(); });
       transitions.push({ at_s: r2(now / 1000), from: QTIERS[from].id, to: QTIERS[tier].id, reason });
       if (transitions.length > 50) transitions.shift();
       bad = 0; goodMs = 0; win = []; lastT = null;
@@ -12007,7 +12164,7 @@
       };
     }
     function save() {
-      try { window.localStorage.setItem(GFX_KEY, JSON.stringify({ look: lookCur, quality: qSel.value })); storage = "ok"; saved = { look: lookCur, quality: qSel.value }; } catch (e) { storage = "unavailable"; saved = null; }
+      try { window.localStorage.setItem(GFX_KEY, JSON.stringify({ look: lookWanted, quality: qSel.value })); storage = "ok"; saved = { look: lookWanted, quality: qSel.value }; } catch (e) { storage = "unavailable"; saved = null; }
     }
     function forget() {
       saved = null;
@@ -12023,9 +12180,9 @@
       return "Your saved choice in this browser: " + parts.join(", ") + ". New visitors get Advanced look with Auto quality; Reset graphics settings goes back to that.";
     }
     function setLook(name) {
-      if (!LOOKS[name] || name === lookCur) return 0;
-      const n = applyLook(LOOKS[name]);
-      lookCur = name; QUALITY.applyMaterials(); QUALITY.applyGeometry();
+      if (!LOOKS[name] || name === lookWanted) return 0;
+      lookWanted = name;
+      const n = QUALITY.applyMaterials(); QUALITY.applyGeometry();
       return n;
     }
     function setQuality(q) {
@@ -12036,14 +12193,15 @@
     function apply(v) { setLook(v.look); setQuality(v.quality); sync(); update(); }
     function sync() {
       const p = QUALITY.perf();
-      lookSel.value = lookCur;
+      lookSel.value = lookWanted;
       qSel.value = p.mode === "auto" ? "auto" : p.tier;
       const t = savedText();
       savedEl.textContent = t; savedEl.hidden = !t;
     }
     function statusText() {
       const p = QUALITY.perf(), w = p.lastWindow, here = w && w.tier === p.tier;
-      const head = (p.mode === "auto" ? "Auto: current tier " : "Manual: ") + tierName(p.tier) + ". ";
+      const head = (p.mode === "auto" ? "Auto: current tier " : "Manual: ") + tierName(p.tier) + ". " +
+        (lookWanted === "cinematic" && p.tier === "light" ? "Cinematic is off on Light; showing Advanced. " : "");
       if (!here) return { text: head + "Measuring frame intervals at this tier…" +
         (storage === "unavailable" ? " Settings cannot be saved in this browser; they apply to this visit only." : ""), short: false };
       let text = head + "Last 2 s: median " + w.median_ms.toFixed(1) + " ms, p95 " + w.p95_ms.toFixed(1) + " ms per frame.";
@@ -12058,6 +12216,7 @@
       return { text, short };
     }
     function update() {
+      sync();
       const s = statusText();
       if (statusEl.textContent !== s.text) statusEl.textContent = s.text;
       statusEl.classList.toggle("short", s.short);
@@ -12070,7 +12229,7 @@
       state: () => {
         let raw = null;
         try { raw = window.localStorage.getItem(GFX_KEY); } catch (e) { raw = "(unavailable)"; }
-        return { look: lookCur, quality: QUALITY.perf().mode === "auto" ? "auto" : QUALITY.perf().tier, tier: QUALITY.perf().tier,
+        return { look: lookWanted, effectiveLook: lookCur, quality: QUALITY.perf().mode === "auto" ? "auto" : QUALITY.perf().tier, tier: QUALITY.perf().tier,
           selects: { look: lookSel.value, quality: qSel.value }, selectLabel: lookSel.selectedOptions[0] ? lookSel.selectedOptions[0].textContent : null,
           stored: raw, storage, loaded, saved, savedHint: savedEl.hidden ? "" : savedEl.textContent, defaults: GFX_DEFAULT,
           status: statusEl.textContent, short: statusEl.classList.contains("short") };
@@ -12109,7 +12268,7 @@
   // Surface gap between two fitted shapes ("comp:idx", or "nucleus:0") at given centres, e.g. to re-test a recorded
   // earlier placement. Preview only; null for unknown ids.
   window.__spacingAt = (a, ca, b, cb) => {
-    const get = (id, c) => id === "nucleus:0" ? NUC : FIT_SHAPES[id] ? placed(id.split(":")[0], +id.split(":")[1], V(...c), FIT_SHAPES[id]) : null;
+    const get = (id, c) => id === "nucleus:0" ? NUC : id === "nucleus:1" ? NUC_TWIN : FIT_SHAPES[id] ? placed(id.split(":")[0], +id.split(":")[1], V(...c), FIT_SHAPES[id]) : null;
     const A = get(a, ca), B = get(b, cb);
     return A && B ? { clearance: clearance(A, B), need: gapFor(A, B) } : null;
   };
@@ -12124,6 +12283,55 @@
     return { inside, ray: info.ray, crossings: info.crossings, n_tris: s.tris.length, point_clearance: clearance(A, B) };
   };
   window.__solidRays = () => Object.assign({}, SOLID_RAYS);
+  // Twin-only diagnostics use full transformed geometry, including every pore vertex; no global-cut filtering.
+  window.__twinAudit = () => {
+    if (!NUC_TWIN) return null;
+    let checked = 0, outside = 0, maxRadius = 0;
+    const q = new THREE.Vector3(), im = new THREE.Matrix4();
+    TWIN_VISUALS.forEach((o) => {
+      o.updateWorldMatrix(true, false); const a = o.geometry.attributes.position;
+      for (let k = 0; k < (o.isInstancedMesh ? o.count : 1); k++) {
+        if (o.isInstancedMesh) o.getMatrixAt(k, im);
+        for (let i = 0; i < a.count; i++) {
+          q.fromBufferAttribute(a, i); if (o.isInstancedMesh) q.applyMatrix4(im); q.applyMatrix4(o.matrixWorld);
+          checked++; if (!insideCell(q, ER_FIT)) outside++;
+          maxRadius = Math.max(maxRadius, q.distanceTo(TWIN_CENTER));
+        }
+      }
+    });
+    let erGap = Infinity;
+    pickables.filter((o) => o.userData.comp === "rough_er" || o.userData.erAttached).forEach((o) => {
+      o.updateWorldMatrix(true, false); const a = o.geometry.attributes.position;
+      if (o.isInstancedMesh) for (let i = 0; i < o.count; i++) {
+        o.getMatrixAt(i, im); erGap = Math.min(erGap, q.setFromMatrixPosition(im).applyMatrix4(o.matrixWorld).distanceTo(TWIN_CENTER) - NUC_TWIN.R - 0.017);
+      } else for (let i = 0; i < a.count; i++) erGap = Math.min(erGap, q.fromBufferAttribute(a, i).applyMatrix4(o.matrixWorld).distanceTo(TWIN_CENTER) - NUC_TWIN.R);
+    });
+    const moving = MOTION.ves.flatMap((v) => v.c.getSpacedPoints(160).map((p) => ({ p, r: v.r })));
+    for (let i = 0; i <= 160; i++) moving.push({ p: MOTION.fusion.start.clone().lerp(MOTION.fusion.auto, i / 160), r: 0.1 });
+    const stateKeys = ["color", "emissive", "emissiveIntensity", "roughness", "metalness", "clearcoat", "opacity", "depthWrite", "transparent"];
+    const materials = TWIN_MATERIALS.map(({ source, copy, planes }) => ({
+      equal: stateKeys.every((k) => source[k] && source[k].isColor ? source[k].equals(copy[k]) : source[k] === copy[k]),
+      shader_callbacks_equal: source.onBeforeCompile === copy.onBeforeCompile && source.customProgramCacheKey === copy.customProgramCacheKey,
+      depth_uniforms: depthMode === "off" || !source.isMeshStandardMaterial ? !((renderer.properties.get(copy).uniforms || {}).dcUnder) :
+        (renderer.properties.get(copy).uniforms || {}).dcUnder === DC_U.dcUnder && (renderer.properties.get(copy).uniforms || {}).dcRim === DC_U.dcRim,
+      planes_preserved: copy.clippingPlanes === planes,
+      planes: planes.map((p) => ({ normal: p.normal.toArray(), constant: p.constant })),
+      source_planes: (source.clippingPlanes || []).map((p) => ({ normal: p.normal.toArray(), constant: p.constant }))
+    }));
+    return { checked, outside, max_radius: maxRadius, bound: NUC_TWIN.R, rough_er_gap: erGap,
+      motion_twin_gap: Math.min(...moving.map(({ p, r }) => p.distanceTo(TWIN_CENTER) - NUC_TWIN.R - r)),
+      route_twin_gaps: MOTION.ves.filter((v, i, a) => a.findIndex((x) => x.c === v.c) === i).map((v) => ({
+        stream: v.stream, gap: Math.min(...v.c.getSpacedPoints(160).map((p) => p.distanceTo(TWIN_CENTER) - NUC_TWIN.R - v.r)),
+        start: v.c.getPointAt(0).toArray(), end: v.c.getPointAt(1).toArray() })),
+      materials, center: TWIN_CENTER.toArray(), screen: proj(TWIN_CENTER) };
+  };
+  window.__twinPick = (x, y) => {
+    const rc = new THREE.Raycaster(); rc.params.Line.threshold = 0.025;
+    rc.setFromCamera(new THREE.Vector2(x / window.innerWidth * 2 - 1, -y / window.innerHeight * 2 + 1), camera);
+    const hits = rc.intersectObjects(TWIN_VISUALS, false).filter((h) => !h.object.material.clippingPlanes.some((p) => p.distanceToPoint(h.point) < 0));
+    return { twin_mesh: !!hits.length, hit: hitTest({ clientX: x, clientY: y }),
+      label: labelBoxes.some((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) };
+  };
   window.__shapeAudit = () => {
     const SURF = new Set(["anchor:plasma_membrane", "anchor:apical_microvilli", "anat_pos:ceaj", "anat_label:terminal_web_endotube.bb"]);
     MODEL.nodes.forEach((n) => { if (n.illustrative_compartment === "membrane") SURF.add("node:" + n.id); });
@@ -12156,6 +12364,8 @@
     // Drawn whole-cell parts against the SHAPE body: kept mesh vertices, or instance centres, not strictly inside.
     const SKIN = new Set(["plasma_membrane", "cytosol", "apical_microvilli"]), parts = {};
     pickables.forEach((o) => {
+      // Audit the unchanged original rim surfaces once; the display instance is an equivalent second path.
+      if (o === GOLGI_RIM.instanced) return;
       const c = o.userData.comp; if (!c || SKIN.has(c) || !o.geometry || !o.geometry.attributes.position) return;
       o.updateWorldMatrix(true, false);
       const e = parts[c] = parts[c] || { checked: 0, outside: 0, sampled_max_dist: 0 }, q = new THREE.Vector3(), mI = new THREE.Matrix4();
@@ -12180,6 +12390,8 @@
     return { body: { shape: BODY_SHAPE2 ? "shape2" : BODY_SHAPE1 ? "shape1" : "ellipsoid", ax: AX.toArray(), cut: { normal: cut.normal.toArray().map((c) => +c.toFixed(4)), constant: cut.constant } },
       // Report the actual primary centre separately from its offset label anchor; display units, not nm.
       primary_nucleus: { center: NC.toArray(), radius: NR },
+      display_twin: NUC_TWIN ? { center: TWIN_CENTER.toArray(), offset: TWIN_OFFSET.toArray(), scale: TWIN_SCALE,
+        radius: NR * TWIN_SCALE, bound: NUC_TWIN.R, obstacle: "nucleus:1", compartment: "nucleus", visual_objects: TWIN_VISUALS.length } : null,
       parts_vs_shape: parts, body_fit: BODY_FIT, spacing, ...(BODY_SHAPE1 ? { node_shift: NODE_SHIFT, home_fit: { hx: +HOME_FIT.hx.toFixed(4), hy: +HOME_FIT.hy.toFixed(4),
         right: HOME_FIT.box.right.map((c) => +c.toFixed(4)), up: HOME_FIT.box.up.map((c) => +c.toFixed(4)), dist: +HOME.dist.toFixed(4) } } : {}),
       target: { dims: SHAPE.dims, surface_tol: SHAPE.SURFACE_TOL, surface_ids: [...SURF], eps: SHAPE.EPS, audit_res: SHAPE.AUDIT_RES,
@@ -12319,7 +12531,8 @@
     const canEnter = BUILD[id] && !(inside && inside.id === id);
     return '<span class="tag">Organelle / compartment</span><h2>' + esc(c.label) + "</h2>" +
       '<div class="row" style="margin:4px 0 8px">' + (canEnter ? '<button class="b primary" data-enter="' + esc(id) + '">Go inside ›</button>' : "") +
-      (inside ? "" : '<button class="b" data-overview>‹ All compartments</button>') + "</div>" +
+      (inside ? "" : '<button class="b" data-overview>' + (id === "golgi" && golgiView ? "‹ Previous view" : "‹ All compartments") + '</button>') + "</div>" +
+      (id === "golgi" && golgiView ? '<p class="note">Focused Golgi view. Other labels and pathway arrows return with Previous view. Open Details to read its processes and sources.</p>' : "") +
       "<h3>What it does</h3><p>" + esc(c.blurb) + "</p>" +
       "<h3>Core processes</h3><ul>" + c.core_processes.map((p) =>
         '<li><a href="#" data-ip="' + ipAttr({ t: "proc", comp: id, id: p.id }) + '">' + esc(p.label) + "</a>" + (p.note ? '<br/><span class="muted" style="font-size:0.7rem">' + escL(p.note) + "</span>" : "") + "</li>").join("") + "</ul>" +
@@ -12355,6 +12568,7 @@
   }
   function selectAnat(id, fly) {
     if (!ANAT[id]) return;
+    releaseGolgiView();
     if (id !== "ceaj") cjReleaseCamera();
     selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail();
     if (fly && !inside && id === "ceaj" && CJ_FADE) frameCeaj();
@@ -12550,14 +12764,22 @@
     pickHtml = null; write();
     if (document.getElementById("open-right").classList.contains("ready")) detailReady(true);
   }
-  function showOverview() { cjReleaseCamera(); selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
+  function showOverview() { releaseGolgiView(); cjReleaseCamera(); selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
   function selectComp(id, fly) {
+    if (!COMP[id]) return;
+    if (id !== "golgi" || inside) releaseGolgiView();
     cjReleaseCamera();
-    selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons(); openDetail();
-    if (inside) isel = { t: "comp", id }; else if (fly) flyTo(ANCHOR[id], 0.8);
+    if (id === "golgi" && !inside) beginGolgiView();
+    selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons();
+    if (golgiView && window.innerWidth < 900) { setPanel("left", false); setPanel("right", false); detailReady(true); }
+    else openDetail();
+    if (inside) isel = { t: "comp", id };
+    else if (golgiView) frameGolgiView();
+    else if (fly) flyTo(ANCHOR[id], 0.8);
   }
   function selectNode(id, fly) {
     const n = NODE[id]; if (!n) return;
+    releaseGolgiView();
     cjReleaseCamera();
     openDetail();
     if (!nodeVisible(id)) { (n.pathways || [n.pathway_id]).forEach((p) => { pwVisible[p] = true; }); renderPwList(); refreshPathwayStyles(); }
@@ -12565,6 +12787,7 @@
     if (inside) isel = { t: "node", id }; else if (fly) flyTo(nodePos[id], 0.8);
   }
   function focusPathway(id) {
+    releaseGolgiView();
     focusPw = focusPw === id ? null : id;
     if (focusPw) pwVisible[id] = true;
     renderPwList(); refreshPathwayStyles();
@@ -12581,6 +12804,44 @@
   const cam = { yaw: 0.32, pitch: 0.38, dist: 8.2, target: V(0, -0.05, 0) };
   const camGoal = { yaw: cam.yaw, pitch: cam.pitch, dist: cam.dist, target: cam.target.clone() };
   const HOME = { yaw: 0.32, pitch: 0.38, dist: 8.2, target: V(0, -0.05, 0) };
+  const cameraCopy = (c) => ({ yaw: c.yaw, pitch: c.pitch, dist: c.dist, target: c.target.clone() });
+  function beginGolgiView() {
+    if (golgiView) return;
+    golgiView = { cam: cameraCopy(cam), goal: cameraCopy(camGoal), userZoomed, spin,
+      left: !leftP.classList.contains("hidden"), right: !rightP.classList.contains("hidden") };
+    spin = false; document.getElementById("t-spin").checked = false;
+    hideTip(); hover = null;
+    userZoomed = true; GOLGI_OUTLINE.visible = true;
+    document.getElementById("close-right").title = "Restore the previous view";
+    refreshPathwayStyles();
+  }
+  function frameGolgiView() {
+    if (!golgiView) return;
+    const sphere = GOLGI_BOUNDS.getBoundingSphere(new THREE.Sphere()), { L, R } = panelEdges();
+    const w = window.innerWidth, h = window.innerHeight, free = Math.max(120, w - L - R - 40);
+    const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    // Display framing only: fit existing bounds to the free viewport, looking below the brush border.
+    camGoal.yaw = 0.5; camGoal.pitch = -0.5; camGoal.target.copy(sphere.center);
+    camGoal.dist = Math.max(BODY_SHAPE1 ? 8 : 4.5, 1.4 * sphere.radius / Math.min(tan * free / h, tan * Math.max(120, h - 180) / h));
+  }
+  function releaseGolgiView() {
+    if (!golgiView) return;
+    const prev = golgiView; golgiView = null; GOLGI_OUTLINE.visible = false;
+    [["left", prev.left], ["right", prev.right]].forEach(([id, open]) => {
+      document.getElementById(id).classList.toggle("hidden", !open);
+      document.getElementById("open-" + id).classList.toggle("on", !open);
+    });
+    detailReady(false); hideTip(); hover = null;
+    document.getElementById("close-right").title = "Hide this panel";
+    resize();
+    // Restore after resize: actual pose and outstanding interpolation goal are separate snapshots.
+    [ [cam, prev.cam], [camGoal, prev.goal] ].forEach(([dst, src]) => {
+      dst.yaw = src.yaw; dst.pitch = src.pitch; dst.dist = src.dist; dst.target.copy(src.target);
+    });
+    userZoomed = prev.userZoomed; spin = prev.spin; document.getElementById("t-spin").checked = spin;
+    refreshPathwayStyles();
+    updateCamera(0);
+  }
   // Half-sizes on screen at the home angle that fitDist fits. The ellipsoid keeps its hand-set values. The SHAPE
   // preview projects the profile grid plus brush-border tips (0.36 along the apical normal) and centres the target on
   // that box; the 0.2 and 0.15 margins are display choices.
@@ -12662,58 +12923,100 @@
     if (!p) return;
     cjReleaseCamera();
     userZoomed = true;
+    // General schematic focus: 0.6 times the anchor, 0.8 of HOME distance on select / 0.6 on double-click.
     camGoal.target.copy(p).multiplyScalar(0.6);
     camGoal.dist = HOME.dist * factor;
   }
   document.getElementById("reset-view").onclick = () => {
+    if (golgiView) showOverview();
     userZoomed = false;
     camGoal.yaw = HOME.yaw; camGoal.pitch = HOME.pitch; camGoal.dist = HOME.dist; camGoal.target.copy(HOME.target);
   };
   let drag = null, moved = false;
+  const activePointers = new Map();
+  let gestureBlocked = false, pendingHover = null, hoverPickCount = 0, hoverFrameView = null, focusIdentity = null;
+  let suppressTouchDouble = null;
   // The first click of a double-click can open the panel or move the camera, which shifts labels; the double-click
   // therefore acts on what was under the pointer at the first click, not on a fresh hit test.
   let lastTap = null;
   function recordTap(e) {
     const now = performance.now(), room = inside ? inside.id : null;
-    const tap = { t: now, x: e.clientX, y: e.clientY, room, h: inside ? hitInterior(e) : hitTest(e) };
+    const tap = { t: now, x: e.clientX, y: e.clientY, room, type: e.pointerType, h: inside ? hitInterior(e) : hitTest(e) };
     const p = lastTap;
-    tap.first = p && !p.first && now - p.t < 600 && Math.hypot(tap.x - p.x, tap.y - p.y) < 12 && p.room === room ? p : null;
+    tap.first = p && !p.first && p.type === tap.type && now - p.t < 600 && Math.hypot(tap.x - p.x, tap.y - p.y) < 12 && p.room === room ? p : null;
     lastTap = tap;
+    return tap;
   }
   function tapForDblclick(e) {
     const t = lastTap, room = inside ? inside.id : null;
     if (!t || performance.now() - t.t > 600 || Math.hypot(e.clientX - t.x, e.clientY - t.y) > 12 || t.room !== room) return undefined;
     return (t.first || t).h;
   }
-  canvas.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; moved = false; canvas.setPointerCapture(e.pointerId); });
-  canvas.addEventListener("pointerup", (e) => { const was = drag; drag = null; if (was && !moved) { recordTap(e); onClick(e); } });
+  function clearHover() {
+    pendingHover = null; hover = ihover = null; focusIdentity = null; hideTip();
+    canvas.style.cursor = "grab";
+  }
+  function cancelPointer(e) {
+    activePointers.delete(e.pointerId);
+    if (drag && drag.id === e.pointerId) drag = null;
+    lastTap = null; moved = true; clearHover();
+    if (!activePointers.size) gestureBlocked = false;
+  }
+  canvas.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    activePointers.set(e.pointerId, true); clearHover();
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* Synthetic events have no native capture. */ }
+    if (activePointers.size > 1 || gestureBlocked) { gestureBlocked = true; drag = null; lastTap = null; moved = true; return; }
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, startX: e.clientX, startY: e.clientY, t: performance.now() }; moved = false;
+  });
+  canvas.addEventListener("pointerup", (e) => {
+    const was = drag && drag.id === e.pointerId ? drag : null, blocked = gestureBlocked;
+    activePointers.delete(e.pointerId); if (was) drag = null;
+    if (!activePointers.size) gestureBlocked = false;
+    try { if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    if (!was || moved || blocked || transition || Math.hypot(e.clientX - was.startX, e.clientY - was.startY) > 6 || (e.pointerType === "touch" && performance.now() - was.t > 500)) { lastTap = null; return; }
+    const tap = recordTap(e);
+    if (e.pointerType === "touch" && tap.first) {
+      suppressTouchDouble = { t: performance.now(), x: e.clientX, y: e.clientY };
+      activateDoubleTap(e, tap.first.h); lastTap = null;
+    } else onClick(e, tap.h);
+  });
+  canvas.addEventListener("pointercancel", cancelPointer);
+  canvas.addEventListener("lostpointercapture", (e) => { if (activePointers.has(e.pointerId)) cancelPointer(e); });
+  window.addEventListener("blur", () => { activePointers.clear(); drag = null; gestureBlocked = false; lastTap = null; clearHover(); });
   canvas.addEventListener("pointermove", (e) => {
-    if (drag) {
+    if (gestureBlocked) return;
+    if (drag && drag.id === e.pointerId) {
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 6) moved = true;
       if (moved) {
         camGoal.yaw -= dx * 0.006; camGoal.pitch = Math.max(-1.2, Math.min(1.3, camGoal.pitch + dy * 0.006));
         drag.x = e.clientX; drag.y = e.clientY;
-        hideTip();
+        lastTap = null; clearHover();
         return;
       }
     }
-    onHover(e);
+    if (!drag && !transition && !activePointers.size && e.pointerType !== "touch" && !e.buttons)
+      pendingHover = { clientX: e.clientX, clientY: e.clientY };
   });
-  canvas.addEventListener("pointerleave", () => { hover = null; hideTip(); });
-  canvas.addEventListener("wheel", (e) => { e.preventDefault(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(inside ? Math.max(16, inside.home.dist * 1.25) : 16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
+  canvas.addEventListener("pointerleave", clearHover);
+  canvas.addEventListener("wheel", (e) => { e.preventDefault(); clearHover(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(inside ? Math.max(16, inside.home.dist * 1.25) : 16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
   canvas.addEventListener("dblclick", (e) => {
-    const tapped = tapForDblclick(e);
+    if (suppressTouchDouble && performance.now() - suppressTouchDouble.t < 800 && Math.hypot(e.clientX - suppressTouchDouble.x, e.clientY - suppressTouchDouble.y) < 12) { e.preventDefault(); return; }
+    if (transition || gestureBlocked) return;
+    activateDoubleTap(e, tapForDblclick(e));
+  });
+  function activateDoubleTap(e, tapped) {
     if (inside) { const h = tapped !== undefined ? tapped : hitInterior(e); if (h && h.ip.t === "comp" && BUILD[h.ip.id] && h.ip.id !== inside.id) enterInterior(h.ip.id); return; }
     const h = tapped !== undefined ? tapped : hitTest(e);
     if (h && h.comp && BUILD[h.comp]) enterInterior(h.comp);
     else if (h && h.comp) flyTo(ANCHOR[h.comp], 0.6);
     else if (h && h.node) flyTo(nodePos[h.node], 0.6);
-  });
-  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && inside) exitInterior(); });
+  }
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape") { if (inside) exitInterior(); else if (golgiView) showOverview(); } });
 
   function updateCamera(dt) {
-    if (spin && !drag) camGoal.yaw += dt * 0.08;
+    if (spin && !drag && !golgiView) camGoal.yaw += dt * 0.08;
     const k = 1 - Math.pow(0.001, dt);
     cam.yaw += (camGoal.yaw - cam.yaw) * k;
     cam.pitch += (camGoal.pitch - cam.pitch) * k;
@@ -12740,7 +13043,7 @@
     ray.setFromCamera(ndc, camera);
     const nh = ray.intersectObjects(nodeMeshes.filter((m) => m.visible), false);
     if (nh.length) return { node: nh[0].object.userData.node };
-    const hits = ray.intersectObjects(pickables.filter((o) => !o.userData.anat || anatGroup.visible), false).filter((h) =>
+    const hits = ray.intersectObjects(pickables.filter((o) => (!o.userData.golgiRim || o.visible) && (!o.userData.anat || anatGroup.visible)), false).filter((h) =>
       !(h.object.material && h.object.material.clippingPlanes && h.object.material.clippingPlanes.some((pl) => pl.distanceToPoint(h.point) < 0)) &&
       !(CJ_FADE && CJ_FADE.u.cjFade.value > 0.5 && CJ_FADE.meshes.includes(h.object) && (h.instanceId != null ? CJ_FADE.mvW[h.instanceId] : cjBandAt(h.point)) > 0.5));
     if (!hits.length) return null;
@@ -12752,6 +13055,36 @@
   }
   const tip = document.getElementById("tooltip");
   function hideTip() { tip.classList.remove("on"); }
+  function placeTip(e) {
+    tip.classList.add("on");
+    const box = tip.getBoundingClientRect();
+    tip.style.left = Math.max(8, Math.min(e.clientX + 14, window.innerWidth - box.width - 8)) + "px";
+    tip.style.top = Math.max(8, Math.min(e.clientY + 12, window.innerHeight - box.height - 8)) + "px";
+  }
+  function moleculeTip(identity, e) {
+    const kind = identity.status === "ready" ? "source-derived surface" : "schematic fallback";
+    tip.innerHTML = esc(identity.title) + "<small>" + esc(identity.id + " · PDB " + identity.source + " · " + kind) + "</small><small>click for host-compartment context</small>";
+    placeTip(e);
+  }
+  // Consume only fresh pointer input in the existing frame; moving views invalidate
+  // stale pointer highlights without causing stationary-pointer or idle raycasts.
+  function flushHover() {
+    if (!pendingHover && !hover && !ihover) return;
+    const view = [cam.yaw, cam.pitch, cam.dist, ...cam.target.toArray(), cut.constant, inside ? inside.id : "cell", transition, window.innerWidth, window.innerHeight, leftP.className, rightP.className].join("|");
+    if (view !== hoverFrameView) { hover = null; if (!focusIdentity) { ihover = null; hideTip(); } hoverFrameView = view; }
+    if (transition || drag || activePointers.size) { pendingHover = null; return; }
+    const e = pendingHover; pendingHover = null;
+    if (e) { focusIdentity = null; ++hoverPickCount; onHover(e); }
+  }
+  document.addEventListener("focusin", (e) => {
+    const b = e.target.closest && e.target.closest("[data-molecule-identity]");
+    if (!b || !inside || !inside.moleculeIdentity) return;
+    const identity = inside.moleculeIdentity();
+    if (b.dataset.moleculeIdentity !== identity.id) return;
+    clearHover(); focusIdentity = identity.id; ihover = identity.ip;
+    const r = b.getBoundingClientRect(); moleculeTip(identity, { clientX: r.left, clientY: r.bottom });
+  });
+  document.addEventListener("focusout", (e) => { if (e.target.matches && e.target.matches("[data-molecule-identity]")) clearHover(); });
   function onHover(e) {
     if (inside) { onHoverInside(e); return; }
     const h = hitTest(e);
@@ -12767,12 +13100,11 @@
       const c = COMP[h.comp];
       tip.innerHTML = esc(c ? c.label : h.comp) + "<small>" + (BUILD[h.comp] ? "click to read · double-click to go inside" : "click to read what it does") + "</small>";
     }
-    tip.style.left = e.clientX + "px"; tip.style.top = e.clientY + "px";
-    tip.classList.add("on");
+    placeTip(e);
   }
-  function onClick(e) {
-    if (inside) { onClickInside(e); return; }
-    const h = hitTest(e);
+  function onClick(e, tapped) {
+    if (inside) { onClickInside(e, tapped); return; }
+    const h = tapped !== undefined ? tapped : hitTest(e);
     if (!h) { showOverview(); return; }
     if (h.node) selectNode(h.node, false); else if (h.anat) selectAnat(h.anat, false); else selectComp(h.comp, false);
   }
@@ -12839,7 +13171,10 @@
     drawAnatSectionLabels(leftEdge, rightEdge);
     // The CeAJ close-up hides the compartment columns: at this zoom they clamp to the panel edges and cover the cell.
     labelRowState = null;
-    if (labelRowsOn() && !(CJ_FADE && CJ_FADE.cam)) {
+    if (golgiView) {
+      const p = proj(GOLGI_BOUNDS.getCenter(new THREE.Vector3()));
+      if (p.ok) labelBoxes.push(Object.assign(pill(COMP.golgi.label, (leftEdge + rightEdge) / 2, topStack(false).rowY, true, null, "center"), { comp: "golgi" }));
+    } else if (labelRowsOn() && !(CJ_FADE && CJ_FADE.cam)) {
       const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
       items.forEach((it) => { it.active = (hover && hover.comp === it.id) || (selected && selected.comp === it.id); it.w = pillWidth(it.text, it.active); });
       items.sort((a, b) => a.p.y - b.p.y);
@@ -12898,6 +13233,7 @@
     }
     const camD = camera.position.distanceTo(cam.target), cands = [];
     MODEL.nodes.forEach((n) => {
+      if (golgiView) return;
       if (!nodeVisible(n.id)) return;
       const st = nodeState[n.id];
       const sel = !!(selected && selected.node === n.id), hov = !!(hover && hover.node === n.id);
@@ -13147,6 +13483,13 @@
   const fadeEl = document.getElementById("fade");
   const captionEl = document.getElementById("caption");
   const BUILD = {};
+  Object.keys(window.DCMolecules.definitions).forEach((id) => {
+    BUILD[id] = (ctx) => window.DCMolecules.build(ctx, id, () => QUALITY.state().tier, () => {
+      QUALITY.applyExtraMaterials(ctx.s);
+      if (inside === ctx) { clearHover(); renderInsideSec(); showInteriorOverview(); }
+    });
+  });
+  window.addEventListener("resize", () => { if (inside && inside.moleculeRefresh) inside.moleculeRefresh(); });
 
   // ---------------------------------------------------------------- interiors: scene helpers
   function makeCtx(id) {
@@ -15265,6 +15608,7 @@
 
   // ---------------------------------------------------------------- interiors: enter / exit
   function crumbFor(id) {
+    if (window.DCMolecules.definitions[id]) return "Whole cell › " + window.DCMolecules.definitions[id].title;
     const chain = [];
     let c = COMP[id];
     // Organelles are filed under "cytosol" in the atlas, but they are not rooms inside the cytosol for navigation.
@@ -15286,10 +15630,11 @@
     if (!BUILD[id]) return;
     if (transition) { pendingNav = () => enterInterior(id, after); return; }
     if (inside && inside.id === id) { if (after) after(); return; }
+    releaseGolgiView();
     if (tourCur) tourClose(true);
     cjReleaseCamera();
     transition = true;
-    hideTip();
+    clearHover();
     if (!inside) {
       outerCam = { yaw: camGoal.yaw, pitch: camGoal.pitch, dist: camGoal.dist, target: camGoal.target.clone(), userZoomed };
       if (ANCHOR[id]) { camGoal.target.copy(ANCHOR[id]); camGoal.dist = Math.max(1.0, cam.dist * 0.18); }
@@ -15347,7 +15692,7 @@
     if (transition) { pendingNav = () => exitInterior(after); return; }
     if (!inside) return;
     transition = true;
-    hideTip();
+    clearHover();
     fadeEl.classList.add("on");
     document.getElementById("crumb").textContent = "";
     setTimeout(() => {
@@ -15366,7 +15711,8 @@
         camGoal.target.copy(o.target); camGoal.dist = o.dist;
         userZoomed = o.userZoomed;
         resize();
-        selectComp(id, false);
+        // Golgi framing closed on entry; return to the restored outer view without opening a new focus transaction.
+        if (id === "golgi") showOverview(); else selectComp(id, false);
       } catch (err) {
         console.error(err);
         outsideFallback();
@@ -15391,7 +15737,7 @@
       !(h.object.material && h.object.material.clippingPlanes && h.object.material.clippingPlanes.some((pl) => pl.distanceToPoint(h.point) < 0)));
     if (!hits.length) return null;
     const solid = hits.find((h) => !h.object.userData.vol && !h.object.isLine && !h.object.isPoints) || hits.find((h) => !h.object.userData.vol) || hits[0];
-    return { ip: solid.object.userData.ip };
+    return { ip: solid.object.userData.ip, molecule: solid.object.userData.molecule || null };
   }
   function ipName(ip) {
     switch (ip.t) {
@@ -15413,14 +15759,15 @@
     ihover = h ? h.ip : null;
     canvas.style.cursor = h ? "pointer" : "grab";
     if (!h) { hideTip(); return; }
-    const hint = h.ip.t === "comp" && BUILD[h.ip.id] && h.ip.id !== inside.id ? "click to read · double-click to go inside"
+    if (h.molecule && inside.moleculeIdentity) { moleculeTip(inside.moleculeIdentity(), e); return; }
+    const hint = inside.pickContextHtml ? "click for host-compartment context"
+      : h.ip.t === "comp" && BUILD[h.ip.id] && h.ip.id !== inside.id ? "click to read · double-click to go inside"
       : h.ip.t === "node" ? "model gene · click for its arrows and sources" : "click to read what it does";
     tip.innerHTML = esc(ipName(h.ip)) + "<small>" + hint + "</small>";
-    tip.style.left = e.clientX + "px"; tip.style.top = e.clientY + "px";
-    tip.classList.add("on");
+    placeTip(e);
   }
-  function onClickInside(e) {
-    const h = hitInterior(e);
+  function onClickInside(e, tapped) {
+    const h = tapped !== undefined ? tapped : hitInterior(e);
     if (!h) { showInteriorOverview(); return; }
     selectIp(h.ip, true);
   }
@@ -15803,7 +16150,7 @@
   }
   function ipHtml(ip) {
     switch (ip.t) {
-      case "comp": return compHtml(ip.id);
+      case "comp": return (inside && inside.pickContextHtml ? inside.pickContextHtml() : "") + compHtml(ip.id);
       case "proc": return procHtml(ip.comp, ip.id);
       case "node": return nodeHtml(ip.id);
       case "cx": return complexHtml(ip.id);
@@ -15821,6 +16168,7 @@
     return "";
   }
   function selectIp(ip, auto) {
+    releaseGolgiView();
     if (ip.t === "node") { selectNode(ip.id, false); return; }
     if (ip.t === "comp" && !inside) { selectComp(ip.id, true); return; }
     if (["cx", "cr", "ap", "ac", "prot", "tca", "tcastep"].includes(ip.t) && !(inside && inside.mito)) { enterInterior("mitochondria", () => selectIp(ip, auto)); return; }
@@ -15869,9 +16217,11 @@
   }
   function renderInsideSec() {
     const el = document.getElementById("inside-sec");
+    const focused = el.contains(document.activeElement) && document.activeElement.dataset.moleculeIdentity;
     if (!inside) { el.innerHTML = ""; return; }
     const c = COMP[inside.id];
-    let h = '<p class="title">You are inside</p><h2 style="font-size:1rem;margin:0 0 8px">' + esc(c ? c.label : inside.id) + "</h2>" +
+    const molecule = window.DCMolecules.definitions[inside.id];
+    let h = '<p class="title">You are inside</p><h2 style="font-size:1rem;margin:0 0 8px">' + esc(c ? c.label : molecule ? molecule.title : inside.id) + "</h2>" +
       '<div class="row"><button class="b" data-exit="1">← Whole cell</button><button class="b" data-ihome="1">Reset view</button><button class="b" data-ioverview="1" title="Leave the guided step and show the whole interior, everything at once">Overview</button></div>';
     if (inside.mito) {
       h += '<p class="title" style="margin-top:14px">Animate</p><div class="row"><button class="b primary" data-mtour="proton_gradient">▶ Guided tour</button><button class="b" data-mflow="1">Continuous flow</button></div>' +
@@ -15886,13 +16236,17 @@
       const kids = WC.compartments.filter((k) => k.parent === c.id && BUILD[k.viewer_id]);
       if (kids.length) h += '<p class="title" style="margin-top:14px">Go further in</p><div>' + kids.map((k) => '<button class="chip" data-enter="' + esc(k.viewer_id) + '">' + esc(k.label) + " ›</button>").join("") + "</div>";
     }
+    if (inside.id === "mitochondria") h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_atp">ATP synthase · human stand-in</button>';
+    if (["ribosomes", "rough_er"].includes(inside.id)) h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_ribosome">80S ribosome · C. elegans</button>';
     h += '<p class="note">Drag to turn · scroll to zoom · click a part to read about it · Esc to go back.</p>';
     el.innerHTML = h;
+    if (focused) { const b = el.querySelector('[data-molecule-identity="' + focused + '"]'); if (b) b.focus({ preventScroll: true }); }
   }
   function interiorClick(ev) {
     const t = ev.target;
     const q = (a) => t.closest("[" + a + "]");
     let el;
+    if (q("data-molecule-retry")) { if (inside && inside.moleculeRefresh) inside.moleculeRefresh(); return true; }
     if ((el = q("data-ip"))) {
       ev.preventDefault();
       const [tt, id, comp] = el.getAttribute("data-ip").split("|");
@@ -16024,7 +16378,7 @@
     inner_membrane: "mitochondria", matrix: "mitochondria", nucleus: "nucleus",
   };
   const SEARCH_IP = { protein: "prot", complex: "cx", carrier: "cr", atlas_process: "ap", atlas_compartment: "ac" };
-  function searchPanel(html) { isel = null; selected = null; detail.innerHTML = html; setPerturbButtons(); openDetail(); }
+  function searchPanel(html) { releaseGolgiView(); isel = null; selected = null; detail.innerHTML = html; setPerturbButtons(); openDetail(); }
   function searchGo(e) {
     if (!e) return;
     if (transition) { pendingNav = () => searchGo(e); return; }
@@ -16177,6 +16531,7 @@
   function tourOpen(id) {
     const t = TOUR_LIST.find((x) => x.id === id);
     if (!t) return;
+    releaseGolgiView();
     if (tourCur) tourClose();
     cjReleaseCamera();
     resetCascade();
@@ -16205,6 +16560,7 @@
     if (!keepDetail) showOverview();
   }
   function tourShow(i, autoplay) {
+    releaseGolgiView();
     const c = tourCur; if (!c) return;
     tourCancelSpeech();
     const t = c.t, lines = t.script;
@@ -16291,6 +16647,7 @@
     c.timers.push(setTimeout(() => { if (tourCur === c && tok === c.tok && c.playing) tourShow(c.i + 1); }, 700));
   }
   function tourCards(explicit) {
+    releaseGolgiView();
     const c = tourCur, t = c.t, line = t.script[c.i], os = line.on_screen || {};
     const h = t.history[Math.min(line.step, t.history.length - 1)] || { activities: {}, contributions: [] };
     const routeSet = new Set(t.route_nodes || []);
@@ -16444,6 +16801,7 @@
     else if (TSYN) TSYN.cancel();
   });
   window.__enterInterior = (id) => { if (!BUILD[id]) return false; enterInterior(id); return true; };
+  window.__moleculeState = () => ({ rooms: Object.fromEntries(Object.entries(interiorCache).filter(([,c]) => c.moleculeState).map(([id,c]) => [id,c.moleculeState()])), transfers: window.DCMolecules.telemetry() });
   window.__tapIp = (t, id) => { selectIp({ t, id }, true); return true; };
   window.__insideId = () => (inside ? inside.id : null);
   window.__mitoTour = () => (inside && inside.mito && inside.api.tourState ? inside.api.tourState() : null);
@@ -16458,6 +16816,14 @@
   window.__labelBoxes = () => labelBoxes.filter((b) => b.comp).map((b) => ({ comp: b.comp, x0: Math.round(b.x), x1: Math.round(b.x + b.w), y0: Math.round(b.y), y1: Math.round(b.y + b.h) }));
   window.__viewState = () => ({ cam: { yaw: +camGoal.yaw.toFixed(3), pitch: +camGoal.pitch.toFixed(3), dist: +camGoal.dist.toFixed(3), target: camGoal.target.toArray().map((v) => +v.toFixed(3)) },
     userZoomed, focus: focusPw, visible: Object.keys(pwVisible).filter((k) => pwVisible[k]).sort() });
+  window.__golgiView = () => ({ active: !!golgiView, outline: GOLGI_OUTLINE.visible, outlineParts: GOLGI_OUTLINE.children.length,
+    cam: { ...cam, target: cam.target.toArray() }, goal: { ...camGoal, target: camGoal.target.toArray() }, userZoomed, spin,
+    panels: { left: !leftP.classList.contains("hidden"), right: !rightP.classList.contains("hidden") },
+    labels: showLabels, genes: showGenes, focus: focusPw, pathways: { ...pwVisible }, selected: selected && { ...selected },
+    edges: Object.values(edgeObj).filter((e) => e.tube.visible).length, relations: relObj.filter((e) => e.line.visible).length,
+    bounds: [GOLGI_BOUNDS.min.toArray(), GOLGI_BOUNDS.max.toArray()],
+    screenBounds: [0, 1].flatMap((x) => [0, 1].flatMap((y) => [0, 1].map((z) => proj(V(x ? GOLGI_BOUNDS.max.x : GOLGI_BOUNDS.min.x, y ? GOLGI_BOUNDS.max.y : GOLGI_BOUNDS.min.y, z ? GOLGI_BOUNDS.max.z : GOLGI_BOUNDS.min.z))))),
+    viewport: panelEdges() });
   // Same-camera captures: sets and snaps the camera; userZoomed keeps resize() from refitting the distance.
   window.__setCam = (c) => {
     userZoomed = true;
@@ -16511,7 +16877,8 @@
       if (!userZoomed) camGoal.dist = oldHome > 0 ? camGoal.dist * inside.home.dist / oldHome : inside.home.dist;
     } else {
       HOME.dist = fitDist();
-      if (!userZoomed) camGoal.dist = HOME.dist;
+      if (golgiView) frameGolgiView();
+      else if (!userZoomed) camGoal.dist = HOME.dist;
     }
   }
   function setPanel(which, open) {
@@ -16534,7 +16901,7 @@
     panelW = w;
   }
   document.getElementById("close-left").onclick = () => setPanel("left", false);
-  document.getElementById("close-right").onclick = () => setPanel("right", false);
+  document.getElementById("close-right").onclick = () => { if (golgiView) showOverview(); else setPanel("right", false); };
   document.getElementById("open-left").onclick = () => setPanel("left", true);
   document.getElementById("open-right").onclick = () => setPanel("right", true);
   window.addEventListener("resize", () => { narrowPanels(); resize(); });
@@ -16565,9 +16932,11 @@
       applyHighlight();
       animateLayer(now, dt);
       if (motionGroup.visible && !tourCur) { motionClock += dt; MOTION.update(motionClock); }
+      syncTwinMaterials();
       renderer.render(scene, camera);
     }
     drawOverlay();
+    flushHover();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
