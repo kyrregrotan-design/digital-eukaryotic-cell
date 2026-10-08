@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T20:45:04+02:00",
+    "generated_at":  "2026-10-08T20:50:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Stage 2 navigation spec and atlas checklist opinion",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  4.9,
-                                 "step_title":  "Read current navigation and approval contracts",
+                                 "percent":  29.6,
+                                 "step_title":  "Write Stage 2 specification",
                                  "steps":  [
                                                "Read current navigation and approval contracts",
                                                "Write Stage 2 specification",
                                                "Assess atlas checklist and sources",
                                                "Peer-check contracts and record handoff"
                                            ],
-                                 "eta_seconds":  928,
+                                 "eta_seconds":  1075,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T20:44:10+02:00",
+                                 "updated":  "2026-10-08T20:48:53+02:00",
                                  "last_run":  "2026-10-08T20:42:32+02:00",
                                  "next_run":  null
                              }
