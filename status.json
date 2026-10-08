@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T17:25:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-08T17:30:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Private enterocyte style opinion",
@@ -24,24 +24,23 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Private enterocyte graphics opinion",
-                                 "status":  "done",
-                                 "step":  6,
-                                 "total":  6,
-                                 "percent":  100,
-                                 "step_title":  "Finish Cursor handoff",
+                                 "task":  "MOL-0001/0014 viewer integration",
+                                 "status":  "running",
+                                 "step":  1,
+                                 "total":  5,
+                                 "percent":  2.2,
+                                 "step_title":  "Verify releases and loader contract",
                                  "steps":  [
-                                               "Read reference and renderer",
-                                               "Compare visual and scientific limits",
-                                               "Verify tier feasibility and queue",
-                                               "Write opinion and approval proposal",
-                                               "Verify artifacts",
+                                               "Verify releases and loader contract",
+                                               "Integrate approved assets and lazy detail",
+                                               "Run tests and browser probes",
+                                               "Self-review and evidence",
                                                "Finish Cursor handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  1110,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T17:20:08+02:00",
-                                 "last_run":  "2026-10-08T17:06:16+02:00",
+                                 "updated":  "2026-10-08T17:29:37+02:00",
+                                 "last_run":  "2026-10-08T17:28:33+02:00",
                                  "next_run":  null
                              }
                },
@@ -49,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  25,
+    "today_runs":  26,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
