@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T18:40:04+02:00",
+    "generated_at":  "2026-10-08T18:45:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -29,7 +29,7 @@
                                  "status":  "running",
                                  "step":  4,
                                  "total":  5,
-                                 "percent":  60.2,
+                                 "percent":  78,
                                  "step_title":  "Write layered navigation proposal",
                                  "steps":  [
                                                "Confirm approved scope",
@@ -38,7 +38,7 @@
                                                "Write layered navigation proposal",
                                                "Self review and handoff"
                                            ],
-                                 "eta_seconds":  667,
+                                 "eta_seconds":  367,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-08T18:40:00+02:00",
                                  "last_run":  "2026-10-08T18:23:15+02:00",
