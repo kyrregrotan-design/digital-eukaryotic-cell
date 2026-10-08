@@ -1,26 +1,27 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T18:15:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-08T18:20:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "MOL-0001/0014 viewer opinion",
-                                  "status":  "done",
+                                  "task":  "Scoped opinion: mol wording + depthcue cache",
+                                  "status":  "running",
                                   "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Write opinion and handoff",
+                                  "total":  6,
+                                  "percent":  81.7,
+                                  "step_title":  "Run depthcue cache probe",
                                   "steps":  [
-                                                "Read contract and diff",
-                                                "Rerun focused tests",
-                                                "Rerun browser probe",
-                                                "Inspect LOD labels lifecycle",
-                                                "Write opinion and handoff"
+                                                "Start log and progress",
+                                                "Review molecular wording diff",
+                                                "Run molecular wording probe",
+                                                "Review depthcue cache diff",
+                                                "Run depthcue cache probe",
+                                                "Write opinions STATUS handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  5,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T17:56:07+02:00",
-                                  "last_run":  "2026-10-08T17:49:41+02:00",
+                                  "updated":  "2026-10-08T18:17:30+02:00",
+                                  "last_run":  "2026-10-08T18:15:20+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
@@ -49,7 +50,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  29,
+    "today_runs":  30,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
