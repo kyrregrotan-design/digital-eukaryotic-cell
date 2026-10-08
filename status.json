@@ -1,35 +1,31 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T17:45:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-08T17:50:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Private enterocyte style opinion",
-                                  "status":  "done",
-                                  "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Update STATUS and handoff to Codex MOL build",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "Read handoff and materials",
-                                                "Inspect reference and captures",
-                                                "Spot-check renderer/tier claims",
-                                                "Write Cursor opinion",
-                                                "Update STATUS and handoff to Codex MOL build"
+
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  398,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-08T17:24:10+02:00",
-                                  "last_run":  "2026-10-08T17:20:17+02:00",
+                                  "last_run":  "2026-10-08T17:49:41+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "MOL-0001/0014 viewer integration",
-                                 "status":  "running",
-                                 "step":  4,
+                                 "status":  "done",
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  73,
-                                 "step_title":  "Self-review and evidence",
+                                 "percent":  100,
+                                 "step_title":  "Finish Cursor handoff",
                                  "steps":  [
                                                "Verify releases and loader contract",
                                                "Integrate approved assets and lazy detail",
@@ -37,9 +33,9 @@
                                                "Self-review and evidence",
                                                "Finish Cursor handoff"
                                            ],
-                                 "eta_seconds":  367,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T17:42:07+02:00",
+                                 "updated":  "2026-10-08T17:48:13+02:00",
                                  "last_run":  "2026-10-08T17:28:33+02:00",
                                  "next_run":  null
                              }
@@ -54,6 +50,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "MOL-0001/0014 viewer integration",
+                       "finished":  "2026-10-08T17:48:13+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Private enterocyte style opinion",
@@ -78,11 +79,6 @@
                        "agent":  "cursor",
                        "task":  "a2-shape-2-twin full opinion",
                        "finished":  "2026-10-08T16:44:39+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "a2-shape-2 display twin",
-                       "finished":  "2026-10-08T16:29:48+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -90,8 +86,8 @@
                       "percent":  37.7,
                       "total":  52,
                       "done":  17,
-                      "in_progress":  4,
-                      "todo":  31,
+                      "in_progress":  5,
+                      "todo":  30,
                       "remaining":  35,
                       "weight_total":  106,
                       "weight_done":  40,
@@ -267,7 +263,7 @@
                                         "id":  "side-assets-integration",
                                         "group":  "Senere",
                                         "text":  "Sideressurser: GLTF-laster (three r158, MIT) og innfasing av ressurser med AGREE fra både Cursor og…",
-                                        "status":  "todo",
+                                        "status":  "in_progress",
                                         "weight":  3
                                     },
                                     {
@@ -383,7 +379,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-08T16:43:00+02:00",
-                      "updated_by":  "Cursor"
+                      "updated":  "2026-10-08T17:48:13+02:00",
+                      "updated_by":  "Codex"
                   }
 }
