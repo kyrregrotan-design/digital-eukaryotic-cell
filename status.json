@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T09:10:05+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-08T09:15:03+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "TCA L1: phone caveat label placement fix",
@@ -26,20 +26,20 @@
                               },
                    "codex":  {
                                  "task":  "TCA L1 caveat placement review",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  55,
-                                 "step_title":  "Inspect screenshots and conclude",
+                                 "percent":  100,
+                                 "step_title":  "Write verdict and handoff",
                                  "steps":  [
                                                "Read context and placement diff",
                                                "Reproduce label bounds",
                                                "Inspect screenshots and conclude",
                                                "Write verdict and handoff"
                                            ],
-                                 "eta_seconds":  471,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T09:09:11+02:00",
+                                 "updated":  "2026-10-08T09:10:08+02:00",
                                  "last_run":  "2026-10-08T09:00:29+02:00",
                                  "next_run":  null
                              }
@@ -54,6 +54,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "TCA L1 caveat placement review",
+                       "finished":  "2026-10-08T09:10:08+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "TCA L1: phone caveat label placement fix",
@@ -78,11 +83,6 @@
                        "agent":  "cursor",
                        "task":  "a2-shape-1 phone top label row fix",
                        "finished":  "2026-10-08T07:56:14+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Review matched-camera evidence and phone labels",
-                       "finished":  "2026-10-08T07:48:26+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
