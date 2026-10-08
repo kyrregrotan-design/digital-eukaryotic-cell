@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T20:20:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-08T20:25:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "Opinion: Golgi camera + Cinematic re-check",
@@ -25,11 +25,11 @@
                               },
                    "codex":  {
                                  "task":  "Cinematic close-out and hover Stage 1",
-                                 "status":  "running",
-                                 "step":  4,
+                                 "status":  "done",
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  78,
-                                 "step_title":  "Verify bounded interaction",
+                                 "percent":  100,
+                                 "step_title":  "Write review and handoff",
                                  "steps":  [
                                                "Finish Cinematic aggregate",
                                                "Inspect Stage 1 interaction",
@@ -37,9 +37,9 @@
                                                "Verify bounded interaction",
                                                "Write review and handoff"
                                            ],
-                                 "eta_seconds":  167,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T20:16:04+02:00",
+                                 "updated":  "2026-10-08T20:24:19+02:00",
                                  "last_run":  "2026-10-08T20:05:56+02:00",
                                  "next_run":  null
                              }
@@ -54,6 +54,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Cinematic close-out and hover Stage 1",
+                       "finished":  "2026-10-08T20:24:19+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Opinion: Golgi camera + Cinematic re-check",
@@ -78,11 +83,6 @@
                        "agent":  "codex",
                        "task":  "Molecular review follow-up and approved queue",
                        "finished":  "2026-10-08T18:14:15+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "MOL-0001/0014 viewer opinion",
-                       "finished":  "2026-10-08T17:56:07+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
