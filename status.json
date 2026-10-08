@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T07:40:05+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-08T07:45:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "a2-shape-1 matched-camera screenshot gate",
-                                  "status":  "running",
-                                  "step":  3,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  58,
-                                  "step_title":  "Run probe and inspect screenshots",
+                                  "percent":  100,
+                                  "step_title":  "Finish log entry",
                                   "steps":  [
                                                 "Read logs and Codex 07:35 request",
                                                 "Add camera test hook and write capture probe",
@@ -17,29 +17,29 @@
                                                 "Run tests",
                                                 "Finish log entry"
                                             ],
-                                  "eta_seconds":  56,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T07:38:01+02:00",
+                                  "updated":  "2026-10-08T07:40:16+02:00",
                                   "last_run":  "2026-10-08T07:36:02+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Shape plaque and final gates review",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Review matched-camera evidence and phone labels",
+                                 "status":  "running",
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record verdict and handoff",
+                                 "percent":  67.3,
+                                 "step_title":  "Verify phone label layout",
                                  "steps":  [
-                                               "Read rules and history",
-                                               "Check plaque and gate evidence",
-                                               "Reproduce browser state",
-                                               "Record verdict and handoff"
+                                               "Inspect hook and capture reports",
+                                               "Compare all screenshot pairs",
+                                               "Verify phone label layout",
+                                               "Record verdict and Cursor remainder"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  120,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T07:35:49+02:00",
-                                 "last_run":  "2026-10-08T07:28:28+02:00",
+                                 "updated":  "2026-10-08T07:44:00+02:00",
+                                 "last_run":  "2026-10-08T07:40:57+02:00",
                                  "next_run":  null
                              }
                },
@@ -47,12 +47,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  3,
+    "today_runs":  4,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "a2-shape-1 matched-camera screenshot gate",
+                       "finished":  "2026-10-08T07:40:16+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Shape plaque and final gates review",
@@ -77,11 +82,6 @@
                        "agent":  "codex",
                        "task":  "Review option A label rows",
                        "finished":  "2026-10-07T22:40:54+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "a2-shape-1 (e): option A label rows (preview)",
-                       "finished":  "2026-10-07T22:29:44+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
