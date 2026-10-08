@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T17:35:04+02:00",
+    "generated_at":  "2026-10-08T17:40:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,7 +28,7 @@
                                  "status":  "running",
                                  "step":  2,
                                  "total":  5,
-                                 "percent":  23.8,
+                                 "percent":  38,
                                  "step_title":  "Integrate approved assets and lazy detail",
                                  "steps":  [
                                                "Verify releases and loader contract",
@@ -37,7 +37,7 @@
                                                "Self-review and evidence",
                                                "Finish Cursor handoff"
                                            ],
-                                 "eta_seconds":  1254,
+                                 "eta_seconds":  955,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-08T17:34:02+02:00",
                                  "last_run":  "2026-10-08T17:28:33+02:00",
