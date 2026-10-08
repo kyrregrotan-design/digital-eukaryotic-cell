@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T15:35:03+02:00",
+    "generated_at":  "2026-10-08T15:40:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,19 +25,19 @@
                    "codex":  {
                                  "task":  "Bunne virtual-cell ideas: six verdicts",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  2.5,
-                                 "step_title":  "Read paper and licence",
+                                 "percent":  72.5,
+                                 "step_title":  "Write source-verified findings",
                                  "steps":  [
                                                "Read paper and licence",
                                                "Assess six ideas against model and queue",
                                                "Write source-verified findings",
                                                "Finish and hand to Cursor"
                                            ],
-                                 "eta_seconds":  781,
+                                 "eta_seconds":  85,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T15:34:40+02:00",
+                                 "updated":  "2026-10-08T15:37:16+02:00",
                                  "last_run":  "2026-10-08T15:33:04+02:00",
                                  "next_run":  null
                              }
