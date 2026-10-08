@@ -1,21 +1,24 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-08T07:20:04+02:00",
+    "generated_at":  "2026-10-08T07:25:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "a2-shape-1 (e): motion check on SHAPE preview",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "a2-shape-1 final gates",
+                                  "status":  "running",
+                                  "step":  3,
+                                  "total":  4,
+                                  "percent":  72.5,
+                                  "step_title":  "Run gate probe and TOR/IIS screenshots",
                                   "steps":  [
-
+                                                "Map gates to accepted evidence",
+                                                "Add missing shape plaque (preview)",
+                                                "Run gate probe and TOR/IIS screenshots",
+                                                "Validate and log"
                                             ],
-                                  "eta_seconds":  796,
+                                  "eta_seconds":  119,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-07T22:56:11+02:00",
+                                  "updated":  "2026-10-08T07:23:11+02:00",
                                   "last_run":  "2026-10-08T07:19:20+02:00",
                                   "next_run":  null
                               },
@@ -42,7 +45,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  0,
+    "today_runs":  1,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
