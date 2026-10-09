@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T12:00:04+02:00",
+    "generated_at":  "2026-10-09T12:05:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage 2 cache/UI opinion",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  78,
-                                  "step_title":  "Reproduce browser probes",
+                                  "percent":  100,
+                                  "step_title":  "Write opinion and handoff",
                                   "steps":  [
                                                 "Context and start",
                                                 "Diff review",
@@ -17,9 +17,9 @@
                                                 "Reproduce browser probes",
                                                 "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  6,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T11:55:15+02:00",
+                                  "updated":  "2026-10-09T12:04:39+02:00",
                                   "last_run":  "2026-10-09T11:53:10+02:00",
                                   "next_run":  null
                               },
@@ -55,6 +55,11 @@
               ],
     "recent":  [
                    {
+                       "agent":  "cursor",
+                       "task":  "Stage 2 cache/UI opinion",
+                       "finished":  "2026-10-09T12:04:39+02:00"
+                   },
+                   {
                        "agent":  "codex",
                        "task":  "Stage 2 browser-cache lifecycle",
                        "finished":  "2026-10-09T11:52:09+02:00"
@@ -78,11 +83,6 @@
                        "agent":  "codex",
                        "task":  "Stage 2 semantic ownership and portrait layout",
                        "finished":  "2026-10-09T10:45:41+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Stage 2 status/source opinion",
-                       "finished":  "2026-10-09T10:20:08+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
