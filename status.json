@@ -1,21 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T20:40:13+02:00",
+    "generated_at":  "2026-10-09T20:45:07+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Fix compact Retry visibility (Kyrre 20:15)",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "Opinion: estimated-mito lifecycle continuation",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  6,
+                                  "percent":  31.7,
+                                  "step_title":  "Validate SHA pins/reports",
                                   "steps":  [
-
+                                                "Start log + progress",
+                                                "Validate SHA pins/reports",
+                                                "Inspect probe assertions + captures",
+                                                "Reproduce focused tests / key evidence",
+                                                "Write opinion + STATUS",
+                                                "Finish handoff"
                                             ],
-                                  "eta_seconds":  247,
+                                  "eta_seconds":  600,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T20:20:16+02:00",
+                                  "updated":  "2026-10-09T20:41:51+02:00",
                                   "last_run":  "2026-10-09T20:39:13+02:00",
                                   "next_run":  null
                               },
@@ -43,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  40,
+    "today_runs":  41,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
@@ -379,7 +384,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-09T19:27:20+02:00",
+                      "updated":  "2026-10-09T20:45:03+02:00",
                       "updated_by":  "Cursor"
                   }
 }
