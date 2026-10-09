@@ -368,7 +368,7 @@
 </div>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-07 08:17 (Europe/Oslo)",
+  "generated_at": "2026-10-09 15:50 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -3294,7 +3294,7 @@
   "wholecell": {
     "version": "wholecell-skeleton-2026-10-03",
     "dated": "2026-10-03",
-    "disclaimer": "Whole-cell overview skeleton. Every major compartment of the intestinal cell is represented from the start, but most entries are overview-only: blurbs and process names are textbook-level teaching text, not curated evidence for the adult C. elegans intestine. GO identifiers are candidates to be resolved against a pinned GO release [VERIFY]. Pathway modules listed under a process are teaching cross-references, not localization evidence; the qualitative influence graph is compartment-agnostic. No database records have been imported yet.",
+    "disclaimer": "Whole-cell overview skeleton. Every major compartment of the intestinal cell is represented from the start, but most entries are overview-only: blurbs and process names are textbook-level teaching text, not curated evidence for the adult C. elegans intestine. GO identifiers are candidates to be resolved against a pinned GO release [VERIFY]. Pathway modules listed under a process are teaching cross-references, not localization evidence; the qualitative influence graph is compartment-agnostic. No database records have been imported into this compartment-source catalogue; other project modules keep their own import provenance.",
     "coverage_levels": [
       {
         "id": "represented_in_overview",
@@ -3636,7 +3636,7 @@
           "adult_intestinal_evidence_checked": false,
           "simulation_implemented": "qualitative_influence_graph"
         },
-        "gaps": "No chromatin or DNA-repair inventory; no nuclear interior view."
+        "gaps": "No chromatin or DNA-repair inventory imported; the WebGL nuclear interior is illustrative, and the classic viewer has no nuclear interior."
       },
       {
         "id": "nucleolus",
@@ -4333,7 +4333,7 @@
         "parent": "cell",
         "kind": "organelle",
         "illustrative": true,
-        "blurb": "Stores genomic DNA and organizes transcription. Interior view not yet built.",
+        "blurb": "Stores genomic DNA and organizes transcription. The WebGL viewer has an illustrative nuclear teaching interior; the classic viewer has no nuclear interior.",
         "coverage": "illustrated"
       },
       {
@@ -6128,16 +6128,16 @@
       {
         "scope": "Organelles in the whole-cell scene",
         "state": "illustrated",
-        "included": "16 organelle and structure categories drawn and selectable; only the mitochondrion has an interior view.",
+        "included": "The canonical whole-cell catalogue contains 17 compartments. Both viewers expose all 17 for overview selection. WebGL provides an illustrative teaching interior for every canonical compartment; the classic viewer provides a mitochondrial cutaway and separate inner-membrane/intermembrane-space scenes.",
         "catalogue": "Teaching set chosen for the viewer, not a sourced catalogue.",
-        "gaps": "Interior views for the nucleus, ER/Golgi, endolysosomal system and other structures."
+        "gaps": "Most rooms remain textbook-level teaching views, without curated adult-intestinal inventories, measured geometry/dynamics or independent quantitative validation. Teaching-room availability is not source or simulation coverage."
       },
       {
         "scope": "Mitochondrial subcompartments",
         "state": "illustrated",
-        "included": "Outer membrane, intermembrane space, inner membrane (cristae), matrix. The intermembrane space has its own interior view. Inner membrane now also hosts a complex-IV oxygen-reduction teaching process.",
+        "included": "Outer membrane, intermembrane space, inner membrane and matrix are represented. The classic viewer has separate inner-membrane and intermembrane-space scenes; WebGL shows selectable subcompartments together in one mitochondrial teaching room, including a schematic mitochondrial-DNA strand. The inner membrane hosts complex-IV oxygen-reduction teaching content.",
         "catalogue": "Textbook organization; geometry illustrative.",
-        "gaps": "Cristae junctions, contact sites, mtDNA nucleoids not drawn; matrix and outer membrane have no interior view."
+        "gaps": "No dedicated matrix or outer-membrane scene in either viewer. Cristae junctions, sourced contact-site topology and a curated mtDNA-nucleoid inventory are not represented; the WebGL DNA strand is schematic, not nucleoid geometry."
       },
       {
         "scope": "Intermembrane space",

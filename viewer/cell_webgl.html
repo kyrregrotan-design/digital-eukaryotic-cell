@@ -92,8 +92,6 @@
   #nogl { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 20; text-align: center; padding: 40px; }
   #nogl.on { display: flex; }
   @media (max-width: 1100px) { #legend { display: none; } }
-  #fade { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; background: radial-gradient(ellipse at 50% 45%, rgba(22, 34, 46, 0.96), rgba(11, 17, 24, 1) 70%); }
-  #fade.on { opacity: 1; }
   #inside-bar { left: 50%; transform: translateX(-50%); top: 16px; padding: 5px 12px 5px 5px; display: none; align-items: center; gap: 10px; font-size: 0.76rem; color: var(--muted); white-space: nowrap; }
   body.inside #inside-bar { display: flex; }
   body.inside .outer-only { display: none !important; }
@@ -238,7 +236,6 @@
 <body>
 <canvas id="gl"></canvas>
 <canvas id="overlay"></canvas>
-<div id="fade"></div>
 <div id="tooltip" role="tooltip"></div>
 
 <button class="panel opener" id="open-left" title="Show the pathway panel">☰ Pathways</button>
@@ -400,7 +397,7 @@
 <script src="navigation_fit.js"></script>
 <script id="model-data" type="application/json">
 {
-  "generated_at": "2026-10-07 08:17 (Europe/Oslo)",
+  "generated_at": "2026-10-09 15:50 (Europe/Oslo)",
   "species": {
     "id": "celegans",
     "scientific_name": "Caenorhabditis elegans",
@@ -3326,7 +3323,7 @@
   "wholecell": {
     "version": "wholecell-skeleton-2026-10-03",
     "dated": "2026-10-03",
-    "disclaimer": "Whole-cell overview skeleton. Every major compartment of the intestinal cell is represented from the start, but most entries are overview-only: blurbs and process names are textbook-level teaching text, not curated evidence for the adult C. elegans intestine. GO identifiers are candidates to be resolved against a pinned GO release [VERIFY]. Pathway modules listed under a process are teaching cross-references, not localization evidence; the qualitative influence graph is compartment-agnostic. No database records have been imported yet.",
+    "disclaimer": "Whole-cell overview skeleton. Every major compartment of the intestinal cell is represented from the start, but most entries are overview-only: blurbs and process names are textbook-level teaching text, not curated evidence for the adult C. elegans intestine. GO identifiers are candidates to be resolved against a pinned GO release [VERIFY]. Pathway modules listed under a process are teaching cross-references, not localization evidence; the qualitative influence graph is compartment-agnostic. No database records have been imported into this compartment-source catalogue; other project modules keep their own import provenance.",
     "coverage_levels": [
       {
         "id": "represented_in_overview",
@@ -3668,7 +3665,7 @@
           "adult_intestinal_evidence_checked": false,
           "simulation_implemented": "qualitative_influence_graph"
         },
-        "gaps": "No chromatin or DNA-repair inventory; no nuclear interior view."
+        "gaps": "No chromatin or DNA-repair inventory imported; the WebGL nuclear interior is illustrative, and the classic viewer has no nuclear interior."
       },
       {
         "id": "nucleolus",
@@ -4365,7 +4362,7 @@
         "parent": "cell",
         "kind": "organelle",
         "illustrative": true,
-        "blurb": "Stores genomic DNA and organizes transcription. Interior view not yet built.",
+        "blurb": "Stores genomic DNA and organizes transcription. The WebGL viewer has an illustrative nuclear teaching interior; the classic viewer has no nuclear interior.",
         "coverage": "illustrated"
       },
       {
@@ -6160,16 +6157,16 @@
       {
         "scope": "Organelles in the whole-cell scene",
         "state": "illustrated",
-        "included": "16 organelle and structure categories drawn and selectable; only the mitochondrion has an interior view.",
+        "included": "The canonical whole-cell catalogue contains 17 compartments. Both viewers expose all 17 for overview selection. WebGL provides an illustrative teaching interior for every canonical compartment; the classic viewer provides a mitochondrial cutaway and separate inner-membrane/intermembrane-space scenes.",
         "catalogue": "Teaching set chosen for the viewer, not a sourced catalogue.",
-        "gaps": "Interior views for the nucleus, ER/Golgi, endolysosomal system and other structures."
+        "gaps": "Most rooms remain textbook-level teaching views, without curated adult-intestinal inventories, measured geometry/dynamics or independent quantitative validation. Teaching-room availability is not source or simulation coverage."
       },
       {
         "scope": "Mitochondrial subcompartments",
         "state": "illustrated",
-        "included": "Outer membrane, intermembrane space, inner membrane (cristae), matrix. The intermembrane space has its own interior view. Inner membrane now also hosts a complex-IV oxygen-reduction teaching process.",
+        "included": "Outer membrane, intermembrane space, inner membrane and matrix are represented. The classic viewer has separate inner-membrane and intermembrane-space scenes; WebGL shows selectable subcompartments together in one mitochondrial teaching room, including a schematic mitochondrial-DNA strand. The inner membrane hosts complex-IV oxygen-reduction teaching content.",
         "catalogue": "Textbook organization; geometry illustrative.",
-        "gaps": "Cristae junctions, contact sites, mtDNA nucleoids not drawn; matrix and outer membrane have no interior view."
+        "gaps": "No dedicated matrix or outer-membrane scene in either viewer. Cristae junctions, sourced contact-site topology and a curated mtDNA-nucleoid inventory are not represented; the WebGL DNA strand is schematic, not nucleoid geometry."
       },
       {
         "scope": "Intermembrane space",
@@ -12414,7 +12411,15 @@
         rayHit: rc.intersectObject(m, false).length > 0 };
     });
   };
-  document.getElementById("t-spin").onchange = (e) => { releaseNavigationPose(); spin = e.target.checked; };
+  document.getElementById("t-spin").onchange = (e) => {
+    releaseNavigationPose();
+    if (liveNavigation && e.target.checked) {
+      cjReleaseCamera();
+      if (inside && inside.api) inside.navigationState.restore(inside.navigationState.capture());
+      if (tourCur) { tourCur.playing=false; tourCancelSpeech(); tourPlayButton(); }
+    }
+    spin = e.target.checked;
+  };
 
   const PRESETS = [
     { label: "Heat stress", ids: ["hsf-1"], dir: 1 },
@@ -12594,12 +12599,12 @@
       "<h3>Sources (" + d.sources.length + ")</h3><p class=\"note\">" + (srcHtml(d.sources) || "[REF NEEDED]") + "</p>" +
       '<p class="note">Gaps: ' + esc(d.gaps) + "<br/>Added " + esc(d.added) + "</p>";
   }
-  function selectAnat(id, fly) {
-    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectAnat(id,fly));
+  function selectAnat(id, fly, fromCanvas = false) {
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectAnat(id,fly,fromCanvas));
     if (!ANAT[id]) return;
     releaseGolgiView();
     if (id !== "ceaj") cjReleaseCamera();
-    selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail();
+    selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail(fromCanvas && !!liveNavigation);
     rememberNavigationDetail('anatomy',{id});
     if (fly && !inside && id === "ceaj" && CJ_FADE) frameCeaj();
     else if (fly && !inside && ANAT_LBL[id]) frameAnatSection(id);
@@ -12610,6 +12615,7 @@
   const CJ_PITCH = 1.1, CJ_ZOOM = 0.6;
   function frameCeaj() {
     releaseNavigationPose();
+    pauseNavigationSpin();
     const goal = (g) => ({ yaw: g.yaw, pitch: g.pitch, dist: g.dist, target: g.target.clone() });
     const prev = CJ_FADE.cam ? CJ_FADE.cam.prev : goal(camGoal), prevZoomed = CJ_FADE.cam ? CJ_FADE.cam.zoomed : userZoomed;
     const lo = V(Infinity, Infinity, Infinity), hi = V(-Infinity, -Infinity, -Infinity);
@@ -12775,8 +12781,10 @@
   }
   // On small screens with a caption or tour active, automatic opens (guided steps, tour parts, scene taps) only mark the
   // Details button as ready, so the drawer never covers the animation unless the learner asks for it.
+  // Candidate canvas picks use the same buffer: opening a phone drawer
+  // between two native clicks would divert the second click away from the canvas.
   const detailPeek = () => document.body.classList.contains("cap-small") && rightP.classList.contains("hidden") &&
-    (document.body.classList.contains("touring") || !!(inside && inside.api));
+    (document.body.classList.contains("touring") || !!(inside && inside.api) || !!liveNavigation);
   function detailReady(on) {
     const b = document.getElementById("open-right"), h = on ? detail.querySelector("h2") : null, name = h ? h.textContent.trim() : "";
     b.classList.toggle("ready", !!on);
@@ -12806,6 +12814,10 @@
   const navigationStepSourceRefs = new Map();
   let navigationRestored = null, navigationRefit = null, navigationLastError = null;
   function releaseNavigationPose() { navigationRestored = null; navigationRefit = null; }
+  function pauseNavigationSpin() {
+    if (!liveNavigation) return;
+    spin=false; document.getElementById('t-spin').checked=false;
+  }
   // Dynamic controls are reconstructed on return; retain their semantic identity.
   const navigationFocusAttrs = ['data-enter','data-ip','data-molecule-identity','data-molecule-retry',
     'data-exit','data-ihome','data-ioverview','data-mtour','data-mstep','data-mflow',
@@ -12868,29 +12880,29 @@
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back();
     releaseGolgiView(); cjReleaseCamera(); selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); rememberNavigationDetail('overview');
   }
-  function selectComp(id, fly) {
+  function selectComp(id, fly, fromCanvas = false) {
     if (!COMP[id]) return;
     if (liveNavigation && !navActivating && !inside && id === 'golgi') { liveNavigation.closeup(); return; }
-    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectComp(id,fly));
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectComp(id,fly,fromCanvas));
     if (id !== "golgi" || inside) releaseGolgiView();
     cjReleaseCamera();
     if (id === "golgi" && !inside) beginGolgiView();
     selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons();
     rememberNavigationDetail('compartment', {id});
     if (golgiView && window.innerWidth < 900) { setPanel("left", false); setPanel("right", false); detailReady(true); }
-    else openDetail();
+    else openDetail(fromCanvas && !!liveNavigation);
     if (inside) isel = { t: "comp", id };
     else if (golgiView) frameGolgiView();
     else if (fly) flyTo(ANCHOR[id], 0.8);
   }
-  function selectNode(id, fly) {
+  function selectNode(id, fly, fromCanvas = false) {
     const n = NODE[id]; if (!n) return;
-    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectNode(id,fly));
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectNode(id,fly,fromCanvas));
     releaseGolgiView();
     cjReleaseCamera();
-    openDetail();
     if (!nodeVisible(id)) { (n.pathways || [n.pathway_id]).forEach((p) => { pwVisible[p] = true; }); renderPwList(); refreshPathwayStyles(); }
     selected = { node: id }; detail.innerHTML = nodeHtml(id); setPerturbButtons();
+    openDetail(fromCanvas && !!liveNavigation);
     rememberNavigationDetail('gene', {id});
     if (inside) isel = { t: "node", id }; else if (fly) flyTo(nodePos[id], 0.8);
   }
@@ -13071,11 +13083,14 @@
   // The first click of a double-click can open the panel or move the camera, which shifts labels; the double-click
   // therefore acts on what was under the pointer at the first click, not on a fresh hit test.
   let lastTap = null;
+  // Pair input times, rather than handler times: rendering can delay delivery of
+  // the second native touch event beyond the double-tap window.
+  const pointerTime = e => liveNavigation && Number.isFinite(e.timeStamp) && e.timeStamp >= 0 ? e.timeStamp : performance.now();
   function recordTap(e) {
     const now = performance.now(), room = inside ? inside.id : null;
-    const tap = { t: now, x: e.clientX, y: e.clientY, room, type: e.pointerType, h: inside ? hitInterior(e) : hitTest(e) };
+    const tap = { t: now, eventTime:pointerTime(e), x: e.clientX, y: e.clientY, room, type: e.pointerType, h: inside ? hitInterior(e) : hitTest(e) };
     const p = lastTap;
-    tap.first = p && !p.first && p.type === tap.type && now - p.t < 600 && Math.hypot(tap.x - p.x, tap.y - p.y) < 12 && p.room === room ? p : null;
+    tap.first = p && !p.first && p.type === tap.type && tap.eventTime >= p.eventTime && tap.eventTime - p.eventTime < 600 && Math.hypot(tap.x - p.x, tap.y - p.y) < 12 && p.room === room ? p : null;
     lastTap = tap;
     return tap;
   }
@@ -13099,14 +13114,14 @@
     activePointers.set(e.pointerId, true); clearHover();
     try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* Synthetic events have no native capture. */ }
     if (activePointers.size > 1 || gestureBlocked) { gestureBlocked = true; drag = null; lastTap = null; moved = true; return; }
-    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, startX: e.clientX, startY: e.clientY, t: performance.now() }; moved = false;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, startX: e.clientX, startY: e.clientY, t: pointerTime(e) }; moved = false;
   });
   canvas.addEventListener("pointerup", (e) => {
     const was = drag && drag.id === e.pointerId ? drag : null, blocked = gestureBlocked;
     activePointers.delete(e.pointerId); if (was) drag = null;
     if (!activePointers.size) gestureBlocked = false;
     try { if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-    if (!was || moved || blocked || transition || Math.hypot(e.clientX - was.startX, e.clientY - was.startY) > 6 || (e.pointerType === "touch" && performance.now() - was.t > 500)) { lastTap = null; return; }
+    if (!was || moved || blocked || Math.hypot(e.clientX - was.startX, e.clientY - was.startY) > 6 || (e.pointerType === "touch" && pointerTime(e) - was.t > 500)) { lastTap = null; return; }
     const tap = recordTap(e);
     if (e.pointerType === "touch" && tap.first) {
       suppressTouchDouble = { t: performance.now(), x: e.clientX, y: e.clientY };
@@ -13129,14 +13144,18 @@
         return;
       }
     }
-    if (!drag && !transition && !activePointers.size && e.pointerType !== "touch" && !e.buttons)
+    if (!drag && !activePointers.size && e.pointerType !== "touch" && !e.buttons)
       pendingHover = { clientX: e.clientX, clientY: e.clientY };
   });
   canvas.addEventListener("pointerleave", clearHover);
   canvas.addEventListener("wheel", (e) => { e.preventDefault(); releaseNavigationPose(); clearHover(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(inside ? Math.max(16, inside.home.dist * 1.25) : 16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
   canvas.addEventListener("dblclick", (e) => {
+    // Chrome can deliver the compatibility mouse double-click long after the
+    // native touch pair has already entered a room. Its touch origin is stable
+    // even when renderer backlog outlasts the existing short suppression timer.
+    if (liveNavigation && e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) { e.preventDefault(); return; }
     if (suppressTouchDouble && performance.now() - suppressTouchDouble.t < 800 && Math.hypot(e.clientX - suppressTouchDouble.x, e.clientY - suppressTouchDouble.y) < 12) { e.preventDefault(); return; }
-    if (transition || gestureBlocked) return;
+    if (gestureBlocked) return;
     activateDoubleTap(e, tapForDblclick(e));
   });
   function activateDoubleTap(e, tapped) {
@@ -13147,7 +13166,6 @@
     else if (h && h.comp) flyTo(ANCHOR[h.comp], 0.6);
     else if (h && h.node) flyTo(nodePos[h.node], 0.6);
   }
-  window.addEventListener("keydown", (e) => { if (!liveNavigation && e.key === "Escape") { if (inside) exitInterior(); else if (golgiView) showOverview(); } });
 
   function updateCamera(dt) {
     if (spin && !drag && !golgiView) camGoal.yaw += dt * 0.08;
@@ -13204,9 +13222,9 @@
   // stale pointer highlights without causing stationary-pointer or idle raycasts.
   function flushHover() {
     if (!pendingHover && !hover && !ihover) return;
-    const view = [cam.yaw, cam.pitch, cam.dist, ...cam.target.toArray(), cut.constant, inside ? inside.id : "cell", transition, window.innerWidth, window.innerHeight, leftP.className, rightP.className].join("|");
+    const view = [cam.yaw, cam.pitch, cam.dist, ...cam.target.toArray(), cut.constant, inside ? inside.id : "cell", window.innerWidth, window.innerHeight, leftP.className, rightP.className].join("|");
     if (view !== hoverFrameView) { hover = null; if (!focusIdentity) { ihover = null; hideTip(); } hoverFrameView = view; }
-    if (transition || drag || activePointers.size) { pendingHover = null; return; }
+    if (drag || activePointers.size) { pendingHover = null; return; }
     const e = pendingHover; pendingHover = null;
     if (e) { focusIdentity = null; ++hoverPickCount; onHover(e); }
   }
@@ -13240,7 +13258,7 @@
     if (inside) { onClickInside(e, tapped); return; }
     const h = tapped !== undefined ? tapped : hitTest(e);
     if (!h) { showOverview(); return; }
-    if (h.node) selectNode(h.node, false); else if (h.anat) selectAnat(h.anat, false); else selectComp(h.comp, false);
+    if (h.node) selectNode(h.node, false, true); else if (h.anat) selectAnat(h.anat, false, true); else selectComp(h.comp, false, true);
   }
 
   // ---------------------------------------------------------------- overlay labels
@@ -13611,10 +13629,9 @@
   function ipAttr(ip) { return esc(ip.t + "|" + ip.id + "|" + (ip.comp || "")); }
   const FONT = getComputedStyle(document.body).fontFamily;
 
-  let inside = null, transition = false, outerCam = null;
+  let inside = null;
   let ihover = null, isel = null, ifocus = null;
   const interiorCache = {};
-  const fadeEl = document.getElementById("fade");
   const captionEl = document.getElementById("caption");
   const BUILD = {};
   const ROOM_STATE = window.DigitalCellRoomState;
@@ -15822,60 +15839,9 @@
     (inside._hlMats || []).forEach((m) => { m.emissive.copy(m.userData.baseEmissive); m.emissiveIntensity = m.userData.baseEI; });
     inside._hlMats = []; inside._hl = null;
   }
-  // A request made while a fade is running is kept (latest wins) and run when the fade ends, instead of being dropped.
-  let pendingNav = null, navTiming = null;
-  function runPendingNav() {
-    const p = pendingNav; pendingNav = null;
-    if (p) p();
-  }
+  // One transaction authority; preparation keeps the displayed origin alive.
   function enterInterior(id, after) {
     if (liveNavigation) return liveNavigation.enter(id, after);
-    if (!BUILD[id]) return;
-    if (transition) { pendingNav = () => enterInterior(id, after); return; }
-    if (inside && inside.id === id) { if (after) after(); return; }
-    releaseGolgiView();
-    if (tourCur) tourClose(true);
-    cjReleaseCamera();
-    transition = true;
-    clearHover();
-    if (!inside) {
-      outerCam = { yaw: camGoal.yaw, pitch: camGoal.pitch, dist: camGoal.dist, target: camGoal.target.clone(), userZoomed };
-      if (ANCHOR[id]) { camGoal.target.copy(ANCHOR[id]); camGoal.dist = Math.max(1.0, cam.dist * 0.18); }
-    } else if (inside.onExit) inside.onExit();
-    fadeEl.classList.add("on");
-    setTimeout(() => {
-      clearInteriorHighlight();
-      try {
-        const t0 = performance.now(), cached = !!interiorCache[id];
-        inside = interiorCache[id] || (interiorCache[id] = buildInterior(id));
-        const t1 = performance.now();
-        QUALITY.applyExtraMaterials(inside.s);
-        navTiming = { id, cached, build_ms: Math.round(t1 - t0), materials_ms: Math.round(performance.now() - t1) };
-      } catch (err) {
-        console.error(err);
-        transition = false; fadeEl.classList.remove("on"); pendingNav = null;
-        return;
-      }
-      ihover = isel = ifocus = null; hover = null; selected = null;
-      document.body.classList.add("inside");
-      document.body.classList.toggle("mito", !!inside.mito);
-      document.body.classList.toggle("story", !!inside.api);
-      document.getElementById("crumb").textContent = crumbFor(id);
-      renderInsideSec();
-      setupCaption();
-      userZoomed = false;
-      resize();
-      const h = inside.home;
-      cam.yaw = camGoal.yaw = h.yaw; cam.pitch = camGoal.pitch = h.pitch;
-      cam.target.copy(h.target); camGoal.target.copy(h.target);
-      cam.dist = h.dist * 1.9; camGoal.dist = h.dist;
-      showInteriorOverview();
-      if (inside.onEnter) inside.onEnter();
-      fadeEl.classList.remove("on");
-      transition = false;
-      if (after) after();
-      runPendingNav();
-    }, 430);
   }
   // If restoring the outer view fails part-way, leave a plain whole-cell home view instead of a half-restored camera, panel or selection.
   function outsideFallback() {
@@ -15893,41 +15859,6 @@
   }
   function exitInterior(after) {
     if (liveNavigation) return after ? liveNavigation.home(after) : liveNavigation.back();
-    if (transition) { pendingNav = () => exitInterior(after); return; }
-    if (!inside) return;
-    transition = true;
-    clearHover();
-    fadeEl.classList.add("on");
-    document.getElementById("crumb").textContent = "";
-    setTimeout(() => {
-      const id = inside.id;
-      try {
-        if (inside.onExit) inside.onExit();
-        clearInteriorHighlight();
-      } catch (err) { console.error(err); }
-      inside = null; ihover = isel = ifocus = null;
-      document.body.classList.remove("inside", "mito", "story");
-      try {
-        renderInsideSec();
-        const o = outerCam || { yaw: HOME.yaw, pitch: HOME.pitch, dist: HOME.dist, target: HOME.target.clone(), userZoomed: false };
-        cam.yaw = camGoal.yaw = o.yaw; cam.pitch = camGoal.pitch = o.pitch;
-        cam.target.copy(ANCHOR[id] || o.target); cam.dist = Math.max(1.0, o.dist * 0.2);
-        camGoal.target.copy(o.target); camGoal.dist = o.dist;
-        userZoomed = o.userZoomed;
-        resize();
-        // Golgi framing closed on entry; return to the restored outer view without opening a new focus transaction.
-        if (id === "golgi") showOverview(); else selectComp(id, false);
-      } catch (err) {
-        console.error(err);
-        outsideFallback();
-        fadeEl.classList.remove("on"); transition = false; pendingNav = null;
-        return;
-      }
-      fadeEl.classList.remove("on");
-      transition = false;
-      if (after) after();
-      runPendingNav();
-    }, 420);
   }
 
   // ---------------------------------------------------------------- interiors: picking, highlight, labels
@@ -16607,7 +16538,6 @@
   }
   function searchGo(e) {
     if (!e) return;
-    if (!liveNavigation && transition) { pendingNav = () => searchGo(e); return; }
     const d = e.destination;
     const outside = (fn) => { if (inside) exitInterior(fn); else fn(); };
     if (e.type === "pathway") {
@@ -16693,7 +16623,7 @@
       const b = ev.target.closest("button");
       const a = api();
       if (!b || !a) return;
-      if (liveNavigation && b.id !== 'cap-more') releaseNavigationPose();
+      if (liveNavigation && b.id !== 'cap-more') { releaseNavigationPose(); pauseNavigationSpin(); }
       if (b.id === "cap-play") a.toggle();
       else if (b.id === "cap-next") a.next();
       else if (b.id === "cap-prev") a.prev();
@@ -16768,6 +16698,7 @@
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>tourOpen(id));
     const t = TOUR_LIST.find((x) => x.id === id);
     if (!t) return;
+    pauseNavigationSpin();
     releaseGolgiView();
     if (tourCur) tourClose();
     cjReleaseCamera();
@@ -16800,6 +16731,7 @@
   function tourShow(i, autoplay) {
     releaseGolgiView();
     const c = tourCur; if (!c) return;
+    pauseNavigationSpin();
     tourCancelSpeech();
     const t = c.t, lines = t.script;
     c.i = Math.max(0, Math.min(lines.length - 1, i));
@@ -17029,10 +16961,6 @@
   };
   tourEl("tp-more").onclick = () => { compactUser.tp = !document.body.classList.contains("tp-compact"); compactSync(); };
   tourEl("tp-close").onclick = () => tourClose();
-  window.addEventListener("keydown", (e) => {
-    if (liveNavigation || e.key !== "Escape" || !tourCur || inside) return;
-    tourClose();
-  });
   document.addEventListener("visibilitychange", () => { if (document.hidden && tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); } });
   window.addEventListener("pagehide", () => {
     if (tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); }
@@ -17055,9 +16983,9 @@
       goal: {yaw:camGoal.yaw,pitch:camGoal.pitch,dist:camGoal.dist,target:camGoal.target.toArray()}})
   });
   window.__navState = () => ({ inside: inside ? inside.id : null,
-    transition: liveNavigation ? liveNavigation.nav.inspect().pending || liveNavigation.nav.inspect().traversal || liveNavigation.nav.inspect().restoring : transition,
-    pending: liveNavigation ? liveNavigation.nav.inspect().pending : !!pendingNav,
-    crumb: document.getElementById("crumb").textContent, timing: navTiming });
+    transition: !!(liveNavigation && (liveNavigation.nav.inspect().pending || liveNavigation.nav.inspect().traversal || liveNavigation.nav.inspect().restoring)),
+    pending: !!(liveNavigation && liveNavigation.nav.inspect().pending),
+    crumb: document.getElementById("crumb").textContent, timing: null });
   window.__geneLabels = () => JSON.parse(JSON.stringify(geneLabelState));
   window.__labelRows = () => labelRowState && { ...labelRowState, homeDist: +HOME.dist.toFixed(4) };
   window.__topStack = () => Object.assign(topStack(anatLabelsShown.length > 0), { motion: motionGroup.visible && !tourCur, anat: anatLabelsShown.length > 0 });
@@ -17180,9 +17108,8 @@
   showOverview();
   resetCascade();
 
-  // Opt-in integration candidate. Unregistered details and outer narrative tours
-  // fail before origin release; they are acceptance work, not exactness claims.
-  if (new URLSearchParams(location.search).get('navigation') === 'stage2') {
+  // Prepared default integration. Unsupported ownership fails before origin release.
+  {
     const pose = c => ({yaw:c.yaw,pitch:c.pitch,dist:c.dist,target:c.target.toArray()});
     const setPose = p => { [cam,camGoal].forEach(c => { c.yaw=p.yaw; c.pitch=p.pitch; c.dist=p.dist; c.target.fromArray(p.target); }); };
     const view = id => window.DCMolecules.definitions[id] ? {kind:'molecule',rank:3,id} : {kind:'interior',rank:2,id};
@@ -17293,7 +17220,7 @@
           else if(event.view.kind==='closeup') { selected={comp:'golgi'}; detail.innerHTML=compHtml('golgi'); rememberNavigationDetail('compartment',{id:'golgi'}); frameGolgiView(); if(innerWidth<900){setPanel('left',false);setPanel('right',false);detailReady(true);} }
           else { showOverview(); setPose(pose(HOME)); }
         }
-        renderPwList(); refreshPathwayStyles(); updateCamera(0); transition=false;
+        renderPwList(); refreshPathwayStyles(); updateCamera(0);
         if(s) restoreNavigationFocus(s.returnFocus);
       } finally { navActivating=false; }
     }
