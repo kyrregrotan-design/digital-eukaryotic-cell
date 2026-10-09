@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T19:05:05+02:00",
+    "generated_at":  "2026-10-09T19:10:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "MOL-0012 nucleosome viewer integration",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  33.5,
-                                 "step_title":  "Implement loader and bundle coverage",
+                                 "percent":  55.9,
+                                 "step_title":  "Verify lifecycle and navigation",
                                  "steps":  [
                                                "Approval and release context",
                                                "Implement loader and bundle coverage",
                                                "Verify lifecycle and navigation",
                                                "Self-review and Cursor handoff"
                                            ],
-                                 "eta_seconds":  650,
+                                 "eta_seconds":  493,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T19:03:41+02:00",
+                                 "updated":  "2026-10-09T19:08:57+02:00",
                                  "last_run":  "2026-10-09T18:59:37+02:00",
                                  "next_run":  null
                              }
