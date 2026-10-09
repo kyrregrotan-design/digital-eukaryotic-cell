@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T22:00:05+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-09T22:05:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "wormatlas-licence-audit opinion",
-                                  "status":  "running",
-                                  "step":  2,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  38,
-                                  "step_title":  "pin validation",
+                                  "percent":  100,
+                                  "step_title":  "status/handoff",
                                   "steps":  [
                                                 "context",
                                                 "pin validation",
@@ -17,9 +17,9 @@
                                                 "write opinion",
                                                 "status/handoff"
                                             ],
-                                  "eta_seconds":  256,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T21:58:31+02:00",
+                                  "updated":  "2026-10-09T22:01:15+02:00",
                                   "last_run":  "2026-10-09T21:57:04+02:00",
                                   "next_run":  null
                               },
@@ -50,10 +50,18 @@
                  },
     "today_runs":  43,
     "queue":  [
-                  "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
-                  "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
+                  "Venter på Kyrre: test på ekte telefon (Light) av shape-1/shape-2 før shape-2 bl…",
+                  "Venter på Kyrre (kommer senere): endelig godkjenning av mitokondrie-piloten ett…",
+                  "Kommer til Kyrre: resultat av WormAtlas-lisenssjekken etter Cursors vurdering",
+                  "Kommer til Kyrre: Claudes plan for cellekjernen når den er klar",
+                  "Kommer til Kyrre: MOL-0015 (Sec61) når Molekylbiblioteket har oppfylt de to bet…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "wormatlas-licence-audit opinion",
+                       "finished":  "2026-10-09T22:01:15+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "WormAtlas/WormImage licence audit",
@@ -78,11 +86,6 @@
                        "agent":  "cursor",
                        "task":  "Fix compact Retry visibility (Kyrre 20:15)",
                        "finished":  "2026-10-09T20:20:16+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Estimated mitochondrial pilot performance gates",
-                       "finished":  "2026-10-09T19:46:27+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
