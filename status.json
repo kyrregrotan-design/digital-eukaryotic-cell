@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T15:00:04+02:00",
+    "generated_at":  "2026-10-09T15:05:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "Stage2 legacy removal and estimated-layer opinion",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  3,
                                  "total":  5,
-                                 "percent":  18,
-                                 "step_title":  "Context and migration audit",
+                                 "percent":  58,
+                                 "step_title":  "Run regressions",
                                  "steps":  [
                                                "Context and migration audit",
                                                "Unify navigation candidate",
@@ -37,9 +37,9 @@
                                                "Estimated-layer opinion",
                                                "Review evidence and handoff"
                                            ],
-                                 "eta_seconds":  713,
+                                 "eta_seconds":  369,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T14:55:33+02:00",
+                                 "updated":  "2026-10-09T15:00:51+02:00",
                                  "last_run":  "2026-10-09T14:53:57+02:00",
                                  "next_run":  null
                              }
