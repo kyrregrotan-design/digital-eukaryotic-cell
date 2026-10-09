@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T19:00:04+02:00",
+    "generated_at":  "2026-10-09T19:05:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Estimated mitochondrial geometry pilot",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "MOL-0012 nucleosome viewer integration",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  33.5,
+                                 "step_title":  "Implement loader and bundle coverage",
                                  "steps":  [
-
+                                               "Approval and release context",
+                                               "Implement loader and bundle coverage",
+                                               "Verify lifecycle and navigation",
+                                               "Self-review and Cursor handoff"
                                            ],
-                                 "eta_seconds":  873,
+                                 "eta_seconds":  650,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T18:44:50+02:00",
+                                 "updated":  "2026-10-09T19:03:41+02:00",
                                  "last_run":  "2026-10-09T18:59:37+02:00",
                                  "next_run":  null
                              }
@@ -44,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  35,
+    "today_runs":  36,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
