@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T07:45:03+02:00",
+    "generated_at":  "2026-10-09T07:50:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -23,18 +23,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Stage 2 live navigation continuation",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Stage 2 live dispatcher",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  50.5,
+                                 "step_title":  "Probe and self-review",
                                  "steps":  [
-
+                                               "Inspect navigation boundaries",
+                                               "Implement dispatcher and view adapters",
+                                               "Probe and self-review",
+                                               "Write evidence and handoff"
                                            ],
-                                 "eta_seconds":  414,
+                                 "eta_seconds":  358,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-08T23:04:06+02:00",
+                                 "updated":  "2026-10-09T07:49:59+02:00",
                                  "last_run":  "2026-10-09T07:43:58+02:00",
                                  "next_run":  null
                              }
@@ -43,7 +46,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  1,
+    "today_runs":  2,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
