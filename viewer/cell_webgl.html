@@ -393,6 +393,10 @@
 
 <script src="vendor/three.min.js"></script>
 <script src="molecular_assets.js"></script>
+<script src="navigation_controller.js"></script>
+<script src="navigation_room_state.js"></script>
+<script src="navigation_history.js"></script>
+<script src="navigation_live.js"></script>
 <script id="model-data" type="application/json">
 {
   "generated_at": "2026-10-07 08:17 (Europe/Oslo)",
@@ -12409,7 +12413,7 @@
         rayHit: rc.intersectObject(m, false).length > 0 };
     });
   };
-  document.getElementById("t-spin").onchange = (e) => { spin = e.target.checked; };
+  document.getElementById("t-spin").onchange = (e) => { releaseNavigationPose(); spin = e.target.checked; };
 
   const PRESETS = [
     { label: "Heat stress", ids: ["hsf-1"], dir: 1 },
@@ -12567,10 +12571,12 @@
       '<p class="note">Gaps: ' + esc(d.gaps) + "<br/>Added " + esc(d.added) + "</p>";
   }
   function selectAnat(id, fly) {
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectAnat(id,fly));
     if (!ANAT[id]) return;
     releaseGolgiView();
     if (id !== "ceaj") cjReleaseCamera();
     selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail();
+    rememberNavigationDetail('anatomy',{id});
     if (fly && !inside && id === "ceaj" && CJ_FADE) frameCeaj();
     else if (fly && !inside && ANAT_LBL[id]) frameAnatSection(id);
     else if (fly && !inside && ANAT_POS[id]) flyTo(ANAT_POS[id], 0.8);
@@ -12579,6 +12585,7 @@
   // The previous camera goal is restored on deselect unless the learner has moved the camera since.
   const CJ_PITCH = 1.1, CJ_ZOOM = 0.6;
   function frameCeaj() {
+    releaseNavigationPose();
     const goal = (g) => ({ yaw: g.yaw, pitch: g.pitch, dist: g.dist, target: g.target.clone() });
     const prev = CJ_FADE.cam ? CJ_FADE.cam.prev : goal(camGoal), prevZoomed = CJ_FADE.cam ? CJ_FADE.cam.zoomed : userZoomed;
     const lo = V(Infinity, Infinity, Infinity), hi = V(-Infinity, -Infinity, -Infinity);
@@ -12638,6 +12645,7 @@
   function frameAnatSection(id) {
     const L = ANAT_LBL[id];
     if (!L || inside) return;
+    releaseNavigationPose();
     cjReleaseCamera();
     const d = cut.normal.clone().negate();
     userZoomed = true;
@@ -12762,15 +12770,74 @@
   function autoDetail(write) {
     if (pickHtml !== null && detail.innerHTML === pickHtml) return;
     pickHtml = null; write();
+    if (liveNavigation) {
+      if (selected && selected.node) rememberNavigationDetail('gene',{id:selected.node});
+      else if (isel) rememberNavigationDetail('interior-pick',{ip:isel});
+    }
     if (document.getElementById("open-right").classList.contains("ready")) detailReady(true);
   }
-  function showOverview() { releaseGolgiView(); cjReleaseCamera(); selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); }
+  let liveNavigation = null, navActivating = false;
+  let navigationDetail = null, navigationDetailStamp = null;
+  let navigationRestored = null, navigationRefit = null, navigationLastError = null;
+  function releaseNavigationPose() { navigationRestored = null; navigationRefit = null; }
+  // Dynamic controls are reconstructed on return; retain their semantic identity.
+  const navigationFocusAttrs = ['data-enter','data-ip','data-molecule-identity','data-molecule-retry',
+    'data-exit','data-ihome','data-ioverview','data-mtour','data-mstep','data-mflow',
+    'data-kd','data-nin','data-nscen','data-nflow','data-comp','data-node','data-anat','data-vis','data-focus'];
+  function captureNavigationFocus(el = document.activeElement) {
+    if (!el || el === document.body) return 'navigation-heading';
+    if (el.id) return el.id;
+    const scope = el.closest('#inside-sec,#detail,#caption,#left,#right');
+    if (scope) for (const attr of navigationFocusAttrs) if (el.hasAttribute(attr))
+      return 'control:' + JSON.stringify([scope.id,attr,el.getAttribute(attr)]);
+    return 'navigation-heading';
+  }
+  function restoreNavigationFocus(key, fallback = true) {
+    let el = null;
+    if (key && key.startsWith('control:')) {
+      try {
+        const [scope,attr,value] = JSON.parse(key.slice(8));
+        const parent = ['inside-sec','detail','caption','left','right'].includes(scope) && document.getElementById(scope);
+        if (parent && navigationFocusAttrs.includes(attr))
+          el = Array.from(parent.querySelectorAll('['+attr+']')).find(b=>b.getAttribute(attr)===value);
+      } catch (_) { /* An unavailable control falls back to the navigation heading. */ }
+    } else if (key) el = document.getElementById(key);
+    if (el && (el.disabled || !el.getClientRects().length)) el = null;
+    if (!el && fallback) el = document.getElementById('navigation-heading');
+    if (el) el.focus({preventScroll:true});
+  }
+  function navigationLayout() {
+    const bar = document.getElementById('navigation-levels');
+    if (!bar) return;
+    const {L,R} = panelEdges(), w = innerWidth;
+    bar.style.left = (L+(w-L-R)/2)+'px';
+    bar.style.width = Math.max(120,w-L-R-16)+'px';
+    bar.style.maxHeight = Math.max(80,innerHeight*.3)+'px'; bar.style.overflowY = 'auto';
+    let bottom = 16;
+    ['caption','tour-player','legend'].forEach(id=>{
+      const el = document.getElementById(id);
+      if (el && el.offsetWidth && getComputedStyle(el).visibility !== 'hidden')
+        bottom = Math.max(bottom,innerHeight-el.getBoundingClientRect().top+8);
+    });
+    bar.style.bottom = bottom+'px';
+  }
+  function rememberNavigationDetail(type, args) {
+    navigationDetail = {type, args: args || {}}; navigationDetailStamp = detail.innerHTML;
+    if (liveNavigation && !navActivating) liveNavigation.render();
+  }
+  function showOverview() {
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back();
+    releaseGolgiView(); cjReleaseCamera(); selected = null; detail.innerHTML = overviewHtml(); setPerturbButtons(); rememberNavigationDetail('overview');
+  }
   function selectComp(id, fly) {
     if (!COMP[id]) return;
+    if (liveNavigation && !navActivating && !inside && id === 'golgi') { liveNavigation.closeup(); return; }
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectComp(id,fly));
     if (id !== "golgi" || inside) releaseGolgiView();
     cjReleaseCamera();
     if (id === "golgi" && !inside) beginGolgiView();
     selected = { comp: id }; detail.innerHTML = compHtml(id); setPerturbButtons();
+    rememberNavigationDetail('compartment', {id});
     if (golgiView && window.innerWidth < 900) { setPanel("left", false); setPanel("right", false); detailReady(true); }
     else openDetail();
     if (inside) isel = { t: "comp", id };
@@ -12779,19 +12846,22 @@
   }
   function selectNode(id, fly) {
     const n = NODE[id]; if (!n) return;
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectNode(id,fly));
     releaseGolgiView();
     cjReleaseCamera();
     openDetail();
     if (!nodeVisible(id)) { (n.pathways || [n.pathway_id]).forEach((p) => { pwVisible[p] = true; }); renderPwList(); refreshPathwayStyles(); }
     selected = { node: id }; detail.innerHTML = nodeHtml(id); setPerturbButtons();
+    rememberNavigationDetail('gene', {id});
     if (inside) isel = { t: "node", id }; else if (fly) flyTo(nodePos[id], 0.8);
   }
   function focusPathway(id) {
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>focusPathway(id));
     releaseGolgiView();
     focusPw = focusPw === id ? null : id;
     if (focusPw) pwVisible[id] = true;
     renderPwList(); refreshPathwayStyles();
-    if (focusPw) { detail.innerHTML = pathwayHtml(id); selected = null; setPerturbButtons(); openDetail(); } else showOverview();
+    if (focusPw) { detail.innerHTML = pathwayHtml(id); selected = null; setPerturbButtons(); openDetail(); rememberNavigationDetail('pathway',{id}); } else showOverview();
   }
   function playPathway(id) {
     const ids = MODEL.nodes.filter((n) => n.pathway_id === id).map((n) => n.id);
@@ -12823,6 +12893,24 @@
     // Display framing only: fit existing bounds to the free viewport, looking below the brush border.
     camGoal.yaw = 0.5; camGoal.pitch = -0.5; camGoal.target.copy(sphere.center);
     camGoal.dist = Math.max(BODY_SHAPE1 ? 8 : 4.5, 1.4 * sphere.radius / Math.min(tan * free / h, tan * Math.max(120, h - 180) / h));
+  }
+  function golgiFitDistance() {
+    const sphere = GOLGI_BOUNDS.getBoundingSphere(new THREE.Sphere()), {L,R} = panelEdges();
+    const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+    return Math.max(BODY_SHAPE1 ? 8 : 4.5,1.4*sphere.radius/Math.min(tan*Math.max(120,innerWidth-L-R-40)/innerHeight,tan*Math.max(120,innerHeight-180-lastCapH)/innerHeight));
+  }
+  function applyNavigationRefit() {
+    if (!navigationRestored) return;
+    const s = navigationRestored, {L,R} = panelEdges();
+    const rect = [L,0,Math.max(1,innerWidth-L-R),Math.max(1,innerHeight-lastCapH)];
+    const changed = s.viewport.width!==innerWidth || s.viewport.height!==innerHeight || rect.some((v,i)=>v!==s.viewport.renderRect[i]);
+    const fit = inside ? inside.home.dist : golgiView ? golgiFitDistance() : HOME.dist;
+    const ratio = changed && s.viewport.fitDistance>0 ? Math.max(1,fit/s.viewport.fitDistance) : 1;
+    const dist = s.pose.dist*ratio;
+    [cam,camGoal].forEach(c=>{c.yaw=s.pose.yaw;c.pitch=s.pose.pitch;c.target.fromArray(s.pose.target);c.dist=dist;});
+    navigationRefit = {changed,originalDistance:s.pose.dist,restoredDistance:dist,savedFit:s.viewport.fitDistance,currentFit:fit,
+      reason:changed ? 'viewport-or-panel-layout' : 'unchanged-layout',policy:'proportional-existing-display-fit'};
+    if (changed) { const el=document.getElementById('navigation-status'); if(el) el.textContent='View refitted after viewport change.'; }
   }
   function releaseGolgiView() {
     if (!golgiView) return;
@@ -12889,7 +12977,7 @@
   // The bottom rows stay above the arrow legend and the tour player, which sit centred over the free middle.
   function rowBottom(H) {
     let y = H - 60;
-    ["legend", "tour-player"].forEach((id) => { const el = document.getElementById(id); if (el && el.offsetWidth) y = Math.min(y, el.getBoundingClientRect().top - 14); });
+    ["legend", "tour-player", "navigation-levels"].forEach((id) => { const el = document.getElementById(id); if (el && el.offsetWidth) y = Math.min(y, el.getBoundingClientRect().top - 14); });
     return y;
   }
   // In SHAPE the canvas badges and the top label row stack below the visible status pill, which drops under the buttons on phones.
@@ -12921,6 +13009,7 @@
   }
   function flyTo(p, factor) {
     if (!p) return;
+    releaseNavigationPose();
     cjReleaseCamera();
     userZoomed = true;
     // General schematic focus: 0.6 times the anchor, 0.8 of HOME distance on select / 0.6 on double-click.
@@ -12990,6 +13079,7 @@
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 6) moved = true;
       if (moved) {
+        releaseNavigationPose();
         camGoal.yaw -= dx * 0.006; camGoal.pitch = Math.max(-1.2, Math.min(1.3, camGoal.pitch + dy * 0.006));
         drag.x = e.clientX; drag.y = e.clientY;
         lastTap = null; clearHover();
@@ -13000,20 +13090,21 @@
       pendingHover = { clientX: e.clientX, clientY: e.clientY };
   });
   canvas.addEventListener("pointerleave", clearHover);
-  canvas.addEventListener("wheel", (e) => { e.preventDefault(); clearHover(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(inside ? Math.max(16, inside.home.dist * 1.25) : 16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
+  canvas.addEventListener("wheel", (e) => { e.preventDefault(); releaseNavigationPose(); clearHover(); userZoomed = true; camGoal.dist = Math.max(2.4, Math.min(inside ? Math.max(16, inside.home.dist * 1.25) : 16, camGoal.dist * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive: false });
   canvas.addEventListener("dblclick", (e) => {
     if (suppressTouchDouble && performance.now() - suppressTouchDouble.t < 800 && Math.hypot(e.clientX - suppressTouchDouble.x, e.clientY - suppressTouchDouble.y) < 12) { e.preventDefault(); return; }
     if (transition || gestureBlocked) return;
     activateDoubleTap(e, tapForDblclick(e));
   });
   function activateDoubleTap(e, tapped) {
+    if (liveNavigation && inside && inside.moleculeIdentity) { showInteriorOverview(); return; }
     if (inside) { const h = tapped !== undefined ? tapped : hitInterior(e); if (h && h.ip.t === "comp" && BUILD[h.ip.id] && h.ip.id !== inside.id) enterInterior(h.ip.id); return; }
     const h = tapped !== undefined ? tapped : hitTest(e);
     if (h && h.comp && BUILD[h.comp]) enterInterior(h.comp);
     else if (h && h.comp) flyTo(ANCHOR[h.comp], 0.6);
     else if (h && h.node) flyTo(nodePos[h.node], 0.6);
   }
-  window.addEventListener("keydown", (e) => { if (e.key === "Escape") { if (inside) exitInterior(); else if (golgiView) showOverview(); } });
+  window.addEventListener("keydown", (e) => { if (!liveNavigation && e.key === "Escape") { if (inside) exitInterior(); else if (golgiView) showOverview(); } });
 
   function updateCamera(dt) {
     if (spin && !drag && !golgiView) camGoal.yaw += dt * 0.08;
@@ -13216,7 +13307,7 @@
         let prev = -Infinity;
         list.forEach((it) => { it.ly = Math.max(it.p.y, prev + 24, 70); prev = it.ly; });
         let next = Infinity;
-        for (let i = list.length - 1; i >= 0; i--) { list[i].ly = Math.min(list[i].ly, next - 24, H - 60); next = list[i].ly; }
+        for (let i = list.length - 1; i >= 0; i--) { list[i].ly = Math.min(list[i].ly, next - 24, liveNavigation ? rowBottom(H) : H - 60); next = list[i].ly; }
         list.forEach((it) => {
           const active = (hover && hover.comp === it.id) || (selected && selected.comp === it.id);
           const pw = pillWidth(it.text, active);
@@ -13483,10 +13574,17 @@
   const fadeEl = document.getElementById("fade");
   const captionEl = document.getElementById("caption");
   const BUILD = {};
+  const ROOM_STATE = window.DigitalCellRoomState;
   Object.keys(window.DCMolecules.definitions).forEach((id) => {
     BUILD[id] = (ctx) => window.DCMolecules.build(ctx, id, () => QUALITY.state().tier, () => {
       QUALITY.applyExtraMaterials(ctx.s);
-      if (inside === ctx) { clearHover(); renderInsideSec(); showInteriorOverview(); }
+      if (inside === ctx) {
+        const active = document.activeElement, focus = captureNavigationFocus(active), semantic = navigationDetail;
+        clearHover(); renderInsideSec();
+        if (!liveNavigation || !semantic || semantic.type === 'overview') showInteriorOverview();
+        if (liveNavigation && active !== document.body) restoreNavigationFocus(focus);
+        else if (active && active.isConnected) active.focus({preventScroll:true});
+      }
     });
   });
   window.addEventListener("resize", () => { if (inside && inside.moleculeRefresh) inside.moleculeRefresh(); });
@@ -13651,6 +13749,10 @@
   function buildInterior(id) {
     const ctx = makeCtx(id);
     BUILD[id](ctx);
+    if (!ctx.navigationState) ctx.navigationState = ROOM_STATE.createCodec({
+      id, kind: "overview", capture: () => ({ playing: false }),
+      validate: s => s && Object.keys(s).length === 1 && s.playing === false,
+      apply: () => {} });
     if (!ctx.custom) {
       const c = COMP[id];
       const procs = c ? c.core_processes : [];
@@ -13992,6 +14094,24 @@
       playTour(lc && SC[lc] ? lc : curSc, 0);
     };
     ctx.onExit = () => { mrna.forEach((m) => { m.p.used = false; m.p.o.visible = false; }); mrna = []; };
+    const nucleusEdges = SE.map(E => E.e.id);
+    const nucleusTours = ROOM_STATE.createTourRegistry();
+    const nucleusTourValid = t => t === null || (t && SC[t.sc.id] && Array.isArray(t.steps) && t.steps.length > 0 &&
+      t.steps.every(S => typeof S.title === "string" && typeof S.text === "string" &&
+        ROOM_STATE.qualitative(S.st, IDS) && Array.isArray(S.fired) && S.fired.every(e => nucleusEdges.includes(e.id)) &&
+        Array.isArray(S.focus) && S.focus.every(id => IDS.includes(id)) && (S.ref === null || IDS.includes(S.ref))));
+    ctx.navigationState = ROOM_STATE.createCodec({ id: ctx.id, kind: "nucleus",
+      capture: () => ({mode, tourId: curSc, step: si, progress: st, playing, speed, stopAfter,
+        tour: nucleusTours.capture(tour, curSc), KD, INPUT, shown, fired: fired.map(e => e.id)}),
+      validate: s => nucleusTours.validate(s.tour, s.tourId) && nucleusTourValid(s.tour) && ROOM_STATE.playback(s, Object.keys(SC), s.tour ? s.tour.steps.length : 1) &&
+        (s.mode !== "tour" || s.tour && s.tour.sc.id === s.tourId) && ROOM_STATE.boolean(s.stopAfter) &&
+        ROOM_STATE.map(s.KD, IDS, ROOM_STATE.boolean) && ROOM_STATE.map(s.INPUT, IDS, ROOM_STATE.sign) &&
+        ROOM_STATE.qualitative(s.shown, IDS) && Array.isArray(s.fired) && s.fired.every(id => nucleusEdges.includes(id)),
+      apply: s => { mode=s.mode; curSc=s.tourId; tour=s.tour; si=s.step; st=s.progress; speed=s.speed; stopAfter=s.stopAfter;
+        playing=false; ROOM_STATE.replaceMap(KD,s.KD); ROOM_STATE.replaceMap(INPUT,s.INPUT); shown=s.shown;
+        if (tour) tour.steps.forEach(S => { S.fired=S.fired.map(e => SE.find(E => E.e.id === e.id).e); });
+        fired=s.fired.map(id => SE.find(E => E.e.id === id).e); caption(); }
+    });
 
     ctx.overviewHtml = () => {
       const c = COMP.nucleus || {};
@@ -14176,6 +14296,7 @@
   function storyKit(ctx, o) {
     const $ = (id) => document.getElementById(id);
     const K = { mode: "tour", tour: null, si: 0, st: 0, playing: true, speed: 1, cur: o.first };
+    const preparedTours = ROOM_STATE.createTourRegistry();
     K.caption = () => {
       if (inside !== ctx) return;
       const S = K.mode === "tour" && K.tour ? K.tour.steps[K.si] : null, f = S ? null : o.flowCaption();
@@ -14227,6 +14348,17 @@
       has: (id) => !!(o.has && o.has(id)),
       runNode(id, dir) { if (o.runNode) o.runNode(id, dir); },
     };
+    ctx.navigationState = ROOM_STATE.createCodec({ id: ctx.id, kind: "story",
+      capture: () => ({mode: K.mode, tourId: K.cur, tour: preparedTours.capture(K.tour, K.cur), step: K.si, progress: K.st,
+        playing: K.playing, speed: K.speed, extra: o.captureState()}),
+      validate: s => preparedTours.validate(s.tour, s.tourId) && (!s.tour || Array.isArray(s.tour.steps) && s.tour.steps.length > 0 &&
+        s.tour.steps.every(S => typeof S.title === "string" && typeof S.text === "string")) &&
+        ROOM_STATE.playback(s, Object.keys(o.tours), s.tour ? s.tour.steps.length : 1) &&
+        (s.mode !== "tour" || !!s.tour) && o.validateState(s.extra),
+      apply: s => { K.mode=s.mode; K.cur=s.tourId; K.tour=s.tour; K.si=s.step; K.st=s.progress;
+        K.speed=s.speed; K.playing=false; if (o.hydrateTour && K.tour) o.hydrateTour(K.tour);
+        o.restoreState(s.extra); K.caption(); }
+    });
     return K;
   }
   const SGN = (e) => (e.interaction === "inhibits" ? -1 : 1);
@@ -14466,6 +14598,13 @@
 
     const K = storyKit(ctx, {
       first: "journey", tours: TOURS,
+      captureState: () => ({KD, INPUT, FLAG, shown, fired: fired.map(e => e.id)}),
+      hydrateTour: t => t.steps.forEach(S => { if (S.fired) S.fired=S.fired.map(e => EDGES.find(local => local.id === e.id)); }),
+      validateState: s => s && ROOM_STATE.map(s.KD, IDS, ROOM_STATE.boolean) &&
+        ROOM_STATE.map(s.INPUT, IDS, ROOM_STATE.sign) && ROOM_STATE.map(s.FLAG, ["block","reporter"], ROOM_STATE.boolean) && Object.keys(s.FLAG).length === 2 &&
+        ROOM_STATE.qualitative(s.shown, IDS) && Array.isArray(s.fired) && s.fired.every(id => EDGES.some(e => e.id === id)),
+      restoreState: s => { ROOM_STATE.replaceMap(KD,s.KD); ROOM_STATE.replaceMap(INPUT,s.INPUT);
+        ROOM_STATE.replaceMap(FLAG,s.FLAG); shown=s.shown; fired=s.fired.map(id => EDGES.find(e => e.id === id)); },
       onStep(S) {
         setInput(S.input);
         FLAG.block = !!(S.flags && S.flags.block); FLAG.reporter = !!(S.flags && S.flags.reporter);
@@ -14748,6 +14887,11 @@
     ];
     const K = storyKit(ctx, {
       first: "route", tours: TOURS,
+      captureState: () => ({BLOCK, COUNT}),
+      validateState: s => s && ROOM_STATE.map(s.BLOCK, ["misfold","erexit","golgiexit"], ROOM_STATE.boolean) &&
+        Object.keys(s.BLOCK).length === 3 && ROOM_STATE.map(s.COUNT, ["out","lys","removed"], v => Number.isSafeInteger(v) && v >= 0) &&
+        Object.keys(s.COUNT).length === 3,
+      restoreState: s => { ROOM_STATE.replaceMap(BLOCK,s.BLOCK); ROOM_STATE.replaceMap(COUNT,s.COUNT); },
       onStep(S) { BLOCK.misfold = !!(S.blocks && S.blocks.misfold); BLOCK.erexit = !!(S.blocks && S.blocks.erexit); BLOCK.golgiexit = !!(S.blocks && S.blocks.golgiexit); if (S.mis) forceMis = true; },
       flowCaption() {
         const b = Object.keys(BLOCK).filter((k) => BLOCK[k]).map((k) => ({ misfold: "folding fails", erexit: "ER exit blocked", golgiexit: "Golgi exit blocked" })[k]);
@@ -15540,6 +15684,18 @@
     };
     ctx.onEnter = () => { gr = 0; playTour("proton_gradient", 0); };
     ctx.onExit = () => { clearAll(); stuckSp.visible = false; $("cap-replay").hidden = true; };
+    ctx.navigationState = ROOM_STATE.createCodec({ id: ctx.id, kind: "mitochondria",
+      capture: () => ({mode, tourId: Object.keys(TOURS).find(id => TOURS[id] === tour), step: si,
+        progress: st, playing, speed, stopAfter, KD, gradient: gr, gradientTarget: grT}),
+      validate: s => TOURS[s.tourId] && ROOM_STATE.playback(s, Object.keys(TOURS), TOURS[s.tourId].steps.length) &&
+        ROOM_STATE.boolean(s.stopAfter) && ROOM_STATE.map(s.KD, Object.keys(CX).concat(Object.keys(CR)), ROOM_STATE.boolean) &&
+        Number.isFinite(s.gradient) && s.gradient >= 0 && s.gradient <= 1 &&
+        Number.isFinite(s.gradientTarget) && s.gradientTarget >= 0 && s.gradientTarget <= 1,
+      apply: s => { clearAll(); mode=s.mode; tour=TOURS[s.tourId]; si=s.step; st=s.progress;
+        speed=s.speed; stopAfter=s.stopAfter; playing=false; ROOM_STATE.replaceMap(KD,s.KD);
+        gr=s.gradient; grT=s.gradientTarget; tracks=mode === "tour" ? (tour.steps[si].tracks || []).map(t => ({...t})) : [];
+        stuckSp.visible=false; caption(); }
+    });
 
     ctx.on((now, dt) => {
       ctx.tags.length = 0;
@@ -15556,7 +15712,7 @@
         }
         if (mode === "tour") {
           runTracks(tracks, Math.min(st, 1));
-          gr += (grT - gr) * Math.min(1, dt * 1.5);
+          if (playing) gr += (grT - gr) * Math.min(1, dt * 1.5);
           rotVel = tour.steps[si].rot != null ? tour.steps[si].rot : 0.6 * gr;
         }
         stuckSp.visible = false;
@@ -15627,6 +15783,7 @@
     if (p) p();
   }
   function enterInterior(id, after) {
+    if (liveNavigation) return liveNavigation.enter(id, after);
     if (!BUILD[id]) return;
     if (transition) { pendingNav = () => enterInterior(id, after); return; }
     if (inside && inside.id === id) { if (after) after(); return; }
@@ -15689,6 +15846,7 @@
     safe(showOverview);
   }
   function exitInterior(after) {
+    if (liveNavigation) return after ? liveNavigation.home(after) : liveNavigation.back();
     if (transition) { pendingNav = () => exitInterior(after); return; }
     if (!inside) return;
     transition = true;
@@ -16168,12 +16326,14 @@
     return "";
   }
   function selectIp(ip, auto) {
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectIp(ip,auto));
     releaseGolgiView();
     if (ip.t === "node") { selectNode(ip.id, false); return; }
     if (ip.t === "comp" && !inside) { selectComp(ip.id, true); return; }
     if (["cx", "cr", "ap", "ac", "prot", "tca", "tcastep"].includes(ip.t) && !(inside && inside.mito)) { enterInterior("mitochondria", () => selectIp(ip, auto)); return; }
     isel = inside ? ip : null; selected = null;
     detail.innerHTML = ipHtml(ip); setPerturbButtons(); openDetail(auto);
+    rememberNavigationDetail('interior-pick', {ip});
     if (ip.t === "aging") agRender();
     pickHtml = document.body.classList.contains("cap-small") && inside && inside.api ? detail.innerHTML : null;
   }
@@ -16213,16 +16373,18 @@
     if (!inside) return;
     isel = null; selected = null;
     detail.innerHTML = inside.overviewHtml ? inside.overviewHtml() : inside.mito ? mitoOverviewHtml() : interiorOverviewHtml();
+    rememberNavigationDetail('overview');
     setPerturbButtons();
   }
   function renderInsideSec() {
     const el = document.getElementById("inside-sec");
+    const semanticFocus = liveNavigation && el.contains(document.activeElement) ? captureNavigationFocus() : null;
     const focused = el.contains(document.activeElement) && document.activeElement.dataset.moleculeIdentity;
     if (!inside) { el.innerHTML = ""; return; }
     const c = COMP[inside.id];
     const molecule = window.DCMolecules.definitions[inside.id];
     let h = '<p class="title">You are inside</p><h2 style="font-size:1rem;margin:0 0 8px">' + esc(c ? c.label : molecule ? molecule.title : inside.id) + "</h2>" +
-      '<div class="row"><button class="b" data-exit="1">← Whole cell</button><button class="b" data-ihome="1">Reset view</button><button class="b" data-ioverview="1" title="Leave the guided step and show the whole interior, everything at once">Overview</button></div>';
+      '<div class="row"><button class="b" data-exit="1">' + (liveNavigation ? 'Back' : '← Whole cell') + '</button><button class="b" data-ihome="1">Reset view</button><button class="b" data-ioverview="1" title="Leave the guided step and show the whole interior, everything at once">Overview</button></div>';
     if (inside.mito) {
       h += '<p class="title" style="margin-top:14px">Animate</p><div class="row"><button class="b primary" data-mtour="proton_gradient">▶ Guided tour</button><button class="b" data-mflow="1">Continuous flow</button></div>' +
         '<p class="title" style="margin-top:14px">Parts</p><div>' + (ATLAS.complexes || []).map((x) => ipChip({ t: "cx", id: x.id }, x.label.replace(/\s*\(.*\)$/, ""))).join("") +
@@ -16236,15 +16398,18 @@
       const kids = WC.compartments.filter((k) => k.parent === c.id && BUILD[k.viewer_id]);
       if (kids.length) h += '<p class="title" style="margin-top:14px">Go further in</p><div>' + kids.map((k) => '<button class="chip" data-enter="' + esc(k.viewer_id) + '">' + esc(k.label) + " ›</button>").join("") + "</div>";
     }
+    if (liveNavigation) h += '<p class="note">Independently modelled teaching view; sizes are not comparable across levels.</p>';
     if (inside.id === "mitochondria") h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_atp">ATP synthase · human stand-in</button>';
     if (["ribosomes", "rough_er"].includes(inside.id)) h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_ribosome">80S ribosome · C. elegans</button>';
     h += '<p class="note">Drag to turn · scroll to zoom · click a part to read about it · Esc to go back.</p>';
     el.innerHTML = h;
+    if (semanticFocus) restoreNavigationFocus(semanticFocus, false);
     if (focused) { const b = el.querySelector('[data-molecule-identity="' + focused + '"]'); if (b) b.focus({ preventScroll: true }); }
   }
   function interiorClick(ev) {
     const t = ev.target;
     const q = (a) => t.closest("[" + a + "]");
+    if (liveNavigation && ['data-ihome','data-ioverview','data-mtour','data-mstep','data-mflow','data-nscen','data-nflow'].some(a=>q(a))) releaseNavigationPose();
     let el;
     if (q("data-molecule-retry")) { if (inside && inside.moleculeRefresh) inside.moleculeRefresh(); return true; }
     if ((el = q("data-ip"))) {
@@ -16255,7 +16420,7 @@
       selectIp(ip);
       return true;
     }
-    if ((el = q("data-enter"))) { enterInterior(el.getAttribute("data-enter")); return true; }
+    if ((el = q("data-enter"))) { if (liveNavigation && inside && inside.moleculeIdentity) liveNavigation.back(); else enterInterior(el.getAttribute("data-enter")); return true; }
     if (q("data-exit")) { exitInterior(); return true; }
     if (q("data-ioverview")) {
       if (inside) {
@@ -16381,7 +16546,7 @@
   function searchPanel(html) { releaseGolgiView(); isel = null; selected = null; detail.innerHTML = html; setPerturbButtons(); openDetail(); }
   function searchGo(e) {
     if (!e) return;
-    if (transition) { pendingNav = () => searchGo(e); return; }
+    if (!liveNavigation && transition) { pendingNav = () => searchGo(e); return; }
     const d = e.destination;
     const outside = (fn) => { if (inside) exitInterior(fn); else fn(); };
     if (e.type === "pathway") {
@@ -16459,6 +16624,7 @@
       const b = ev.target.closest("button");
       const a = api();
       if (!b || !a) return;
+      if (liveNavigation && b.id !== 'cap-more') releaseNavigationPose();
       if (b.id === "cap-play") a.toggle();
       else if (b.id === "cap-next") a.next();
       else if (b.id === "cap-prev") a.prev();
@@ -16529,6 +16695,8 @@
     if (TSYN) TSYN.cancel();
   }
   function tourOpen(id) {
+    releaseNavigationPose();
+    if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>tourOpen(id));
     const t = TOUR_LIST.find((x) => x.id === id);
     if (!t) return;
     releaseGolgiView();
@@ -16792,7 +16960,7 @@
   tourEl("tp-more").onclick = () => { compactUser.tp = !document.body.classList.contains("tp-compact"); compactSync(); };
   tourEl("tp-close").onclick = () => tourClose();
   window.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape" || !tourCur || inside) return;
+    if (liveNavigation || e.key !== "Escape" || !tourCur || inside) return;
     tourClose();
   });
   document.addEventListener("visibilitychange", () => { if (document.hidden && tourCur) { tourCur.playing = false; tourCancelSpeech(); tourPlayButton(); } });
@@ -16805,7 +16973,21 @@
   window.__tapIp = (t, id) => { selectIp({ t, id }, true); return true; };
   window.__insideId = () => (inside ? inside.id : null);
   window.__mitoTour = () => (inside && inside.mito && inside.api.tourState ? inside.api.tourState() : null);
-  window.__navState = () => ({ inside: inside ? inside.id : null, transition, pending: !!pendingNav, crumb: document.getElementById("crumb").textContent, timing: navTiming });
+  // Integration boundary only: no history creation, room switching or onEnter.
+  window.__roomNavigation = Object.freeze({
+    capture: () => inside ? inside.navigationState.capture() : null,
+    validate: r => !!(inside && inside.navigationState.validate(r)),
+    restore: r => { if (!inside) throw new TypeError("No active room");
+      const result=inside.navigationState.restore(r);
+      if (inside.api) document.getElementById("cap-speed").value=String(r.state.speed);
+      return result; },
+    camera: () => ({displayed: {yaw:cam.yaw,pitch:cam.pitch,dist:cam.dist,target:cam.target.toArray()},
+      goal: {yaw:camGoal.yaw,pitch:camGoal.pitch,dist:camGoal.dist,target:camGoal.target.toArray()}})
+  });
+  window.__navState = () => ({ inside: inside ? inside.id : null,
+    transition: liveNavigation ? liveNavigation.nav.inspect().pending || liveNavigation.nav.inspect().traversal || liveNavigation.nav.inspect().restoring : transition,
+    pending: liveNavigation ? liveNavigation.nav.inspect().pending : !!pendingNav,
+    crumb: document.getElementById("crumb").textContent, timing: navTiming });
   window.__geneLabels = () => JSON.parse(JSON.stringify(geneLabelState));
   window.__labelRows = () => labelRowState && { ...labelRowState, homeDist: +HOME.dist.toFixed(4) };
   window.__topStack = () => Object.assign(topStack(anatLabelsShown.length > 0), { motion: motionGroup.visible && !tourCur, anat: anatLabelsShown.length > 0 });
@@ -16826,6 +17008,7 @@
     viewport: panelEdges() });
   // Same-camera captures: sets and snaps the camera; userZoomed keeps resize() from refitting the distance.
   window.__setCam = (c) => {
+    releaseNavigationPose();
     userZoomed = true;
     ["yaw", "pitch", "dist"].forEach((k) => { cam[k] = camGoal[k] = +c[k]; });
     cam.target.set(...c.target); camGoal.target.set(...c.target);
@@ -16835,7 +17018,7 @@
   window.__tourState = () => tourCur ? { id: tourCur.t.id, part: tourCur.i, playing: tourCur.playing, tok: tourCur.tok, timers: tourCur.timers.length, hl: [...tourCur.hl], states: Object.keys(nodeState).length, voice: tourVoice ? tourVoice.name : null } : null;
 
   // ---------------------------------------------------------------- loop
-  let lastCapH = 0;
+  let lastCapH = 0, lastCaptionMeasured = 0, lastNavigationMeasured = 0;
   // Short landscape or narrow portrait phones: the caption and tour player start as a one-line bar so the animation stays visible.
   const compactUser = { cap: null, tp: null };
   function compactSync() {
@@ -16868,18 +17051,24 @@
       captionEl.style.width = Math.max(360, Math.min(780, w - L - R - 24)) + "px";
     }
     const capH = capOn && !document.body.classList.contains("cramped") ? captionEl.offsetHeight + 24 : 0;
-    lastCapH = capH;
-    camera.setViewOffset(w, h, (R - L) / 2, capH / 2, w, h);
+    lastCaptionMeasured = capH;
+    navigationLayout();
+    const navBar = document.getElementById('navigation-levels');
+    const reservedH = navBar ? Math.max(capH,h-navBar.getBoundingClientRect().top+8) : capH;
+    lastNavigationMeasured = navBar ? navBar.offsetHeight : 0;
+    lastCapH = reservedH;
+    camera.setViewOffset(w, h, (R - L) / 2, reservedH / 2, w, h);
     camera.updateProjectionMatrix();
     if (inside) {
       const oldHome = inside.home.dist;
-      inside.home.dist = interiorFit(inside, capH);
+      inside.home.dist = interiorFit(inside, reservedH);
       if (!userZoomed) camGoal.dist = oldHome > 0 ? camGoal.dist * inside.home.dist / oldHome : inside.home.dist;
     } else {
       HOME.dist = fitDist();
-      if (golgiView) frameGolgiView();
+      if (golgiView && !navigationRestored) frameGolgiView();
       else if (!userZoomed) camGoal.dist = HOME.dist;
     }
+    if (navigationRestored && !navActivating) applyNavigationRefit();
   }
   function setPanel(which, open) {
     const wasFront = which === "right" && !open && rightP.classList.contains("tour-source-front");
@@ -16916,16 +17105,133 @@
   showOverview();
   resetCascade();
 
+  // Opt-in integration candidate. Unregistered details and outer narrative tours
+  // fail before origin release; they are acceptance work, not exactness claims.
+  if (new URLSearchParams(location.search).get('navigation') === 'stage2') {
+    const pose = c => ({yaw:c.yaw,pitch:c.pitch,dist:c.dist,target:c.target.toArray()});
+    const setPose = p => { [cam,camGoal].forEach(c => { c.yaw=p.yaw; c.pitch=p.pitch; c.dist=p.dist; c.target.fromArray(p.target); }); };
+    const view = id => window.DCMolecules.definitions[id] ? {kind:'molecule',rank:3,id} : {kind:'interior',rank:2,id};
+    const rootView = {kind:'cell',rank:0,id:'cell'};
+    const validDetail = d => d && (d.type === 'overview' || d.type === 'compartment' && !!COMP[d.args.id] ||
+      d.type === 'gene' && !!NODE[d.args.id] || d.type === 'anatomy' && !!ANAT[d.args.id] ||
+      d.type === 'pathway' && !!PW[d.args.id] || d.type === 'interior-pick' && !!ipHtml(d.args.ip));
+    function captureNavigation() {
+      if (tourCur) throw new TypeError('Outer narrative-tour snapshots are not supported in this candidate yet');
+      if (navigationDetailStamp !== detail.innerHTML || !validDetail(navigationDetail))
+        throw new TypeError('This detail destination has no reviewed restore resolver yet');
+      const pl = inside ? inside.cut : cut, edges=panelEdges();
+      return {camera:{displayed:pose(cam),goal:pose(camGoal),userZoomed},
+        projection:{fov:camera.fov,near:camera.near,far:camera.far,zoom:camera.zoom,viewOffset:camera.view ? {...camera.view} : null},
+        clipping:{enabled:renderer.localClippingEnabled,normal:pl.normal.toArray(),constant:pl.constant},
+        visibility:{labels:showLabels,genes:showGenes,ambient,anatomy:anatGroup.visible,pathways:{...pwVisible},focus:focusPw},
+        selection:{selected:selected ? {...selected} : null,isel:isel ? {...isel} : null,ifocus:ifocus ? {...ifocus} : null},
+        detail:navigationDetail,
+        panels:{left:!leftP.classList.contains('hidden'),right:!rightP.classList.contains('hidden'),
+          leftScroll:leftP.scrollTop,rightScroll:rightP.scrollTop,ready:document.getElementById('open-right').classList.contains('ready'),compact:{...compactUser}},
+        room:{playing:!!(inside && inside.navigationState.capture().state.playing),value:inside ? inside.navigationState.capture() : null},
+        owners:{spin,guidedPlaying:!!(inside && inside.api),tourPlaying:false,ceaj:!!(CJ_FADE && CJ_FADE.cam),speech:false},
+        viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio,renderRect:[edges.L,0,Math.max(1,innerWidth-edges.L-edges.R),Math.max(1,innerHeight-lastCapH)],fitDistance:inside ? inside.home.dist : golgiView ? golgiFitDistance() : HOME.dist},
+        returnFocus:captureNavigationFocus()};
+    }
+    function restoreDetail(d) {
+      if(d.type==='overview') { if(inside) showInteriorOverview(); else showOverview(); }
+      else { detail.innerHTML=d.type==='compartment' ? compHtml(d.args.id) : d.type==='gene' ? nodeHtml(d.args.id) :
+        d.type==='anatomy' ? anatHtml(d.args.id) : d.type==='pathway' ? pathwayHtml(d.args.id) : ipHtml(d.args.ip);
+        rememberNavigationDetail(d.type,d.args); }
+      setPerturbButtons();
+    }
+    function activateNavigation(prepared,event) {
+      navActivating=true;
+      releaseNavigationPose();
+      try {
+        clearHover(); lastTap=null; if(tourCur) tourClose(true); cjReleaseCamera(); releaseGolgiView();
+        spin=false; document.getElementById('t-spin').checked=false; agPlaying=false; tourCancelSpeech();
+        clearInteriorHighlight(); if(inside && inside.onExit) inside.onExit();
+        inside=prepared.room; ihover=isel=ifocus=null; selected=null; pickHtml=null;
+        document.body.classList.toggle('inside',!!inside); document.body.classList.toggle('mito',!!(inside && inside.mito));
+        document.body.classList.toggle('story',!!(inside && inside.api));
+        renderInsideSec(); setupCaption();
+        if(event.view.kind==='closeup') beginGolgiView();
+        const s=event.state;
+        if(s) {
+          if(inside) { inside.navigationState.restore(s.room.value); if(inside.api) document.getElementById('cap-speed').value=String(s.room.value.state.speed); }
+          showLabels=s.visibility.labels; showGenes=s.visibility.genes; ambient=s.visibility.ambient; anatGroup.visible=s.visibility.anatomy;
+          ROOM_STATE.replaceMap(pwVisible,s.visibility.pathways); focusPw=s.visibility.focus;
+          [['t-labels',showLabels],['t-genes',showGenes],['t-anatomy',anatGroup.visible]].forEach(([id,v])=>document.getElementById(id).checked=v);
+          restoreDetail(s.detail);
+          selected=s.selection.selected; isel=s.selection.isel; ifocus=s.selection.ifocus;
+          Object.assign(compactUser,s.panels.compact);
+          [['left',s.panels.left],['right',s.panels.right]].forEach(([id,on])=>{document.getElementById(id).classList.toggle('hidden',!on);document.getElementById('open-'+id).classList.toggle('on',!on);});
+          camera.fov=s.projection.fov; camera.near=s.projection.near; camera.far=s.projection.far; camera.zoom=s.projection.zoom;
+          const pl=inside ? inside.cut : cut; pl.normal.fromArray(s.clipping.normal); pl.constant=s.clipping.constant; renderer.localClippingEnabled=s.clipping.enabled;
+          userZoomed=true; resize();
+          const edges=panelEdges(), rect=[edges.L,0,Math.max(1,innerWidth-edges.L-edges.R),Math.max(1,innerHeight-lastCapH)];
+          if(s.viewport.width===innerWidth && s.viewport.height===innerHeight && rect.every((v,i)=>v===s.viewport.renderRect[i]) && s.projection.viewOffset) {
+            const v=s.projection.viewOffset; camera.setViewOffset(v.fullWidth,v.fullHeight,v.offsetX,v.offsetY,v.width,v.height); camera.updateProjectionMatrix();
+          }
+          setPose(s.camera.displayed); userZoomed=s.camera.userZoomed;
+          navigationRestored = {pose:s.camera.displayed,viewport:s.viewport};
+          applyNavigationRefit();
+          if(event.context && event.context.operation==='home') { releaseNavigationPose(); setPose(pose(HOME)); userZoomed=false; }
+          detailReady(s.panels.ready); leftP.scrollTop=s.panels.leftScroll; rightP.scrollTop=s.panels.rightScroll;
+          pickHtml=isel ? detail.innerHTML : null;
+          if(inside && inside.moleculeIdentity && inside.onEnter) inside.onEnter();
+        } else {
+          userZoomed=false; resize();
+          if(inside) { const h=inside.home; setPose({yaw:h.yaw,pitch:h.pitch,dist:h.dist,target:h.target.toArray()});
+            if(inside.onEnter) inside.onEnter();
+            if(inside.api) {const recorded=inside.navigationState.capture();inside.navigationState.restore(recorded);}
+            showInteriorOverview(); }
+          else if(event.view.kind==='closeup') { selected={comp:'golgi'}; detail.innerHTML=compHtml('golgi'); rememberNavigationDetail('compartment',{id:'golgi'}); frameGolgiView(); if(innerWidth<900){setPanel('left',false);setPanel('right',false);detailReady(true);} }
+          else { showOverview(); setPose(pose(HOME)); }
+        }
+        renderPwList(); refreshPathwayStyles(); updateCamera(0); transition=false;
+        if(s) restoreNavigationFocus(s.returnFocus);
+      } finally { navActivating=false; }
+    }
+    const adapter={rootView,capture:captureNavigation,
+      validateView:v=>v.kind==='cell' && v.id==='cell' || v.kind==='closeup' && v.id==='golgi' ||
+        v.kind==='interior' && !!BUILD[v.id] && !window.DCMolecules.definitions[v.id] || v.kind==='molecule' && !!window.DCMolecules.definitions[v.id],
+      validateState:(s,v)=>Number.isFinite(s.viewport.fitDistance) && s.viewport.fitDistance>0 && validDetail(s.detail) && (v.kind==='cell'||v.kind==='closeup' ? s.room.value===null :
+        !!(interiorCache[v.id] && interiorCache[v.id].navigationState.validate(s.room.value))),
+      prepare:async(v,context)=>{ const room=v.kind==='interior'||v.kind==='molecule' ? interiorCache[v.id] || (interiorCache[v.id]=buildInterior(v.id)) : null;
+        if(room && room.moleculeIdentity && !room._navigationReturnCopy) {
+          ['overviewHtml','sideHtml'].forEach(name=>{const original=room[name];room[name]=()=>original().replaceAll('Back to schematic interior','Back to previous view');});
+          room._navigationReturnCopy=true;
+        }
+        if(room) QUALITY.applyExtraMaterials(room.s); return {room}; },
+      activate:activateNavigation,
+      rollback:r=>activateNavigation({room:interiorCache[r.view.id]||null},{view:r.view,state:window.DigitalCellNavigation.pausedRestore(r.state)}),
+      discard:()=>{},recoverRoot:()=>{navActivating=true;try{if(inside&&inside.onExit)inside.onExit();outsideFallback();rememberNavigationDetail('overview');}finally{navActivating=false;}},
+      onError:(error)=>{navigationLastError=error.message;const el=document.getElementById('navigation-status');if(el)el.textContent='View unavailable: '+error.message;}};
+    const initial=captureNavigation();
+    liveNavigation=window.DigitalCellLiveNavigation({adapter,view,layout:resize,
+      label:id=>(COMP[id]||window.DCMolecules.definitions[id]||{label:id}).label || window.DCMolecules.definitions[id].title,
+      selectedComp:()=>selected&&selected.comp,
+      inwardTarget:()=>inside ? inside.id==='mitochondria' ? 'molecule_atp' : ['rough_er','ribosomes'].includes(inside.id) ? 'molecule_ribosome' : null : selected&&BUILD[selected.comp] ? selected.comp : golgiView ? 'golgi' : null,
+      homeState:()=>({...initial,camera:{...initial.camera,displayed:pose(HOME),goal:pose(HOME),userZoomed:false},
+        viewport:{...initial.viewport,width:innerWidth,height:innerHeight,fitDistance:HOME.dist,renderRect:[panelEdges().L,0,Math.max(1,innerWidth-panelEdges().L-panelEdges().R),Math.max(1,innerHeight-lastCapH)]}})});
+    resize();
+    document.getElementById('inside-bar').querySelector('[data-exit]').textContent='Back';
+    window.addEventListener('keydown',e=>{if(e.key!=='Escape'||e.defaultPrevented)return;
+      if(document.getElementById('search-out').textContent){document.getElementById('search-out').textContent='';}
+      else if(tourCur)tourClose();else liveNavigation.back();e.preventDefault();e.stopImmediatePropagation();});
+    document.getElementById('reset-view').onclick=()=>liveNavigation.home();
+    document.getElementById('close-right').onclick=()=>golgiView ? liveNavigation.back() : setPanel('right',false);
+    window.__liveNavigation={read:()=>liveNavigation.nav.read(),inspect:()=>liveNavigation.nav.inspect(),capture:captureNavigation,
+      refit:()=>navigationRefit,poseGuard:()=>!!navigationRestored,lastError:()=>navigationLastError};
+  }
+
   let last = performance.now(), qInside = null;
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (inside !== qInside) { qInside = inside; QUALITY.settle(now); }
     QUALITY.frame(now);
     cjUpdate(dt);
     updateCamera(dt);
     if (inside) {
       inside.updaters.forEach((f) => f(now, dt));
-      if (inside.api && Math.abs(captionEl.offsetHeight + 24 - lastCapH) > 8) resize();
+      if (inside.api && Math.abs((document.body.classList.contains('cramped') ? 0 : captionEl.offsetHeight+24)-lastCaptionMeasured)>8 || liveNavigation && document.getElementById('navigation-levels').offsetHeight!==lastNavigationMeasured) resize();
       applyInteriorHighlight();
       renderer.render(inside.s, camera);
     } else {
