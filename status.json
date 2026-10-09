@@ -1,25 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T07:35:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-09T07:40:14+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage 2 native-history opinion",
-                                  "status":  "done",
-                                  "step":  4,
+                                  "task":  "Stage 2 unload/rooms opinion",
+                                  "status":  "running",
+                                  "step":  3,
                                   "total":  4,
-                                  "percent":  100,
-                                  "step_title":  "Write opinion and handoff",
+                                  "percent":  72.5,
+                                  "step_title":  "Reproduce rooms browser probe",
                                   "steps":  [
-                                                "Read slice + contract",
-                                                "Reproduce node/pytest",
-                                                "Reproduce history probe",
+                                                "Read contracts and diffs",
+                                                "Reproduce focused pytest/JS",
+                                                "Reproduce rooms browser probe",
                                                 "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  69,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-08T22:46:07+02:00",
-                                  "last_run":  "2026-10-08T22:41:50+02:00",
+                                  "updated":  "2026-10-09T07:39:03+02:00",
+                                  "last_run":  "2026-10-09T07:36:53+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
@@ -47,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  0,
+    "today_runs":  1,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
