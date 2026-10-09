@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T07:50:04+02:00",
+    "generated_at":  "2026-10-09T07:55:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -27,7 +27,7 @@
                                  "status":  "running",
                                  "step":  3,
                                  "total":  4,
-                                 "percent":  50.5,
+                                 "percent":  72.5,
                                  "step_title":  "Probe and self-review",
                                  "steps":  [
                                                "Inspect navigation boundaries",
@@ -35,7 +35,7 @@
                                                "Probe and self-review",
                                                "Write evidence and handoff"
                                            ],
-                                 "eta_seconds":  358,
+                                 "eta_seconds":  57,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-09T07:49:59+02:00",
                                  "last_run":  "2026-10-09T07:43:58+02:00",
