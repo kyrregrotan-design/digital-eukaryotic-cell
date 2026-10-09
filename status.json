@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T19:20:04+02:00",
+    "generated_at":  "2026-10-09T19:25:05+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Opinion: estimated-mito support/markings slice",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "MOL-0012 local viewer opinion",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  5,
+                                  "percent":  38,
+                                  "step_title":  "Verify hashes and wording",
                                   "steps":  [
-
+                                                "Start log and context",
+                                                "Verify hashes and wording",
+                                                "Reproduce integration probes",
+                                                "Reproduce focused tests",
+                                                "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  195,
+                                  "eta_seconds":  166,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T18:58:12+02:00",
+                                  "updated":  "2026-10-09T19:20:13+02:00",
                                   "last_run":  "2026-10-09T19:18:19+02:00",
                                   "next_run":  null
                               },
@@ -43,7 +47,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  36,
+    "today_runs":  37,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
