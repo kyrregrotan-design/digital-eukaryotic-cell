@@ -1,33 +1,33 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T08:00:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-09T08:05:03+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage 2 unload/rooms opinion",
-                                  "status":  "done",
-                                  "step":  4,
+                                  "task":  "Stage 2 live candidate opinion",
+                                  "status":  "running",
+                                  "step":  3,
                                   "total":  4,
-                                  "percent":  100,
-                                  "step_title":  "Write opinion and handoff",
+                                  "percent":  72.5,
+                                  "step_title":  "Reproduce tests and probe",
                                   "steps":  [
-                                                "Read contracts and diffs",
-                                                "Reproduce focused pytest/JS",
-                                                "Reproduce rooms browser probe",
+                                                "Context and start entry",
+                                                "Inspect live wiring",
+                                                "Reproduce tests and probe",
                                                 "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  54,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T07:43:06+02:00",
-                                  "last_run":  "2026-10-09T07:36:53+02:00",
+                                  "updated":  "2026-10-09T08:04:00+02:00",
+                                  "last_run":  "2026-10-09T08:02:03+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Stage 2 live dispatcher",
-                                 "status":  "running",
+                                 "status":  "done",
                                  "step":  4,
                                  "total":  4,
-                                 "percent":  76.9,
+                                 "percent":  100,
                                  "step_title":  "Write evidence and handoff",
                                  "steps":  [
                                                "Inspect navigation boundaries",
@@ -35,9 +35,9 @@
                                                "Probe and self-review",
                                                "Write evidence and handoff"
                                            ],
-                                 "eta_seconds":  290,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T07:59:39+02:00",
+                                 "updated":  "2026-10-09T08:01:39+02:00",
                                  "last_run":  "2026-10-09T07:43:58+02:00",
                                  "next_run":  null
                              }
@@ -46,12 +46,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  2,
+    "today_runs":  3,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Stage 2 live dispatcher",
+                       "finished":  "2026-10-09T08:01:39+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Stage 2 unload/rooms opinion",
@@ -76,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "Stage 2 controller foundation opinion",
                        "finished":  "2026-10-08T21:20:50+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Stage 2 controller and snapshots",
-                       "finished":  "2026-10-08T21:16:53+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
