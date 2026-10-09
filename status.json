@@ -1,26 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T13:40:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-09T13:45:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage 2 cache/UI opinion",
-                                  "status":  "done",
-                                  "step":  5,
+                                  "task":  "Stage 2 guided/snapshot opinion",
+                                  "status":  "running",
+                                  "step":  3,
                                   "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Write opinion and handoff",
+                                  "percent":  48.3,
+                                  "step_title":  "run 59 JS + focused pytest",
                                   "steps":  [
-                                                "Context and start",
-                                                "Diff review",
-                                                "Reproduce JS and pytest",
-                                                "Reproduce browser probes",
-                                                "Write opinion and handoff"
+                                                "start log + progress",
+                                                "review diff + slice doc",
+                                                "run 59 JS + focused pytest",
+                                                "run probes",
+                                                "write opinion + STATUS + handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  281,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T12:04:39+02:00",
-                                  "last_run":  "2026-10-09T11:53:10+02:00",
+                                  "updated":  "2026-10-09T13:44:18+02:00",
+                                  "last_run":  "2026-10-09T13:40:41+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  16,
+    "today_runs":  17,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
