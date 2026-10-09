@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T18:55:05+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-09T19:00:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Opinion: estimated-mito support/markings slice",
-                                  "status":  "running",
-                                  "step":  4,
+                                  "status":  "done",
+                                  "step":  5,
                                   "total":  5,
-                                  "percent":  78,
-                                  "step_title":  "Reproduce pilot + lifecycle probes",
+                                  "percent":  100,
+                                  "step_title":  "Write opinion and handoff",
                                   "steps":  [
                                                 "Start log + context",
                                                 "Inspect module and viewer wiring",
@@ -17,29 +17,26 @@
                                                 "Reproduce pilot + lifecycle probes",
                                                 "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  6,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T18:47:07+02:00",
+                                  "updated":  "2026-10-09T18:58:12+02:00",
                                   "last_run":  "2026-10-09T18:45:06+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Estimated mitochondrial geometry pilot",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Record evidence and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Confirm source and pilot boundary",
-                                               "Implement isolated support display",
-                                               "Verify UI navigation and captures",
-                                               "Record evidence and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  873,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-09T18:44:50+02:00",
-                                 "last_run":  "2026-10-09T18:25:36+02:00",
+                                 "last_run":  "2026-10-09T18:59:37+02:00",
                                  "next_run":  null
                              }
                },
@@ -53,6 +50,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "Opinion: estimated-mito support/markings slice",
+                       "finished":  "2026-10-09T18:58:12+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Estimated mitochondrial geometry pilot",
@@ -77,11 +79,6 @@
                        "agent":  "codex",
                        "task":  "Organelle type filter",
                        "finished":  "2026-10-09T17:56:51+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Opinion atlas-checklist-visibility",
-                       "finished":  "2026-10-09T17:31:33+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -383,7 +380,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-09T18:44:14+02:00",
-                      "updated_by":  "Codex"
+                      "updated":  "2026-10-09T18:57:00+02:00",
+                      "updated_by":  "Cursor"
                   }
 }
