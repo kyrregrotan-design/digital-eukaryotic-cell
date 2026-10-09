@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T17:25:04+02:00",
+    "generated_at":  "2026-10-09T17:30:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Opinion: atlas-checklist-inventory",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "Opinion atlas-checklist-visibility",
+                                  "status":  "running",
+                                  "step":  3,
+                                  "total":  5,
+                                  "percent":  58,
+                                  "step_title":  "Reproduce focused probes",
                                   "steps":  [
-
+                                                "Context and start log",
+                                                "Read slice and evidence",
+                                                "Reproduce focused probes",
+                                                "Inspect captures and code",
+                                                "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  267,
+                                  "eta_seconds":  207,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T16:04:27+02:00",
+                                  "updated":  "2026-10-09T17:28:06+02:00",
                                   "last_run":  "2026-10-09T17:24:31+02:00",
                                   "next_run":  null
                               },
@@ -44,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  28,
+    "today_runs":  29,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
