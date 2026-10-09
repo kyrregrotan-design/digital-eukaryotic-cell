@@ -3,14 +3,18 @@
 (function () {
   "use strict";
   const definitions = {
-    molecule_atp: { id: "MOL-0001", title: "ATP synthase · human stand-in", source: "8H9S", anchor: false,
+    molecule_atp: { id: "MOL-0001", title: "ATP synthase · human stand-in", source: "8H9S", anchor: false, host: "mitochondria", hostName: "mitochondrial", color: 0xe9b949,
       displayBounds: [[-6.822, -11.857, -6.176], [6.824, 11.857, 6.163]],
       note: "Human 8H9S ATP synthase monomer, used as a structural stand-in for C. elegans. This is a simplified source-derived surface, not worm intestinal geometry or a dimer. +Y points towards the mitochondrial matrix.",
       files: { L1: [107712, "8c843f953ad7540a8af1f3cd19aedaa17d4cb4251f08a773a1b76f73875094d3"], L2: [522292, "2787c65e7a5da26c519f9636c6ae3428eb6db540a2fc4a8db4e31d686e4083dd"] } },
-    molecule_ribosome: { id: "MOL-0014", title: "80S ribosome · C. elegans", source: "9BH5", anchor: true,
+    molecule_ribosome: { id: "MOL-0014", title: "80S ribosome · C. elegans", source: "9BH5", anchor: true, host: "ribosomes", hostName: "ribosome", color: 0xd8506a,
       displayBounds: [[-11.462, 0.14, -11.663], [14.948, 25.883, 12.671]],
       note: "C. elegans 9BH5 80S ribosome. The corrected anchor uses a pig 3J7R Sec61 alignment: origin at the Sec61 pore axis and cytosolic boundary; +Y points into cytosol. Boundary is descriptive [VERIFY], not measured bilayer thickness. No Sec61 mesh or physical ER seam is shown. tRNA, mRNA, ligands and ions are excluded.",
-      files: { L1: [171040, "1e08e8eed00cbfe64f44d4c268664489f8bfcb42007cf89bb3c1575fbbc3f5a2"], L2: [1475340, "ffcd305fb890ae339ce7f3a955d8bb39a9a518d8df70fe80e51c18790f9cd1e7"] } }
+      files: { L1: [171040, "1e08e8eed00cbfe64f44d4c268664489f8bfcb42007cf89bb3c1575fbbc3f5a2"], L2: [1475340, "ffcd305fb890ae339ce7f3a955d8bb39a9a518d8df70fe80e51c18790f9cd1e7"] } },
+    molecule_nucleosome: { id: "MOL-0012", title: "Nucleosome · Xenopus/human stand-in", source: "1KX5", anchor: false, host: "nucleus", hostName: "nuclear", color: 0x9c7ce2,
+      displayBounds: [[-5.786, -3.631, -5.329], [9.127, 3.15, 6.917]],
+      note: "1KX5 nucleosome: Xenopus laevis histones with human alpha-satellite DNA, used as a structural stand-in for C. elegans. Teal shows DNA; violet shows histones. Deposited histone mutations remain source qualifications. The corrected origin is the fitted DNA core centre. +Y is the DNA-phosphorus PCA reference normal; +X points towards the dyad. This operational frame is not a uniquely measured physical axis. No chromatin array or worm intestinal geometry is inferred.",
+      files: { L1: [118392, "082a4ebe37389cd1f8cc9ac047d6dc712060f11868618cadac77acf0ef27aea9"], L2: [548476, "795bc06097142c9c6e01bfd2432c823f1170d48cba86beca950df5ee649d2f64"] } }
   };
   const transfers = new Map(), telemetry = [];
   let bridgePromise;
@@ -46,12 +50,12 @@
     const d = definitions[room], T = window.THREE;
     ctx.custom = true; ctx.hw = 3; ctx.hh = 2.6;
     ctx.home = { yaw: 0.2, pitch: 0.15, target: new T.Vector3(), dist: 8 };
-    const ip = { t: "comp", id: d.id === "MOL-0001" ? "mitochondria" : "ribosomes" };
-    const hostName = d.anchor ? "ribosome" : "mitochondrial";
+    const ip = { t: "comp", id: d.host };
+    const hostName = d.hostName;
     const adoptionHtml = '<p class="note" data-molecule-adoption="' + d.id + '">Included here as a display-only close-up. The <a href="assets/molecules/' + d.id + '/manifest.json" target="_blank" rel="noopener">original source manifest and attributions</a> retain historical CANDIDATE / not swapped wording.</p>';
     ctx.pickContextHtml = () => '<p class="note" style="padding-right:28px" data-molecule-host-context="' + d.id + '">Host-compartment context: ' + hostName + ' compartment. Open Overview for this molecule\'s source and organism details.</p>';
     const fallback = new T.Group();
-    const a = new T.Mesh(new T.SphereGeometry(1, 16, 12), ctx.m(d.anchor ? 0xd8506a : 0xe9b949));
+    const a = new T.Mesh(new T.SphereGeometry(1, 16, 12), ctx.m(d.color));
     a.scale.set(1, 1.3, 0.8); a.userData.molecule = d.id; fallback.add(a); ctx.s.add(fallback); ctx.pick(fallback, ip);
     let current = null, generation = 0, active = false;
     const state = { id: d.id, status: "schematic", lod: null, bytes: 0, parse_ms: null, display_scale: null, anchor: d.anchor, error: null };
@@ -94,8 +98,8 @@
         object.traverse((o) => {
           if (!o.isMesh) return;
           old.add(o.material); const slot = o.material.name || "protein";
-          if (!slots[slot]) slots[slot] = ctx.m(slot === "rRNA" ? 0xf29ab0 : d.anchor ? 0xd8506a : 0xe9b949, { roughness: 0.45, clearcoat: 0.4 });
-          o.material = slots[slot]; o.userData.molecule = d.id;
+          if (!slots[slot]) slots[slot] = ctx.m(slot === "DNA" ? 0x51c9cc : slot === "rRNA" ? 0xf29ab0 : d.color, { roughness: 0.45, clearcoat: 0.4 });
+          o.material = slots[slot]; o.userData.molecule = d.id; o.userData.moleculeSlot = slot;
         });
         old.forEach((m) => m.dispose());
         current = object; ctx.s.add(object); ctx.pick(object, ip); fallbackPick(false);
@@ -111,11 +115,12 @@
     ctx.onExit = () => { active = false; ++generation; remove(current); current = null; state.status = "schematic"; state.lod = null; fallbackPick(true); };
     ctx.moleculeRefresh = refresh;
     ctx.moleculeState = () => ({ ...state, meshes: current ? ctx.picks.filter((o) => o.userData.molecule).length : 0, picks: ctx.picks.length,
+      materials: current ? ctx.picks.filter((o) => o.userData.molecule).map((o) => ({slot:o.userData.moleculeSlot,color:o.material.color.getHex()})) : [],
       clearcoat: current ? ctx.picks.filter((o) => o.userData.molecule).map((o) => o.material.clearcoat) : [] });
     ctx.overviewHtml = () => '<h2>' + esc(d.title) + '</h2><p>' + esc(d.note) + '</p><p class="note">Display-only close-up. Source coordinates are in nm; display fit is illustrative and does not calibrate the cell. Surface detail is simplified; evidence confidence remains unscored [VERIFY].</p><p>' +
       (state.status === "ready" ? 'Source-derived surface · ' + (state.lod === "L1" ? 'simplified detail' : 'higher detail') : state.status === "loading" ? 'Loading source-derived surface; schematic shown meanwhile.' : 'Schematic fallback. ' + esc(state.error || 'Source surface has not loaded.')) +
-      '</p><p class="src"><a href="https://www.rcsb.org/structure/' + d.source + '" target="_blank" rel="noopener">PDB ' + d.source + '</a> · PDB/EMDB data CC0; UniProt annotations CC BY 4.0 (UniProt Consortium). Derived asset © Kyrre Grøtan, All rights reserved.</p>' + adoptionHtml + '<button class="chip" data-enter="' + (d.anchor ? 'ribosomes' : 'mitochondria') + '">Back to schematic interior</button>';
-    ctx.sideHtml = () => '<button class="chip" data-ioverview="1" data-molecule-identity="' + d.id + '" aria-describedby="identity-' + d.id + '">' + esc(d.id + ' · ' + d.title + ' · PDB ' + d.source) + '</button><p class="note" id="identity-' + d.id + '">' + esc(d.note) + '</p><p class="note">Display-only source surface; sizes do not calibrate the cell. Click the surface for ' + hostName + ' host-compartment context.</p>' + adoptionHtml + (state.status === "fallback" ? '<button class="chip" data-molecule-retry="1">Retry source surface</button>' : '') + '<button class="chip" data-enter="' + (d.anchor ? 'ribosomes' : 'mitochondria') + '">Back to schematic interior</button>';
+      '</p><p class="src"><a href="https://www.rcsb.org/structure/' + d.source + '" target="_blank" rel="noopener">PDB ' + d.source + '</a> · PDB/EMDB data CC0; UniProt annotations CC BY 4.0 (UniProt Consortium). Derived asset © Kyrre Grøtan, All rights reserved.</p>' + adoptionHtml + '<button class="chip" data-enter="' + d.host + '">Back to schematic interior</button>';
+    ctx.sideHtml = () => '<button class="chip" data-ioverview="1" data-molecule-identity="' + d.id + '" aria-describedby="identity-' + d.id + '">' + esc(d.id + ' · ' + d.title + ' · PDB ' + d.source) + '</button><p class="note" id="identity-' + d.id + '">' + esc(d.note) + '</p><p class="note">Display-only source surface; sizes do not calibrate the cell. Click the surface for ' + hostName + ' host-compartment context.</p>' + adoptionHtml + (state.status === "fallback" ? '<button class="chip" data-molecule-retry="1">Retry source surface</button>' : '') + '<button class="chip" data-enter="' + d.host + '">Back to schematic interior</button>';
   }
   window.DCMolecules = { definitions, build, telemetry: () => telemetry.map((x) => ({ ...x })) };
 })();

@@ -84,6 +84,11 @@
           !['fullWidth', 'fullHeight', 'width', 'height'].every(k => p.viewOffset[k] > 0))
         throw new TypeError('Invalid view offset');
     }
+    if (Object.hasOwn(state.visibility, 'types')) {
+      requireObject(state.visibility.types, 'type visibility');
+      if (Object.values(state.visibility.types).some(v => typeof v !== 'boolean'))
+        throw new TypeError('Invalid type visibility flag');
+    }
     if (typeof state.clipping.enabled !== 'boolean') throw new TypeError('Invalid clipping flag');
     vector(state.clipping.normal, 3, 'clip normal');
     if (!Number.isFinite(state.clipping.constant)) throw new TypeError('Invalid clipping constant');

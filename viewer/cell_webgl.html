@@ -17,6 +17,7 @@
   #gl, #overlay { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   #overlay { pointer-events: none; }
   #gl { touch-action: none; }
+  #scene-caveat { position: fixed; left: 0; right: 0; bottom: 0; z-index: 7; padding: 5px 12px max(5px, env(safe-area-inset-bottom)); background: #101923; border-top: 1px solid var(--glass-border); color: var(--warn); font-size: 0.7rem; line-height: 1.35; text-align: center; }
   .panel {
     position: fixed; z-index: 5; background: var(--glass); border: 1px solid var(--glass-border);
     backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -134,7 +135,7 @@
   body.cap-small.cap-compact #cap-ctrl { flex: none; flex-wrap: nowrap; }
   body.cap-small.tp-compact #tp-step, body.cap-small.tp-compact #tp-voice-note, body.cap-small.tp-compact #tp-replay,
   body.cap-small.tp-compact #tp-view, body.cap-small.tp-compact #tp-rate, body.cap-small.tp-compact #tp-ctrl label,
-  body.cap-small.tp-compact #tp-cards, body.cap-small.tp-compact #tp-ctrl .sep { display: none; }
+  body.cap-small.tp-compact #tp-ctrl .sep { display: none; }
   body.cap-small.tp-compact #tp-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 2px; }
   body.cap-small.tp-compact #tp-sub { max-height: 3em; font-size: 0.78rem; }
   body.cap-small.tp-compact #tour-player { padding: 6px 10px; }
@@ -236,6 +237,7 @@
 <body>
 <canvas id="gl"></canvas>
 <canvas id="overlay"></canvas>
+<div id="scene-caveat" role="note">Illustrative view; not to scale. Motion and qualitative states are teaching aids; timing, counts and rates are not measurements.</div>
 <div id="tooltip" role="tooltip"></div>
 
 <button class="panel opener" id="open-left" title="Show the pathway panel">☰ Pathways</button>
@@ -297,6 +299,14 @@
     <div class="note" id="anatomy-note">Gut granules (blue-teal), the apical junction (CeAJ, green band) on a faint neighbouring-cell boundary, and the terminal web (yellow) above the endotube (pink), a layer rich in intermediate filaments (IF), under the brush border. Sourced atlas records, drawn schematically: number, size, colour and position are display choices. Not simulated. Click one for its sources and cautions.</div>
     <label><input type="checkbox" id="t-spin" /> Slow rotation</label>
     <div class="row" style="margin-top:6px"><button class="b" id="reset-view">Reset view</button></div>
+  </div>
+  <div class="section" id="type-filter-sec">
+    <p class="title">Organelle types</p>
+    <button class="b" id="type-all">All</button>
+    <p class="note">Show or hide a type, or isolate all its drawn instances. Filtering changes the display only. Return to Cell to change types.</p>
+    <p class="note" id="type-context" hidden>Cell outline and nuclear rims remain as context, not selected target types.</p>
+    <div id="type-list"></div>
+    <p class="note" id="type-status" role="status" aria-live="polite">All organelle types shown.</p>
   </div>
   <div class="section" id="graphics-sec">
     <p class="title">Graphics</p>
@@ -395,6 +405,8 @@
 <script src="navigation_history.js"></script>
 <script src="navigation_live.js"></script>
 <script src="navigation_fit.js"></script>
+<script src="organelle_visibility.js"></script>
+<script src="estimated_mito_geometry.js"></script>
 <script id="model-data" type="application/json">
 {
   "generated_at": "2026-10-09 15:50 (Europe/Oslo)",
@@ -10111,6 +10123,19 @@
   const WC = MODEL.wholecell || { compartments: [], coverage_levels: [] };
   const COMP = {};
   WC.compartments.forEach((c) => { COMP[c.viewer_id] = c; });
+  const TYPE_VISIBILITY = window.DigitalCellTypeVisibility.create(Object.keys(COMP));
+  const TYPE_REGISTRY = [];
+  let typeRegistryReady = false, captureTypeOrigin = null, restoreTypeOrigin = null;
+  const typeShown = id => TYPE_VISIBILITY.shown(id);
+  const effectiveVisible = obj => { for(let o=obj;o;o=o.parent) if(!o.visible)return false; return true; };
+  const anatomyType = id => ANAT[id] && ANAT[id].parent_compartment;
+  const nodeType = id => NODE[id] && LAYOUT_COMP[NODE[id].illustrative_compartment];
+  function hiddenTypeNotice(id) {
+    const message = ((COMP[id] || {}).label || id) + ' is not shown. Use Organelle types to show it, or choose All. This does not mean it is absent from the cell.';
+    document.getElementById('type-status').textContent=message;
+    if(liveNavigation) liveNavigation.status(message);
+    return false;
+  }
   const PW = {};
   MODEL.pathways.forEach((p) => { PW[p.id] = p; });
   const NODE = {};
@@ -10365,7 +10390,7 @@
     return pts;
   })();
   const rimMat = mat("plasma_membrane", { color: 0xe58f6a, roughness: 0.5, sheen: 1, sheenColor: new THREE.Color(0xffd0b0), emissive: new THREE.Color(0x000000) });
-  add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rimPts, true), 360, 0.05, 14, true), rimMat), "plasma_membrane");
+  add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rimPts, true), 360, 0.05, 14, true), rimMat), "plasma_membrane").userData.filterContext="cell-outline";
   const rimMat2 = mat("plasma_membrane", { color: 0xf2b48c, roughness: 0.6, emissive: new THREE.Color(0x000000) });
   add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rimPts.map((p) => p.clone().multiplyScalar(0.965)), true), 360, 0.028, 10, true), rimMat2), "plasma_membrane");
 
@@ -10419,7 +10444,8 @@
       pos.push(p.x, p.y, p.z);
     }
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-    scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffd9a8, size: 0.018, transparent: true, opacity: 0.55, depthWrite: false })));
+    const points = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffd9a8, size: 0.018, transparent: true, opacity: 0.55, depthWrite: false }));
+    points.userData.typeOwner="cytosol"; scene.add(points);
   })();
 
   // ---------------------------------------------------------------- nucleus
@@ -10454,7 +10480,7 @@
     const pts = [];
     for (let i = 0; i < 120; i++) { const a = i / 120 * Math.PI * 2; pts.push(c0.clone().addScaledVector(u, Math.cos(a) * rr * 0.985).addScaledVector(v, Math.sin(a) * rr * 0.985)); }
     add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 200, NRIM_T, 10, true),
-      mat("nuclear_envelope", { color: 0x9c78e0, roughness: 0.4, emissive: new THREE.Color(0x000000) })), "nuclear_envelope");
+      mat("nuclear_envelope", { color: 0x9c78e0, roughness: 0.4, emissive: new THREE.Color(0x000000) })), "nuclear_envelope").userData.filterContext="nucleus-outline";
   })();
   (function pores() {
     const ms = [], n = 260;
@@ -10887,7 +10913,7 @@
       const line = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 10), outlineMat);
       line.matrixAutoUpdate = false; line.matrix.copy(o.matrixWorld); GOLGI_OUTLINE.add(line);
     });
-    scene.add(GOLGI_OUTLINE);
+    GOLGI_OUTLINE.userData.typeOwner="golgi"; scene.add(GOLGI_OUTLINE);
     // Same existing display spheres, shared unit sphere + per-instance radius. Only Cinematic renders this path;
     // Standard/Advanced keep their original meshes and geometry. Fit/collision inputs above remain unchanged.
     const rim = pickable(dsph(new THREE.InstancedMesh(new THREE.SphereGeometry(1, 20, 14), vm, GOLGI_RIM.originals.length)), "golgi");
@@ -11612,7 +11638,7 @@
   let tourCur = null;
   const reducedMotion = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-  const nodeVisible = (id) => { const n = NODE[id]; return n && (n.pathways || [n.pathway_id]).some((p) => pwVisible[p]); };
+  const nodeVisible = (id) => { const n = NODE[id]; return n && typeShown(nodeType(id)) && (n.pathways || [n.pathway_id]).some((p) => pwVisible[p]); };
   const edgeVisible = (e) => pwVisible[e.pathway_id] && nodeVisible(e.source) && nodeVisible(e.target);
 
   function refreshPathwayStyles() {
@@ -11667,8 +11693,8 @@
     const rm = reducedMotion();
     motionBox.disabled = rm;
     motionBox.checked = motionOn && !rm;
-    motionGroup.visible = motionOn && !rm;
-    motionNote.textContent = (rm ? "Off because your browser asks for reduced motion. " : "") + MOTION_NOTE;
+    motionGroup.visible = motionOn && !rm && TYPE_VISIBILITY.allShown();
+    motionNote.textContent = (rm ? "Off because your browser asks for reduced motion. " : "") + MOTION_NOTE + (TYPE_VISIBILITY.allShown() ? "" : " Motion is not shown while organelle types are filtered.");
   }
   motionBox.onchange = (e) => { motionOn = e.target.checked; motionSync(); };
   if (window.matchMedia) {
@@ -11812,6 +11838,26 @@
   window.__shells = () => SHELLS.map((s) => ({ c: s.c, uuid: s.m.uuid, base: s.base, ratio: +s.ratio.toFixed(4), opacity: s.m.opacity, transparent: s.m.transparent, depthWrite: s.m.depthWrite }));
   window.__applyLook = (name) => { if (!LOOKS[name]) return null; lookWanted = name; const n = QUALITY.applyMaterials(); QUALITY.applyGeometry(); return n; };
   window.__renderDataURL = () => { syncTwinMaterials(); renderer.render(scene, camera); return canvas.toDataURL("image/png"); };
+  // Labelled scene capture for sharing. Keep the raw renderer hook above for
+  // matched-camera diagnostics; it deliberately excludes all HTML/overlay UI.
+  window.__illustrationDataURL = () => {
+    syncTwinMaterials(); renderer.render(inside ? inside.s : scene, camera);
+    const out = document.createElement('canvas'); out.width = canvas.width; out.height = canvas.height;
+    const ctx = out.getContext('2d'); ctx.drawImage(canvas,0,0);
+    const scale = out.width / innerWidth, font = 12 * scale, lineH = 17 * scale, pad = 12 * scale;
+    ctx.font = font + 'px sans-serif';
+    const source = inside && window.DCMolecules.definitions[inside.id];
+    syncGeometryPilotNotice();
+    const notice = document.getElementById('scene-caveat').textContent + (source ?
+      ' '+source.note+' Independently fitted source view; sizes are not comparable across levels.' : '');
+    const words = notice.trim().split(/\s+/), lines = []; let line = '';
+    words.forEach(word => { const next = line ? line+' '+word : word; if(line && ctx.measureText(next).width > out.width-2*pad) { lines.push(line); line=word; } else line=next; });
+    if(line) lines.push(line);
+    const height = lines.length*lineH+2*pad;
+    ctx.fillStyle='#101923'; ctx.fillRect(0,out.height-height,out.width,height); ctx.fillStyle='#f2c46d';
+    ctx.textBaseline='top'; lines.forEach((text,i)=>ctx.fillText(text,pad,out.height-height+pad+i*lineH));
+    return out.toDataURL('image/png');
+  };
 
   // ---------------------------------------------------------------- cheap depth cues (Stage A, Advanced look only)
   // visual spec v1 tiers.depth_cue: Light "subtle vertex-colour underside/rim contrast only"; Balanced/High "modest
@@ -12602,6 +12648,7 @@
   function selectAnat(id, fly, fromCanvas = false) {
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectAnat(id,fly,fromCanvas));
     if (!ANAT[id]) return;
+    if (!inside && (!typeShown(anatomyType(id)) || !anatGroup.visible)) return hiddenTypeNotice(anatomyType(id));
     releaseGolgiView();
     if (id !== "ceaj") cjReleaseCamera();
     selected = { anat: id }; detail.innerHTML = anatHtml(id); setPerturbButtons(); openDetail(fromCanvas && !!liveNavigation);
@@ -12853,7 +12900,9 @@
     bar.style.left = (dock ? w/2 : L+(w-L-R)/2)+'px';
     bar.style.width = Math.max(1, (dock ? w-32 : w-L-R-16))+'px';
     bar.style.maxHeight = Math.max(80,innerHeight*.3)+'px'; bar.style.overflowY = 'auto';
-    let bottom = 16;
+    const caveat = document.getElementById('scene-caveat'), footer = caveat.offsetHeight+8;
+    ['caption','tour-player','legend'].forEach(id=>{ document.getElementById(id).style.bottom=footer+'px'; });
+    let bottom = footer;
     ['caption','tour-player','legend'].forEach(id=>{
       const el = document.getElementById(id);
       if (el && el.offsetWidth && getComputedStyle(el).visibility !== 'hidden')
@@ -12863,7 +12912,7 @@
     // When a phone drawer occupies the viewport, dock below its scroll area.
     // The controls keep their full width and the source text remains scrollable.
     [leftP,rightP].forEach(panel => panel.style.bottom =
-      (dock && !panel.classList.contains('hidden') ? bottom+bar.offsetHeight+8 : 16)+'px');
+      (dock && !panel.classList.contains('hidden') ? bottom+bar.offsetHeight+8 : footer)+'px');
   }
   function navigationDetailMarkup() {
     // Native button presses temporarily decorate DOM inside Details. They are
@@ -12882,6 +12931,7 @@
   }
   function selectComp(id, fly, fromCanvas = false) {
     if (!COMP[id]) return;
+    if (!inside && !typeShown(id)) return hiddenTypeNotice(id);
     if (liveNavigation && !navActivating && !inside && id === 'golgi') { liveNavigation.closeup(); return; }
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectComp(id,fly,fromCanvas));
     if (id !== "golgi" || inside) releaseGolgiView();
@@ -12897,6 +12947,7 @@
   }
   function selectNode(id, fly, fromCanvas = false) {
     const n = NODE[id]; if (!n) return;
+    if (!inside && !typeShown(nodeType(id))) return hiddenTypeNotice(nodeType(id));
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectNode(id,fly,fromCanvas));
     releaseGolgiView();
     cjReleaseCamera();
@@ -13038,7 +13089,7 @@
   // In SHAPE the canvas badges and the top label row stack below the visible status pill, which drops under the buttons on phones.
   // Each 20 px pill is centred 14 px below the bottom of the one above; the old fixed centres stay as minima.
   function topStack(anat) {
-    const motion = motionGroup.visible && !tourCur, el = document.getElementById("status-pill");
+    const motion = motionGroup.visible && !tourCur || !TYPE_VISIBILITY.allShown(), el = document.getElementById("status-pill");
     let bottom = BODY_SHAPE1 && el && el.offsetWidth && getComputedStyle(el).visibility !== "hidden" ? el.getBoundingClientRect().bottom : 0;
     const motionY = Math.max(62, bottom + 14);
     if (motion) bottom = motionY + 10;
@@ -13195,7 +13246,7 @@
     ray.setFromCamera(ndc, camera);
     const nh = ray.intersectObjects(nodeMeshes.filter((m) => m.visible), false);
     if (nh.length) return { node: nh[0].object.userData.node };
-    const hits = ray.intersectObjects(pickables.filter((o) => (!o.userData.golgiRim || o.visible) && (!o.userData.anat || anatGroup.visible)), false).filter((h) =>
+    const hits = ray.intersectObjects(pickables.filter((o) => effectiveVisible(o) && typeShown(o.userData.sourceComp || o.userData.comp || anatomyType(o.userData.anat)) && (!o.userData.displayTwin || typeShown(o.userData.comp))), false).filter((h) =>
       !(h.object.material && h.object.material.clippingPlanes && h.object.material.clippingPlanes.some((pl) => pl.distanceToPoint(h.point) < 0)) &&
       !(CJ_FADE && CJ_FADE.u.cjFade.value > 0.5 && CJ_FADE.meshes.includes(h.object) && (h.instanceId != null ? CJ_FADE.mvW[h.instanceId] : cjBandAt(h.point)) > 0.5));
     if (!hits.length) return null;
@@ -13291,7 +13342,7 @@
   function drawAnatSectionLabels(leftEdge, rightEdge) {
     anatLabelsShown = [];
     const id = selected && selected.anat, L = id && ANAT_LBL[id];
-    if (!L || !anatGroup.visible || tourCur) return;
+    if (!L || !anatGroup.visible || !typeShown(anatomyType(id)) || tourCur) return;
     const pts = ANAT_SECTION_TEXT.map(([k, text, col]) => ({ k, text, col, p: proj(L[k]) })).filter((i) => i.p.ok);
     if (!pts.length) return;
     const leftX = Math.min(...pts.map((i) => i.p.x)) - 70;
@@ -13319,6 +13370,10 @@
     const edges = panelEdges();
     const leftEdge = edges.L, rightEdge = W - edges.R;
     if (inside) { drawInteriorOverlay(W, H, leftEdge, rightEdge); return; }
+    if (!TYPE_VISIBILITY.allShown()) {
+      const x=(leftEdge+rightEdge)/2;
+      pill('Cell outline / nuclear rims: context only',x,topStack(false).motionY,false,null,'center');
+    }
     if (motionGroup.visible && !tourCur) pill("Illustrative motion: schematic, not simulated", (leftEdge + rightEdge) / 2, topStack(false).motionY, false, null, "center");
     drawAnatSectionLabels(leftEdge, rightEdge);
     // The CeAJ close-up hides the compartment columns: at this zoom they clamp to the panel edges and cover the cell.
@@ -13327,7 +13382,7 @@
       const p = proj(GOLGI_BOUNDS.getCenter(new THREE.Vector3()));
       if (p.ok) labelBoxes.push(Object.assign(pill(COMP.golgi.label, (leftEdge + rightEdge) / 2, topStack(false).rowY, true, null, "center"), { comp: "golgi" }));
     } else if (labelRowsOn() && !(CJ_FADE && CJ_FADE.cam)) {
-      const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
+      const items = WC.compartments.filter(c=>typeShown(c.viewer_id)).map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
       items.forEach((it) => { it.active = (hover && hover.comp === it.id) || (selected && selected.comp === it.id); it.w = pillWidth(it.text, it.active); });
       items.sort((a, b) => a.p.y - b.p.y);
       const half = Math.ceil(items.length / 2), minX = leftEdge + 10, maxX = rightEdge - 10;
@@ -13360,7 +13415,7 @@
       drawn.forEach((it) => labelBoxes.push(Object.assign(pill(it.text, it.x, it.ly, it.active, null, "left"), { comp: it.id })));
     } else if (showLabels && !document.body.classList.contains("cramped") && !(CJ_FADE && CJ_FADE.cam)) {
       const c0 = proj(V(0, 0, 0));
-      const items = WC.compartments.map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
+      const items = WC.compartments.filter(c=>typeShown(c.viewer_id)).map((c) => ({ id: c.viewer_id, text: compLabelText(c), p: proj(ANCHOR[c.viewer_id] || V(0, 0, 0)) })).filter((i) => i.p.ok);
       const sorted = items.slice().sort((a, b) => a.p.x - b.p.x);
       const half = Math.ceil(sorted.length / 2);
       [[sorted.slice(0, half), "L"], [sorted.slice(half), "R"]].forEach(([list, side]) => {
@@ -13505,6 +13560,7 @@
       const t = (now - p.t0) / p.dur;
       if (t >= 1) { p.busy = false; p.s.visible = false; if (p.done) p.done(); return; }
       const eo = edgeObj[p.edge];
+      p.s.visible = edgeVisible(eo.edge) && !golgiView;
       const e = t * t * (3 - 2 * t);
       p.s.position.copy(eo.curve.getPoint(e));
       p.s.material.opacity = p.strong ? 1 : Math.sin(Math.PI * t) * 0.8;
@@ -13632,6 +13688,43 @@
   let inside = null;
   let ihover = null, isel = null, ifocus = null;
   const interiorCache = {};
+  const ESTIMATED_MITO = new URLSearchParams(location.search).get('geometry') === 'estimated-mito';
+  const GEOMETRY_PILOT = window.DigitalCellEstimatedMito;
+  const baseSceneCaveat = document.getElementById('scene-caveat').textContent;
+  function geometryPilotReady() {
+    return !!(inside && inside.moleculeState && inside.moleculeState().status === 'ready');
+  }
+  function syncGeometryPilotNotice() {
+    const note = ESTIMATED_MITO && inside ? GEOMETRY_PILOT.notice(inside.id,geometryPilotReady()) : '';
+    const el = document.getElementById('scene-caveat'), key = baseSceneCaveat + (note ? ' '+note : '');
+    if(el.dataset.notice === key) return false;
+    el.dataset.notice = key; el.textContent = key;
+    if(note) {
+      const button = document.createElement('button'); button.id='geometry-support-open';
+      button.className='chip'; button.textContent='Geometry support';
+      button.onclick=()=>selectIp({t:'geometry',id:inside.id},true); el.append(' ',button);
+    }
+    return true;
+  }
+  function geometryPilotHtml(id) {
+    if(!ESTIMATED_MITO || !['mitochondria','molecule_atp'].includes(id)) return '';
+    const rows=GEOMETRY_PILOT.inventory(id,id==='molecule_atp' && geometryPilotReady());
+    return '<span class="tag">Geometry support · isolated pilot</span><h2>What supports this geometry?</h2>'+
+      '<p>Measured / derived from source / estimated describe geometry only. Mechanism evidence, confidence, species and coverage stay separate. No property here is labelled measured.</p>'+
+      rows.map(r=>'<div class="step"><b>'+esc(r.label)+' · '+esc(r.support)+'</b><br/>'+esc(r.note)+'</div>').join('')+
+      '<p class="note">Missing reconstruction means “not shown; geometry evidence missing”, never biological absence. Crista connectivity and complete mitochondrial DNA/ribosome anatomy are not reconstructed by this pilot.</p>'+
+      '<p class="note">Membrane edge lines mark the estimated teaching boundaries, not measured cristae. Other shapes remain illustrative. Existing teaching geometry is reused without new biological numbers.</p>'+
+      '<h3>Source boundary</h3><p>The separate ATP close-up uses the human 8H9S monomer, not a measured worm intestinal organelle. Its surface derivation is recorded in the existing source manifest; independently fitted display views do not establish a physical scale or membrane docking.</p>'+
+      '<p><a href="https://www.rcsb.org/structure/8H9S" target="_blank" rel="noopener">PDB 8H9S · Lai et al.</a> · '+
+      '<a href="https://www.wwpdb.org/about/usage-policies" target="_blank" rel="noopener">wwPDB data: CC0</a> · '+
+      '<a href="assets/molecules/MOL-0001/manifest.json" target="_blank" rel="noopener">Existing derivation / source manifest</a></p>';
+  }
+  window.__estimatedMito = () => ({enabled:ESTIMATED_MITO,room:inside && inside.id,
+    inventory:inside && ESTIMATED_MITO ? GEOMETRY_PILOT.inventory(inside.id,geometryPilotReady()) : [],
+    lines:inside && inside.estimatedBoundaryLines ? inside.estimatedBoundaryLines.map(l=>({
+      id:l.userData.estimatedBoundary,uuid:l.uuid,segments:l.geometry.attributes.position.count/2,
+      pickable:inside.picks.includes(l),visible:l.visible})) : [],
+    renderer:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,lines:renderer.info.render.lines,memory:{...renderer.info.memory}}});
   const captionEl = document.getElementById("caption");
   const BUILD = {};
   const ROOM_STATE = window.DigitalCellRoomState;
@@ -13640,8 +13733,15 @@
       QUALITY.applyExtraMaterials(ctx.s);
       if (inside === ctx) {
         const active = document.activeElement, focus = captureNavigationFocus(active), semantic = navigationDetail;
-        clearHover(); renderInsideSec();
+        clearHover();
+        if(syncGeometryPilotNotice()) resize();
+        renderInsideSec();
         if (!liveNavigation || !semantic || semantic.type === 'overview') showInteriorOverview();
+        else if(ESTIMATED_MITO && semantic.type === 'interior-pick' && semantic.args.ip.t === 'geometry') {
+          detail.innerHTML=geometryPilotHtml(inside.id);
+          rememberNavigationDetail(semantic.type,semantic.args);
+          pickHtml=document.body.classList.contains('cap-small') ? detail.innerHTML : null;
+        }
         if (liveNavigation && active !== document.body) restoreNavigationFocus(focus);
         else if (active && active.isConnected) active.focus({preventScroll:true});
       }
@@ -13809,6 +13909,7 @@
   function buildInterior(id) {
     const ctx = makeCtx(id);
     BUILD[id](ctx);
+    if (ESTIMATED_MITO && id === "mitochondria") GEOMETRY_PILOT.mark(THREE,ctx);
     if (!ctx.navigationState) ctx.navigationState = ROOM_STATE.createCodec({
       id, kind: "overview", capture: () => ({ playing: false }),
       validate: s => s && Object.keys(s).length === 1 && s.playing === false,
@@ -15841,12 +15942,15 @@
   }
   // One transaction authority; preparation keeps the displayed origin alive.
   function enterInterior(id, after) {
+    const host = window.DCMolecules.definitions[id]?.host || id;
+    if (!inside && COMP[host] && !typeShown(host)) return hiddenTypeNotice(host);
     if (liveNavigation) return liveNavigation.enter(id, after);
   }
   // If restoring the outer view fails part-way, leave a plain whole-cell home view instead of a half-restored camera, panel or selection.
   function outsideFallback() {
     const safe = (f) => { try { f(); } catch (err) { console.error(err); } };
     inside = null; ihover = isel = ifocus = null;
+    syncGeometryPilotNotice();
     document.body.classList.remove("inside", "mito", "story");
     document.getElementById("inside-sec").innerHTML = "";
     cam.yaw = camGoal.yaw = HOME.yaw; cam.pitch = camGoal.pitch = HOME.pitch;
@@ -15883,6 +15987,7 @@
       case "cr": return (CR[ip.id] || {}).label || ip.id;
       case "ap": return (APR[ip.id] || {}).label || ip.id;
       case "ac": return (AC[ip.id] || {}).label || ip.id;
+      case "geometry": return "Geometry support";
       case "prot": { const p = PROT[ip.id]; return p ? p.symbol.toUpperCase() + " · " + p.name : ip.id; }
       case "tca": return "TCA cycle · model flux ranges";
       case "tcastep": { const s = TCA_STEP[ip.id]; return s ? "TCA step " + s.step + " · " + s.label : ip.id; }
@@ -16292,6 +16397,7 @@
       case "cr": return carrierHtml(ip.id);
       case "ap": return apHtml(ip.id);
       case "ac": return acHtml(ip.id);
+      case "geometry": return geometryPilotHtml(ip.id);
       case "prot": return protHtml(ip.id);
       case "tca": return tcaOverviewHtml();
       case "tcastep": return tcaStepHtml(ip.id);
@@ -16384,6 +16490,7 @@
     if (liveNavigation) h += '<p class="note">Independently modelled teaching view; sizes are not comparable across levels.</p>';
     if (inside.id === "mitochondria") h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_atp">ATP synthase · human stand-in</button>';
     if (["ribosomes", "rough_er"].includes(inside.id)) h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_ribosome">80S ribosome · C. elegans</button>';
+    if (inside.id === "nucleus") h += '<h3>Molecular close-up</h3><button class="chip" data-enter="molecule_nucleosome">Nucleosome · Xenopus/human stand-in</button>';
     h += '<p class="note">Drag to turn · scroll to zoom · click a part to read about it · Esc to go back.</p>';
     el.innerHTML = h;
     if (semanticFocus) restoreNavigationFocus(semanticFocus, false);
@@ -16539,6 +16646,9 @@
   function searchGo(e) {
     if (!e) return;
     const d = e.destination;
+    const target = e.type==='pathway_node' ? nodeType(e.id) : e.type==='anatomy_detail' ? anatomyType(e.id) :
+      d && (COMP[d.id] ? d.id : ATLAS_INTERIOR[d.id]);
+    if (target && !typeShown(target)) return hiddenTypeNotice(target);
     const outside = (fn) => { if (inside) exitInterior(fn); else fn(); };
     if (e.type === "pathway") {
       outside(() => { if (focusPw !== e.id) focusPathway(e.id); else { detail.innerHTML = pathwayHtml(e.id); openDetail(); rememberNavigationDetail('pathway',{id:e.id}); } });
@@ -16694,6 +16804,11 @@
     if (TSYN) TSYN.cancel();
   }
   function tourOpen(id) {
+    if (!TYPE_VISIBILITY.allShown()) {
+      document.getElementById('type-status').textContent='Choose All organelle types before starting a narrated tour.';
+      if(liveNavigation)liveNavigation.status('Choose All organelle types before starting a narrated tour.');
+      return;
+    }
     releaseNavigationPose();
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>tourOpen(id));
     const t = TOUR_LIST.find((x) => x.id === id);
@@ -17108,6 +17223,65 @@
   showOverview();
   resetCascade();
 
+  // A separate parent gate composes with local visibility (quality, atlas and
+  // selection owners). It never overwrites the mesh's existing visible flag.
+  scene.traverse(o=>{
+    const id=o.userData.sourceComp || o.userData.comp || o.userData.typeOwner || anatomyType(o.userData.anat);
+    if(id && COMP[id] && (o.geometry || o===GOLGI_OUTLINE)) TYPE_REGISTRY.push({obj:o,id,context:o.userData.filterContext});
+  });
+  TYPE_REGISTRY.forEach(entry=>{
+    const gate=new THREE.Group(), parent=entry.obj.parent;
+    parent.remove(entry.obj); parent.add(gate); gate.add(entry.obj); entry.gate=gate;
+  });
+  typeRegistryReady=true;
+  document.getElementById('type-list').innerHTML=WC.compartments.map(c=>
+    '<div class="row"><label style="flex:1"><input type="checkbox" data-type="'+esc(c.viewer_id)+'" checked /> '+esc(c.label)+
+    '</label><button class="b" data-isolate-type="'+esc(c.viewer_id)+'" aria-label="Isolate '+esc(c.label)+' type">Isolate</button></div>').join('');
+  function syncTypeControls() {
+    const busy=inside || golgiView || tourCur;
+    document.querySelectorAll('[data-type]').forEach(el=>{el.checked=typeShown(el.dataset.type);el.disabled=!!busy;});
+    document.querySelectorAll('[data-isolate-type],#type-all').forEach(el=>{el.disabled=!!busy;});
+    document.getElementById('type-context').hidden=TYPE_VISIBILITY.allShown();
+  }
+  function applyTypeVisibility() {
+    if(!typeRegistryReady)return;
+    TYPE_REGISTRY.forEach(e=>{e.gate.visible=typeShown(e.id) || !!e.context;});
+    clearHover(); lastTap=null; labelBoxes=[];
+    motionSync(); refreshPathwayStyles(); syncTypeControls();
+  }
+  function changeTypes(action) {
+    const state=liveNavigation && liveNavigation.nav.inspect();
+    const restriction=navigationOwnerRestriction();
+    if(inside || golgiView || restriction || drag || activePointers.size || state && (state.pending || state.restoring || state.traversal || state.queued || state.closed || state.reloadRequired)) {
+      document.getElementById('type-status').textContent=restriction || 'Return to Cell before changing organelle types.';syncTypeControls();return false;
+    }
+    let origin;
+    try {origin=captureTypeOrigin && captureTypeOrigin();} catch(error) {document.getElementById('type-status').textContent=error.message;syncTypeControls();return false;}
+    const previous=TYPE_VISIBILITY.snapshot();
+    action();
+    releaseNavigationPose(); cjReleaseCamera();
+    if(selected && (selected.comp && !typeShown(selected.comp) || selected.node && !typeShown(nodeType(selected.node)) || selected.anat && !typeShown(anatomyType(selected.anat))))showOverview();
+    applyTypeVisibility();
+    const saved=liveNavigation && liveNavigation.nav.checkpoint();
+    if(saved && saved.status!=='committed') {
+      if(['failed','unavailable'].includes(saved.status) && origin && restoreTypeOrigin)restoreTypeOrigin(origin);
+      else if(!liveNavigation.nav.inspect().reloadRequired && !liveNavigation.nav.inspect().closed) {TYPE_VISIBILITY.restore(previous);applyTypeVisibility();}
+      document.getElementById('type-status').textContent='Filter unavailable. Check the navigation status before trying again.';return false;
+    }
+    document.getElementById('type-status').textContent=TYPE_VISIBILITY.allShown() ? 'All organelle types shown.' :
+      'Filtered display: hidden types are not shown, not biologically absent. Cell outline and nuclear rims remain as context. Narrated tours and illustrative motion need All.';
+    if(liveNavigation)liveNavigation.render();return true;
+  }
+  document.getElementById('type-all').onclick=()=>changeTypes(()=>TYPE_VISIBILITY.all());
+  document.getElementById('type-list').addEventListener('change',ev=>{if(ev.target.matches('[data-type]'))changeTypes(()=>TYPE_VISIBILITY.set(ev.target.dataset.type,ev.target.checked));});
+  document.getElementById('type-list').addEventListener('click',ev=>{const el=ev.target.closest('[data-isolate-type]');if(el)changeTypes(()=>TYPE_VISIBILITY.isolate(el.dataset.isolateType));});
+  applyTypeVisibility();
+  window.__typeVisibility={snapshot:()=>TYPE_VISIBILITY.snapshot(),
+    set:(id,shown)=>changeTypes(()=>TYPE_VISIBILITY.set(id,shown)),isolate:id=>changeTypes(()=>TYPE_VISIBILITY.isolate(id)),all:()=>changeTypes(()=>TYPE_VISIBILITY.all()),
+    inspect:()=>({mask:TYPE_VISIBILITY.snapshot(),hover,lastTap,selected,
+      registry:TYPE_REGISTRY.map(e=>({id:e.id,context:e.context||null,twin:!!e.obj.userData.displayTwin,local:e.obj.visible,gate:e.gate.visible,effective:effectiveVisible(e.obj),pickable:pickables.includes(e.obj),eligiblePick:effectiveVisible(e.obj)&&typeShown(e.id)&&(!e.obj.userData.displayTwin||typeShown(e.obj.userData.comp))})),
+      unregistered:pickables.filter(o=>!TYPE_REGISTRY.some(e=>e.obj===o)).length})};
+
   // Prepared default integration. Unsupported ownership fails before origin release.
   {
     const pose = c => ({yaw:c.yaw,pitch:c.pitch,dist:c.dist,target:c.target.toArray()});
@@ -17155,7 +17329,7 @@
       return {camera:{displayed:pose(cam),goal:pose(camGoal),userZoomed},
         projection:{fov:camera.fov,near:camera.near,far:camera.far,zoom:camera.zoom,viewOffset:camera.view ? {...camera.view} : null},
         clipping:{enabled:renderer.localClippingEnabled,normal:pl.normal.toArray(),constant:pl.constant},
-        visibility:{labels:showLabels,genes:showGenes,ambient,anatomy:anatGroup.visible,pathways:{...pwVisible},focus:focusPw},
+        visibility:{labels:showLabels,genes:showGenes,ambient,anatomy:anatGroup.visible,pathways:{...pwVisible},focus:focusPw,types:TYPE_VISIBILITY.snapshot()},
         selection:{selected:selected ? {...selected} : null,isel:isel ? {...isel} : null,ifocus:ifocus ? {...ifocus} : null},
         detail:navigationDetail,
         panels:{left:!leftP.classList.contains('hidden'),right:!rightP.classList.contains('hidden'),
@@ -17184,11 +17358,12 @@
         inside=prepared.room; ihover=isel=ifocus=null; selected=null; pickHtml=null;
         document.body.classList.toggle('inside',!!inside); document.body.classList.toggle('mito',!!(inside && inside.mito));
         document.body.classList.toggle('story',!!(inside && inside.api));
-        renderInsideSec(); setupCaption();
+        syncGeometryPilotNotice(); renderInsideSec(); setupCaption();
         if(event.view.kind==='closeup') beginGolgiView();
         const s=event.state;
         if(s) {
           if(inside) { inside.navigationState.restore(s.room.value); if(inside.api) document.getElementById('cap-speed').value=String(s.room.value.state.speed); }
+          TYPE_VISIBILITY.restore(s.visibility.types); applyTypeVisibility();
           showLabels=s.visibility.labels; showGenes=s.visibility.genes; ambient=s.visibility.ambient; anatGroup.visible=s.visibility.anatomy;
           ROOM_STATE.replaceMap(pwVisible,s.visibility.pathways); focusPw=s.visibility.focus;
           [['t-labels',showLabels],['t-genes',showGenes],['t-anatomy',anatGroup.visible]].forEach(([id,v])=>document.getElementById(id).checked=v);
@@ -17220,17 +17395,19 @@
           else if(event.view.kind==='closeup') { selected={comp:'golgi'}; detail.innerHTML=compHtml('golgi'); rememberNavigationDetail('compartment',{id:'golgi'}); frameGolgiView(); if(innerWidth<900){setPanel('left',false);setPanel('right',false);detailReady(true);} }
           else { showOverview(); setPose(pose(HOME)); }
         }
-        renderPwList(); refreshPathwayStyles(); updateCamera(0);
+        renderPwList(); refreshPathwayStyles(); syncTypeControls(); updateCamera(0);
         if(s) restoreNavigationFocus(s.returnFocus);
       } finally { navActivating=false; }
     }
     const adapter={rootView,capture:captureNavigation,
       validateView:v=>v.kind==='cell' && v.id==='cell' || v.kind==='closeup' && v.id==='golgi' ||
         v.kind==='interior' && !!BUILD[v.id] && !window.DCMolecules.definitions[v.id] || v.kind==='molecule' && !!window.DCMolecules.definitions[v.id],
-      validateState:(s,v)=>Number.isFinite(s.viewport.fitDistance) && s.viewport.fitDistance>0 && Array.isArray(s.viewport.fitPoints) && s.viewport.fitPoints.length<=64 &&
+      validateState:(s,v)=>TYPE_VISIBILITY.valid(s.visibility.types) && Number.isFinite(s.viewport.fitDistance) && s.viewport.fitDistance>0 && Array.isArray(s.viewport.fitPoints) && s.viewport.fitPoints.length<=64 &&
         s.viewport.fitPoints.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite)) && validDetail(s.detail) && (v.kind==='cell'||v.kind==='closeup' ? s.room.value===null :
         !!(interiorCache[v.id] && interiorCache[v.id].navigationState.validate(s.room.value))),
-      prepare:async(v,context)=>{ const room=v.kind==='interior'||v.kind==='molecule' ? interiorCache[v.id] || (interiorCache[v.id]=buildInterior(v.id)) : null;
+      prepare:async(v,context)=>{
+        if(!context.restore && !inside && COMP[v.id] && !typeShown(v.id)) throw new TypeError('Organelle type is not shown; choose All or show it first.');
+        const room=v.kind==='interior'||v.kind==='molecule' ? interiorCache[v.id] || (interiorCache[v.id]=buildInterior(v.id)) : null;
         if(room && room.moleculeIdentity && !room._navigationReturnCopy) {
           ['overviewHtml','sideHtml'].forEach(name=>{const original=room[name];room[name]=()=>original().replaceAll('Back to schematic interior','Back to previous view');});
           room._navigationReturnCopy=true;
@@ -17242,14 +17419,16 @@
         releaseNavigationPose(); clearHover(); lastTap=null; if(tourCur)tourClose(true); cjReleaseCamera(); releaseGolgiView();
         resetCascade();
         spin=false; document.getElementById('t-spin').checked=false; agPlaying=false; tourCancelSpeech();
-        if(inside&&inside.onExit)inside.onExit(); outsideFallback(); rememberNavigationDetail('overview');
+        if(inside&&inside.onExit)inside.onExit(); TYPE_VISIBILITY.all(); applyTypeVisibility(); outsideFallback(); syncTypeControls(); rememberNavigationDetail('overview');
       }finally{navActivating=false;}},
       onError:(error)=>{navigationLastError=error.message;const el=document.getElementById('navigation-status');if(el)el.textContent='View unavailable: '+error.message;}};
+    captureTypeOrigin=captureNavigation;
+    restoreTypeOrigin=s=>activateNavigation({room:null},{view:liveNavigation.nav.read().current.view,state:s});
     const initial=captureNavigation();
     liveNavigation=window.DigitalCellLiveNavigation({adapter,view,layout:resize,restriction:navigationOwnerRestriction,
       label:id=>(COMP[id]||window.DCMolecules.definitions[id]||{label:id}).label || window.DCMolecules.definitions[id].title,
-      selectedComp:()=>selected&&selected.comp,
-      inwardTarget:()=>inside ? inside.id==='mitochondria' ? 'molecule_atp' : ['rough_er','ribosomes'].includes(inside.id) ? 'molecule_ribosome' : null : selected&&BUILD[selected.comp] ? selected.comp : golgiView ? 'golgi' : null,
+      selectedComp:()=>selected&&selected.comp&&typeShown(selected.comp) ? selected.comp : null,
+      inwardTarget:()=>inside ? inside.id==='mitochondria' ? 'molecule_atp' : ['rough_er','ribosomes'].includes(inside.id) ? 'molecule_ribosome' : inside.id==='nucleus' ? 'molecule_nucleosome' : null : selected&&typeShown(selected.comp)&&BUILD[selected.comp] ? selected.comp : golgiView ? 'golgi' : null,
       homeState:()=>({...initial,camera:{...initial.camera,displayed:pose(HOME),goal:pose(HOME),userZoomed:false},
         viewport:{...initial.viewport,width:innerWidth,height:innerHeight,fitDistance:HOME.dist,renderRect:[panelEdges().L,0,Math.max(1,innerWidth-panelEdges().L-panelEdges().R),Math.max(1,innerHeight-lastCapH)]}})});
     resize();
@@ -17286,6 +17465,7 @@
       syncTwinMaterials();
       renderer.render(scene, camera);
     }
+    if(syncGeometryPilotNotice()) resize();
     drawOverlay();
     flushHover();
     requestAnimationFrame(frame);

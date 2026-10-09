@@ -1,0 +1,382 @@
+{
+  "id": "MOL-0012",
+  "viewer_id": "nucleus",
+  "name": "Nucleosome core particle (1KX5, NCP147)",
+  "candidate": true,
+  "candidate_note": "CANDIDATE only - not swapped into the viewer. Replacement needs Codex + Cursor (AGREE) and Kyrre approval (template v0.2 OQ2).",
+  "units": "nm",
+  "scale_nm": 1.0,
+  "axes": "right-handed; origin = DNA superhelix centre (revised 2026-10-08 16:18; same origin for all LODs), computed once from the 1KX5 atomic coordinates (see core_frame); +Y = DNA superhelical axis = least-variance principal axis of the DNA phosphorus atoms (unchanged), sign: H3 chain A on +Y side; +X = pseudo-dyad (unchanged; the dyad base pair lies 1.06° from +X, 0.005 nm from the X-Z plane); Z = X x Y.",
+  "lod": [
+    {
+      "level": "L1",
+      "file": "MOL-0012.L1.glb",
+      "triangles": 3994,
+      "vertices": 2410,
+      "bytes": 118392,
+      "bbox_nm": {
+        "min": [
+          -5.442,
+          -3.192,
+          -5.018
+        ],
+        "max": [
+          5.039,
+          2.843,
+          4.976
+        ]
+      },
+      "material_slots": [
+        "DNA",
+        "histone"
+      ]
+    },
+    {
+      "level": "L2",
+      "file": "MOL-0012.L2.glb",
+      "triangles": 19996,
+      "vertices": 10912,
+      "bytes": 548476,
+      "bbox_nm": {
+        "min": [
+          -5.787,
+          -3.631,
+          -5.33
+        ],
+        "max": [
+          9.127,
+          3.15,
+          6.917
+        ]
+      },
+      "material_slots": [
+        "DNA",
+        "histone"
+      ]
+    },
+    {
+      "level": "L3",
+      "file": "MOL-0012.L3.glb",
+      "triangles": 272140,
+      "vertices": 163284,
+      "bytes": 7840636,
+      "bbox_nm": {
+        "min": [
+          -5.869,
+          -3.733,
+          -5.372
+        ],
+        "max": [
+          9.237,
+          3.482,
+          7.02
+        ]
+      },
+      "material_slots": [
+        "DNA",
+        "histone"
+      ]
+    }
+  ],
+  "bbox_nm": {
+    "min": [
+      -5.786,
+      -3.631,
+      -5.329
+    ],
+    "max": [
+      9.127,
+      3.15,
+      6.917
+    ]
+  },
+  "organism": {
+    "structure": [
+      "Xenopus laevis (histones)",
+      "Homo sapiens (alpha-satellite DNA sequence)"
+    ],
+    "target": "Caenorhabditis elegans",
+    "homolog_reason": "histones are highly conserved; no C. elegans nucleosome structure in the catalog"
+  },
+  "species": "Caenorhabditis elegans (target); structure Xenopus laevis histones + human DNA sequence",
+  "cell_types": [
+    "intestinal epithelial cell"
+  ],
+  "added": "2026-10-07",
+  "sources": [
+    {
+      "type": "PDB",
+      "id": "1KX5",
+      "citation": "X-Ray Structure of the Nucleosome Core Particle, NCP147, at 1.9 A Resolution",
+      "note": "X-ray [1.94] Å; mmCIF files.rcsb.org",
+      "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+      "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+      "commercial_use": true
+    },
+    {
+      "type": "DOI",
+      "id": "10.1016/S0022-2836(02)00386-8",
+      "citation": "Davey, C.A. et al. 2002 J.Mol.Biol.",
+      "note": "primary citation; facts only",
+      "licence": "citation (facts only)",
+      "terms_url": null,
+      "commercial_use": true
+    },
+    {
+      "type": "UniProt",
+      "id": [
+        "P84233",
+        "P62799",
+        "P06897",
+        "P02281"
+      ],
+      "role": "chain accessions (H3, H4, H2A, H2B)",
+      "licence": "CC-BY-4.0",
+      "terms_url": "https://www.uniprot.org/help/license",
+      "commercial_use": true
+    }
+  ],
+  "geometry_basis": "homolog",
+  "evidence_level": "inferred",
+  "confidence": null,
+  "confidence_note": "[VERIFY] confidence not set - to be decided by Codex/Cursor/Kyrre (models.py Evidence requires float 0-1)",
+  "notes": "evidence_level=inferred (homology). Building block for chromatin (Cellekjerne).",
+  "material_slots": [
+    "DNA",
+    "histone"
+  ],
+  "vertex_attributes": {
+    "_CHAIN": "float index into mesh.extras.chains"
+  },
+  "instancing": "one mesh per LOD; intended for heavy instancing along chromatin",
+  "build": {
+    "script": "organeller-shared/tools/build_ribo_sec61_nuc.py (reuses build_complex_assets.py gaussian_surface/unit_normals/write_glb and membrane_orient.py)",
+    "date": "2026-10-07",
+    "L1": "Gaussian density 20 Å / grid 4 Å, quadric decimation",
+    "L2": "Gaussian density 10 Å (sigma 0.225*res) / grid 2.5 Å, iso-level enclosing mass x 1.21 Å^3/Da, marching cubes, quadric decimation",
+    "normals": "explicitly normalised",
+    "postprocess": "gltf-transform dedup --materials false + prune --keep-attributes true",
+    "validation": "Khronos glTF-Validator: 0 errors, 0 warnings (all LODs incl. anchor)",
+    "compression": "none",
+    "L3": "icosphere(0) per heavy atom (20 tris/atom)",
+    "n_atoms": 13607,
+    "core_frame_fix": "organeller-shared/tools/fix_mol0012_core_frame.py --build (L1/L2/L3 rebuilt with the superhelix-centre origin); dedup/prune; validator 0 errors/0 warnings"
+  },
+  "status": "fix-delivered",
+  "built_by": "Grok Bot",
+  "reviewed_by": null,
+  "license": {
+    "asset": {
+      "licence": "All rights reserved (© Kyrre Grøtan)",
+      "terms_url": null,
+      "commercial_use": "reserved by owner",
+      "decided": "2026-10-07 (Kyrre)",
+      "note": "Decided by Kyrre 2026-10-07: All rights reserved (© Kyrre Grøtan) until further notice (keeps commercialisation open); a possible open release (e.g. CC BY-NC) may come later. Applies to our own 3D assets/manifests only; every source keeps its own licence and attribution."
+    },
+    "data_sources": {
+      "wwPDB/RCSB PDB": {
+        "licence": "CC0 1.0 (PDB archive data and RCSB APIs)",
+        "terms_url": "https://www.wwpdb.org/about/usage-policies ; https://www.rcsb.org/pages/usage-policy",
+        "commercial_use": true
+      },
+      "UniProt": {
+        "licence": "CC-BY-4.0",
+        "terms_url": "https://www.uniprot.org/help/license",
+        "commercial_use": true
+      }
+    },
+    "not_used": "PDBTM (non-commercial only)",
+    "tools": [
+      {
+        "tool": "gemmi",
+        "licence": "MPL-2.0",
+        "url": "https://github.com/project-gemmi/gemmi",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "numpy",
+        "licence": "BSD-3-Clause (+bundled 0BSD/MIT/Zlib/CC0)",
+        "url": "https://numpy.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "scipy",
+        "licence": "BSD-3-Clause",
+        "url": "https://scipy.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "scikit-image (marching cubes)",
+        "licence": "BSD-3-Clause",
+        "url": "https://scikit-image.org/",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "trimesh",
+        "licence": "MIT",
+        "url": "https://github.com/mikedh/trimesh",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "fast-simplification",
+        "licence": "MIT",
+        "url": "https://github.com/pyvista/fast-simplification",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "pygltflib",
+        "licence": "MIT",
+        "url": "https://gitlab.com/dodgyville/pygltflib",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "requests",
+        "licence": "Apache-2.0",
+        "url": "https://github.com/psf/requests",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "glTF-Transform CLI",
+        "licence": "MIT",
+        "url": "https://github.com/donmccurdy/glTF-Transform",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "Khronos glTF-Validator",
+        "licence": "Apache-2.0",
+        "url": "https://github.com/KhronosGroup/glTF-Validator",
+        "commercial_use": true,
+        "output_encumbered": false
+      },
+      {
+        "tool": "matplotlib (previews)",
+        "licence": "Matplotlib License (PSF-based, BSD-compatible)",
+        "url": "https://matplotlib.org/stable/project/license.html",
+        "commercial_use": true,
+        "output_encumbered": false
+      }
+    ],
+    "summary": "All inputs CC0 / CC BY (commercial use allowed); no NC/academic-only source. Own asset: All rights reserved (© Kyrre Grøtan). "
+  },
+  "core_centre_nm": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "core_frame": {
+    "method": "DNA superhelix centre from 1KX5 C1' base-pair centres (author chains I/J = label A/B), circle fit in the X-Z plane of the unchanged rotation; Y = mean bp-centre Y",
+    "source": {
+      "file": "sources/rcsb/1KX5.cif.gz",
+      "sha256": "a8fa3d8942f94ec03b11b089d0a3e55d8cf02dbf1134b6773444ac86f1c306f8",
+      "model": "model 1 = asymmetric unit = biological assembly 1 (one NCP)"
+    },
+    "n_base_pairs": 147,
+    "bp_index_range": [
+      -73,
+      73
+    ],
+    "superhelix_radius_nm": 4.245,
+    "radial_residual_rms_nm": 0.345,
+    "radial_residual_max_nm": 1.09,
+    "bp_y_range_rel_origin_nm": [
+      -1.9,
+      1.91
+    ],
+    "R_source_to_frame": [
+      [
+        0.057826,
+        0.992733,
+        -0.105529
+      ],
+      [
+        0.070849,
+        0.101359,
+        0.992324
+      ],
+      [
+        0.99581,
+        -0.064858,
+        -0.064473
+      ]
+    ],
+    "origin_source_A": [
+      46.322,
+      93.053,
+      6.142
+    ],
+    "transform_note": "p_frame_nm = (R @ p_source_A - R @ origin_source_A) / 10",
+    "old_origin_bbox_source_A": [
+      55.34,
+      109.172,
+      2.573
+    ],
+    "old_origin_in_new_frame_nm": [
+      1.69,
+      -0.127,
+      0.817
+    ],
+    "old_to_new_distance_nm": 1.881,
+    "dyad_bp_centre_in_new_frame_nm": [
+      4.192,
+      -0.005,
+      0.078
+    ],
+    "dyad_bp_angle_from_plusX_deg": 1.06,
+    "crosscheck_free_cylinder": {
+      "axis_angle_vs_Y_deg": 12.1,
+      "radius_nm": 4.204,
+      "axis_direction_in_frame": [
+        0.007,
+        0.9778,
+        -0.2095
+      ],
+      "axis_angle_vs_X_dyad_deg": 89.6,
+      "centre_distance_from_cylinder_axis_nm": 0.044,
+      "rms_nm": 0.274
+    },
+    "dna_P_singular_values_A": [
+      539.5,
+      495.9,
+      240.7
+    ],
+    "chain_id_convention": "DNA = author chains I/J (= label A/B); histones = author A-H. Never treat author A/B as DNA.",
+    "pairing": "author I residue i <-> author J residue -i (1KX5 numbering -73..73; dyad = i 0)",
+    "old_origin": "bbox centre of all atoms in the rotated frame (tail-driven); old origin lies at old_origin_in_new_frame_nm",
+    "lod_check": "new L1/L2/L3 vertices = old vertices + old_origin_in_new_frame_nm (pure translation, max deviation 0.0004 nm = rounding) - one common transform for all LODs",
+    "note_axis": "[VERIFY for reviewers] a free cylinder fit to the bp centres gives an axis 12.1° from the kept +Y (tilted about X; 89.6° to the dyad). The origin lies 0.044 nm from that fitted axis, so the centre does not depend on the choice. The rotation was kept unchanged as instructed; changing +Y to the cylinder axis would be a separate, reviewable change."
+  },
+  "learner_text": "Xenopus histones / human DNA sequence stand-in (PDB 1KX5); illustrative proxy for the C. elegans nucleosome.",
+  "target_equivalents": {
+    "note": "C. elegans equivalents, NOT replacements (multigene histone families; one representative accession per histone). verified via UniProt REST 2026-10-08 (gene names and ORFs; WBGene IDs not re-checked here).",
+    "H3": {
+      "uniprot": "P08898",
+      "gene": "his-2",
+      "orf": "T10C6.13"
+    },
+    "H4": {
+      "uniprot": "P62784",
+      "gene": "his-1",
+      "orf": "T10C6.14"
+    },
+    "H2A": {
+      "uniprot": "P09588",
+      "gene": "his-3",
+      "orf": "T10C6.12"
+    },
+    "H2B": {
+      "uniprot": "P04255",
+      "gene": "his-11",
+      "orf": "ZK131.5"
+    }
+  },
+  "status_note": "AGREE round 2026-10-08: KEEP + FIX. Fix delivered 2026-10-08 16:18: core frame from atomic coordinates; awaiting new verdicts from Codex and Cursor."
+}

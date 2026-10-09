@@ -18,7 +18,7 @@
     };
     const nav = root.DigitalCellNavigationHistory.createNativeNavigation({
       browser: root, adapter: h.adapter, sessionId: root.crypto.randomUUID(),
-      viewerRevision: 'stage2-live-2026-10-09-v1',
+      viewerRevision: 'stage2-live-2026-10-09-v2-types',
       variant: root.DigitalCellNavigationHistory.bodyVariant(root.location.href)
     });
     let command = 0;
