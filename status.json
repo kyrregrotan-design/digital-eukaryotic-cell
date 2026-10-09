@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T18:30:04+02:00",
+    "generated_at":  "2026-10-09T18:35:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,19 +25,19 @@
                    "codex":  {
                                  "task":  "Estimated mitochondrial geometry pilot",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  13.5,
-                                 "step_title":  "Confirm source and pilot boundary",
+                                 "percent":  31.1,
+                                 "step_title":  "Implement isolated support display",
                                  "steps":  [
                                                "Confirm source and pilot boundary",
                                                "Implement isolated support display",
                                                "Verify UI navigation and captures",
                                                "Record evidence and handoff"
                                            ],
-                                 "eta_seconds":  692,
+                                 "eta_seconds":  1261,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T18:27:53+02:00",
+                                 "updated":  "2026-10-09T18:33:13+02:00",
                                  "last_run":  "2026-10-09T18:25:36+02:00",
                                  "next_run":  null
                              }
