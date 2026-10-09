@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T16:05:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-09T16:10:04+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "Opinion: atlas-checklist-inventory",
