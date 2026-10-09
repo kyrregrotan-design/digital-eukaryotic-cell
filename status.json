@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T17:35:04+02:00",
+    "generated_at":  "2026-10-09T17:40:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,7 +28,7 @@
                                  "status":  "running",
                                  "step":  1,
                                  "total":  5,
-                                 "percent":  6.6,
+                                 "percent":  18,
                                  "step_title":  "Approved context",
                                  "steps":  [
                                                "Approved context",
@@ -37,7 +37,7 @@
                                                "Verify runtime and regressions",
                                                "Review handoff"
                                            ],
-                                 "eta_seconds":  1017,
+                                 "eta_seconds":  718,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-09T17:33:44+02:00",
                                  "last_run":  "2026-10-09T17:32:01+02:00",
