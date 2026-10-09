@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T17:00:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-09T17:05:05+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Opinion: atlas-checklist-inventory",
@@ -24,23 +24,23 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Close navigation; atlas coverage inventory",
-                                 "status":  "done",
-                                 "step":  5,
+                                 "task":  "Atlas caveat visibility",
+                                 "status":  "running",
+                                 "step":  3,
                                  "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "State and handoff",
+                                 "percent":  50.2,
+                                 "step_title":  "Implement bounded fixes",
                                  "steps":  [
-                                               "Context and approved scope",
-                                               "Close reviewed navigation composite",
-                                               "Reconcile whole-cell coverage inventory",
-                                               "Verify coverage and focused regressions",
-                                               "State and handoff"
+                                               "Context and scope",
+                                               "Audit caveat surfaces",
+                                               "Implement bounded fixes",
+                                               "Verify visible limitations",
+                                               "Record review handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  305,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T15:57:56+02:00",
-                                 "last_run":  "2026-10-09T15:42:40+02:00",
+                                 "updated":  "2026-10-09T17:04:01+02:00",
+                                 "last_run":  "2026-10-09T16:59:57+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  27,
+    "today_runs":  28,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
