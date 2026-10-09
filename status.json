@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T21:50:04+02:00",
+    "generated_at":  "2026-10-09T21:55:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,11 +26,11 @@
                               },
                    "codex":  {
                                  "task":  "WormAtlas/WormImage licence audit",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  58,
-                                 "step_title":  "Inventory uses",
+                                 "percent":  100,
+                                 "step_title":  "Verify and handoff",
                                  "steps":  [
                                                "Context and scope",
                                                "Official terms",
@@ -38,9 +38,9 @@
                                                "Classify and correct register",
                                                "Verify and handoff"
                                            ],
-                                 "eta_seconds":  261,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T21:45:26+02:00",
+                                 "updated":  "2026-10-09T21:54:57+02:00",
                                  "last_run":  "2026-10-09T21:39:28+02:00",
                                  "next_run":  null
                              }
@@ -55,6 +55,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "WormAtlas/WormImage licence audit",
+                       "finished":  "2026-10-09T21:54:57+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Opinion: estimated-mito lifecycle continuation",
@@ -79,11 +84,6 @@
                        "agent":  "cursor",
                        "task":  "MOL-0012 local viewer opinion",
                        "finished":  "2026-10-09T19:27:20+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "MOL-0012 nucleosome viewer integration",
-                       "finished":  "2026-10-09T19:17:59+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
