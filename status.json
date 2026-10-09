@@ -1,35 +1,35 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T14:45:04+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-09T14:50:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage 2 pointer/owner + filter opinions",
-                                  "status":  "done",
-                                  "step":  5,
+                                  "task":  "Stage 2 native acceptance opinion",
+                                  "status":  "running",
+                                  "step":  4,
                                   "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "STATUS handoff finish",
+                                  "percent":  72.9,
+                                  "step_title":  "Reproduce native4 matrix",
                                   "steps":  [
-                                                "Context and start",
-                                                "Inspect pointer/owner diff",
-                                                "Reproduce",
-                                                "Write opinions",
-                                                "STATUS handoff finish"
+                                                "Context and start log",
+                                                "Diff and slice review",
+                                                "Reproduce 68 JS / pytest",
+                                                "Reproduce native4 matrix",
+                                                "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  66,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T14:26:49+02:00",
-                                  "last_run":  "2026-10-09T14:21:03+02:00",
+                                  "updated":  "2026-10-09T14:49:32+02:00",
+                                  "last_run":  "2026-10-09T14:47:06+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Stage 2 native pointer acceptance",
-                                 "status":  "running",
-                                 "step":  4,
+                                 "status":  "done",
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  78,
-                                 "step_title":  "Reconcile acceptance and integration gate",
+                                 "percent":  100,
+                                 "step_title":  "Write evidence and handoff",
                                  "steps":  [
                                                "Context and scheduling diagnosis",
                                                "Correct native probe scheduling",
@@ -37,9 +37,9 @@
                                                "Reconcile acceptance and integration gate",
                                                "Write evidence and handoff"
                                            ],
-                                 "eta_seconds":  89,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T14:41:15+02:00",
+                                 "updated":  "2026-10-09T14:46:41+02:00",
                                  "last_run":  "2026-10-09T14:27:36+02:00",
                                  "next_run":  null
                              }
@@ -48,12 +48,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  20,
+    "today_runs":  21,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Stage 2 native pointer acceptance",
+                       "finished":  "2026-10-09T14:46:41+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Stage 2 pointer/owner + filter opinions",
@@ -78,11 +83,6 @@
                        "agent":  "cursor",
                        "task":  "Stage 2 cache/UI opinion",
                        "finished":  "2026-10-09T12:04:39+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Stage 2 browser-cache lifecycle",
-                       "finished":  "2026-10-09T11:52:09+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
