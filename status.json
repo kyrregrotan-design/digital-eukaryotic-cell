@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T17:40:04+02:00",
+    "generated_at":  "2026-10-09T17:45:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -37,7 +37,7 @@
                                                "Verify runtime and regressions",
                                                "Review handoff"
                                            ],
-                                 "eta_seconds":  718,
+                                 "eta_seconds":  416,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-09T17:33:44+02:00",
                                  "last_run":  "2026-10-09T17:32:01+02:00",
