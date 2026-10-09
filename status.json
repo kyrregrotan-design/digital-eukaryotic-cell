@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T14:40:04+02:00",
+    "generated_at":  "2026-10-09T14:45:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,7 +28,7 @@
                                  "status":  "running",
                                  "step":  4,
                                  "total":  5,
-                                 "percent":  65.8,
+                                 "percent":  78,
                                  "step_title":  "Reconcile acceptance and integration gate",
                                  "steps":  [
                                                "Context and scheduling diagnosis",
@@ -37,9 +37,9 @@
                                                "Reconcile acceptance and integration gate",
                                                "Write evidence and handoff"
                                            ],
-                                 "eta_seconds":  389,
+                                 "eta_seconds":  89,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T14:38:57+02:00",
+                                 "updated":  "2026-10-09T14:41:15+02:00",
                                  "last_run":  "2026-10-09T14:27:36+02:00",
                                  "next_run":  null
                              }
