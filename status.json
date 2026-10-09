@@ -1,21 +1,25 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T15:35:04+02:00",
+    "generated_at":  "2026-10-09T15:40:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Stage2 default-prep + estimated-geometry opinions",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "Stage2 post-apply opinion",
+                                  "status":  "running",
+                                  "step":  4,
+                                  "total":  5,
+                                  "percent":  78,
+                                  "step_title":  "Reproduce disk probes",
                                   "steps":  [
-
+                                                "Context and start",
+                                                "Verify disk SHA and retirement",
+                                                "Reproduce JS and pytest",
+                                                "Reproduce disk probes",
+                                                "Write opinion and handoff"
                                             ],
-                                  "eta_seconds":  257,
+                                  "eta_seconds":  48,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T15:20:48+02:00",
+                                  "updated":  "2026-10-09T15:38:15+02:00",
                                   "last_run":  "2026-10-09T15:34:21+02:00",
                                   "next_run":  null
                               },
@@ -44,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  24,
+    "today_runs":  25,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
