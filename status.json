@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T12:05:04+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-09T12:10:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Stage 2 cache/UI opinion",
@@ -24,23 +24,23 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Stage 2 browser-cache lifecycle",
-                                 "status":  "done",
-                                 "step":  5,
+                                 "task":  "Stage 2 guided and acceptance matrix",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "Review and handoff",
+                                 "percent":  38,
+                                 "step_title":  "Capture guided failure",
                                  "steps":  [
                                                "Context and start",
-                                               "Implement cache lifecycle",
-                                               "Probe lifecycle and regressions",
-                                               "Acceptance accounting",
-                                               "Review and handoff"
+                                               "Capture guided failure",
+                                               "Fix and extend acceptance probes",
+                                               "Verify final candidate",
+                                               "Acceptance accounting and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  183,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T11:52:09+02:00",
-                                 "last_run":  "2026-10-09T11:32:39+02:00",
+                                 "updated":  "2026-10-09T12:07:15+02:00",
+                                 "last_run":  "2026-10-09T12:05:48+02:00",
                                  "next_run":  null
                              }
                },
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  15,
+    "today_runs":  16,
     "queue":  [
                   "Venter på Kyrre (DEC-logg 07:41/08:13): valg av GLTF-loader / ny avhengighet fo…",
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
