@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T14:10:04+02:00",
+    "generated_at":  "2026-10-09T14:15:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Stage 2 pointer/owner acceptance",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  40.1,
-                                 "step_title":  "Pointer correction and cases",
+                                 "percent":  50.9,
+                                 "step_title":  "Owner transitions and accounting",
                                  "steps":  [
                                                "Context and live diagnosis",
                                                "Pointer correction and cases",
                                                "Owner transitions and accounting",
                                                "Validation and review handoff"
                                            ],
-                                 "eta_seconds":  861,
+                                 "eta_seconds":  844,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T14:06:27+02:00",
+                                 "updated":  "2026-10-09T14:14:47+02:00",
                                  "last_run":  "2026-10-09T14:00:28+02:00",
                                  "next_run":  null
                              }
