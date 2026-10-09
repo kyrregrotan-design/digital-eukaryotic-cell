@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T20:45:07+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-09T20:51:28+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "Opinion: estimated-mito lifecycle continuation",
-                                  "status":  "running",
-                                  "step":  2,
+                                  "status":  "done",
+                                  "step":  6,
                                   "total":  6,
-                                  "percent":  31.7,
-                                  "step_title":  "Validate SHA pins/reports",
+                                  "percent":  100,
+                                  "step_title":  "Finish handoff",
                                   "steps":  [
                                                 "Start log + progress",
                                                 "Validate SHA pins/reports",
@@ -18,9 +18,9 @@
                                                 "Write opinion + STATUS",
                                                 "Finish handoff"
                                             ],
-                                  "eta_seconds":  600,
+                                  "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-09T20:41:51+02:00",
+                                  "updated":  "2026-10-09T20:46:19+02:00",
                                   "last_run":  "2026-10-09T20:39:13+02:00",
                                   "next_run":  null
                               },
@@ -55,6 +55,11 @@
               ],
     "recent":  [
                    {
+                       "agent":  "cursor",
+                       "task":  "Opinion: estimated-mito lifecycle continuation",
+                       "finished":  "2026-10-09T20:46:19+02:00"
+                   },
+                   {
                        "agent":  "codex",
                        "task":  "Estimated-mito Retry and lifecycle recheck",
                        "finished":  "2026-10-09T20:38:23+02:00"
@@ -78,11 +83,6 @@
                        "agent":  "codex",
                        "task":  "MOL-0012 nucleosome viewer integration",
                        "finished":  "2026-10-09T19:17:59+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Opinion: estimated-mito support/markings slice",
-                       "finished":  "2026-10-09T18:58:12+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
