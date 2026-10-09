@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T18:40:04+02:00",
+    "generated_at":  "2026-10-09T18:45:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,20 +24,20 @@
                               },
                    "codex":  {
                                  "task":  "Estimated mitochondrial geometry pilot",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  58.1,
-                                 "step_title":  "Verify UI navigation and captures",
+                                 "percent":  100,
+                                 "step_title":  "Record evidence and handoff",
                                  "steps":  [
                                                "Confirm source and pilot boundary",
                                                "Implement isolated support display",
                                                "Verify UI navigation and captures",
                                                "Record evidence and handoff"
                                            ],
-                                 "eta_seconds":  626,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T18:38:02+02:00",
+                                 "updated":  "2026-10-09T18:44:50+02:00",
                                  "last_run":  "2026-10-09T18:25:36+02:00",
                                  "next_run":  null
                              }
@@ -52,6 +52,11 @@
                   "Venter på Kyrre: eksakt køplass for side-assets-integration (Cursor: etter Cine…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Estimated mitochondrial geometry pilot",
+                       "finished":  "2026-10-09T18:44:50+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Filter checkpoint origin re-opinion",
@@ -76,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "Opinion atlas-checklist-visibility",
                        "finished":  "2026-10-09T17:31:33+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Atlas caveat visibility",
-                       "finished":  "2026-10-09T17:24:19+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -88,8 +88,8 @@
                       "percent":  41.7,
                       "total":  56,
                       "done":  20,
-                      "in_progress":  6,
-                      "todo":  30,
+                      "in_progress":  7,
+                      "todo":  29,
                       "remaining":  36,
                       "weight_total":  120,
                       "weight_done":  50,
@@ -382,7 +382,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-09T18:03:17+02:00",
-                      "updated_by":  "Cursor"
+                      "updated":  "2026-10-09T18:44:14+02:00",
+                      "updated_by":  "Codex"
                   }
 }
