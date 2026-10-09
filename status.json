@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T14:35:04+02:00",
+    "generated_at":  "2026-10-09T14:40:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "Stage 2 native pointer acceptance",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  5,
-                                 "percent":  58,
-                                 "step_title":  "Run changed native matrix",
+                                 "percent":  65.8,
+                                 "step_title":  "Reconcile acceptance and integration gate",
                                  "steps":  [
                                                "Context and scheduling diagnosis",
                                                "Correct native probe scheduling",
@@ -37,9 +37,9 @@
                                                "Reconcile acceptance and integration gate",
                                                "Write evidence and handoff"
                                            ],
-                                 "eta_seconds":  81,
+                                 "eta_seconds":  389,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T14:31:07+02:00",
+                                 "updated":  "2026-10-09T14:38:57+02:00",
                                  "last_run":  "2026-10-09T14:27:36+02:00",
                                  "next_run":  null
                              }
