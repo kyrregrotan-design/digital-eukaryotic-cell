@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T19:30:05+02:00",
+    "generated_at":  "2026-10-09T19:35:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Estimated mitochondrial pilot performance gates",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  1.4,
-                                 "step_title":  "Inspect remaining gates",
+                                 "percent":  59.7,
+                                 "step_title":  "Run controlled browser checks",
                                  "steps":  [
                                                "Inspect remaining gates",
                                                "Build matched performance/lifecycle probe",
                                                "Run controlled browser checks",
                                                "Review evidence and handoff"
                                            ],
-                                 "eta_seconds":  989,
+                                 "eta_seconds":  264,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T19:29:48+02:00",
+                                 "updated":  "2026-10-09T19:34:00+02:00",
                                  "last_run":  "2026-10-09T19:28:33+02:00",
                                  "next_run":  null
                              }
