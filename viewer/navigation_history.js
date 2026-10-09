@@ -21,6 +21,7 @@
     let controller, position = 0, chain = 0, recovery = 0, popGeneration = 0;
     let flight = null, wanted = null, restoring = false, queued = null, closed = false;
     let reloadRequired = false, reconciliationTarget = null, recovering = false;
+    let suspended = false, authorityGeneration = 0;
     const slots = new Map();
     const departures = new Map();
     const waiters = [];
@@ -138,7 +139,18 @@
       if (busy()) return queueCommand(method, copy);
       if (reloadRequired) return Promise.resolve({status: 'reload-required'});
       try { assertCurrent(); } catch (error) { return Promise.resolve(recover(error)); }
-      return controller[method](copy).then(result => {
+      const currentView = controller.read().current.view;
+      if (method === 'navigate' && currentView.kind === copy.kind && currentView.id === copy.id) {
+        controller.cancel();
+        return Promise.resolve({status: 'unchanged', route: controller.read()});
+      }
+      // Semantic room actions queued behind native traversal resolve their rank
+      // against the reconciled destination, never the departing room.
+      const action = method === 'navigate' ?
+        currentView.kind === 'interior' && copy.kind === 'interior' ? 'lateral' : 'enter' : method;
+      const authority = authorityGeneration;
+      return controller[action](copy).then(result => {
+        if (authority !== authorityGeneration) return result;
         if (!busy() && !closed) {
           try { assertCurrent(); } catch (error) { return recover(error); }
         }
@@ -225,7 +237,7 @@
       return request({index: 0, route: route.ancestors.length ? routeAt(route, 0) : route,
         homeState: saved});
     }
-    function recover(error) {
+    function recover(error, reason) {
       if (closed) return {status: 'closed'};
       recovering = true;
       controller.close(); chain++; recovery++; slots.clear(); departures.clear(); position = 0;
@@ -233,7 +245,7 @@
       reloadRequired = bodyVariant(href()) !== variant;
       try {
         if (closed) return {status: 'closed'};
-        sync(adapter.recoverRoot({error, reloadRequired, url: href(), variant}), 'recoverRoot');
+        sync(adapter.recoverRoot({error, reloadRequired, url: href(), variant, reason}), 'recoverRoot');
         if (closed) return {status: 'closed'};
         const replacement = makeController();
         if (closed) { replacement.close(); return {status: 'closed'}; }
@@ -294,18 +306,41 @@
       if (!closed) { restoring = false; recover(error); }
     }); };
     browser.addEventListener('popstate', listener);
-    function close() {
+    function stopAuthority() {
       // pagehide must always win over activation, restoration and recovery.
       // It is not a navigation command and must never hit a reentry guard.
       browser.removeEventListener('popstate', listener);
-      browser.removeEventListener('pagehide', close);
+      browser.removeEventListener('pagehide', hide);
       if (closed) return;
-      closed = true; popGeneration++;
+      closed = true; popGeneration++; authorityGeneration++;
       wanted = flight = reconciliationTarget = null; restoring = false;
       controller.close();
       settle({status: 'closed'}); dropQueued({status: 'closed'});
     }
-    browser.addEventListener('pagehide', close);
+    function close() {
+      suspended = false;
+      browser.removeEventListener('pageshow', show);
+      stopAuthority();
+    }
+    function hide(event) {
+      // A persisted document may return, but the old authority is terminal.
+      // Its transactions and native waiters cannot survive the cache boundary.
+      if (!event.persisted) { close(); return; }
+      suspended = true;
+      stopAuthority();
+    }
+    function show(event) {
+      if (!event.persisted || !suspended) return;
+      suspended = false;
+      closed = false;
+      browser.addEventListener('popstate', listener);
+      browser.addEventListener('pagehide', hide);
+      // The controller captures a root at construction. Recover the real scene
+      // first, invalidate the old chain and replace this browser entry only.
+      recover(new Error('Browser cache return requires a fresh navigation authority'), 'browser-cache');
+    }
+    browser.addEventListener('pagehide', hide);
+    browser.addEventListener('pageshow', show);
     function checkpoint() {
       guard();
       if (closed) return {status: 'closed'};
@@ -314,12 +349,13 @@
       try { assertCurrent(); } catch (error) { return recover(error); }
       return controller.checkpoint();
     }
-    return Object.freeze({enter: target => enterOrLateral('enter', target),
+    return Object.freeze({navigate: target => enterOrLateral('navigate', target),
+      enter: target => enterOrLateral('enter', target),
       lateral: target => enterOrLateral('lateral', target), back, ancestor, home, checkpoint, close,
       read: () => controller.read(),
       inspect: () => Object.freeze({...controller.inspect(), position, chain,
         traversal: !!flight, restoring, queued: !!queued, targetIndex: wanted ? wanted.index : null,
-        closed, reloadRequired})});
+        closed, suspended, reloadRequired})});
   }
   return Object.freeze({NAMESPACE, VERSION, bodyVariant, createNativeNavigation});
 });

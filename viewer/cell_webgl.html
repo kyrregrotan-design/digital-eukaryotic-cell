@@ -397,6 +397,7 @@
 <script src="navigation_room_state.js"></script>
 <script src="navigation_history.js"></script>
 <script src="navigation_live.js"></script>
+<script src="navigation_fit.js"></script>
 <script id="model-data" type="application/json">
 {
   "generated_at": "2026-10-07 08:17 (Europe/Oslo)",
@@ -12438,16 +12439,36 @@
   document.getElementById("reset-sim").onclick = resetCascade;
 
   // ---------------------------------------------------------------- cascade (qualitative)
-  let cascadeTimers = [], lastCascade = null;
+  let cascadeTimers = [], lastCascade = null, cascadeGeneration = 0;
+  function releaseStrongParticles() {
+    particles.filter(p => p.strong).forEach(p => { p.done = null; p.busy = false; p.s.visible = false; });
+  }
   function resetCascade() {
+    cascadeGeneration++;
     cascadeTimers.forEach(clearTimeout); cascadeTimers = [];
     Object.keys(nodeState).forEach((k) => delete nodeState[k]);
     simRunning = false;
+    // A reset is the candidate's explicit escape from unsupported cascade state.
+    // Pending particle completions and room-start hints must be released too.
+    if (liveNavigation) {
+      lastCascade = null;
+      releaseStrongParticles();
+      if (selected && selected.node && navigationDetail && navigationDetail.type === 'gene') {
+        detail.innerHTML = nodeHtml(selected.node); rememberNavigationDetail('gene', {id:selected.node});
+      }
+    }
     document.getElementById("status-pill").textContent = "qualitative signal flow · idle";
+  }
+  function navigationOwnerRestriction() {
+    if (tourCur) return 'Close the narrated tour before changing views; its saved state is not supported yet.';
+    if (simRunning || lastCascade || cascadeTimers.length || Object.keys(nodeState).length || particles.some(p => p.busy && p.strong))
+      return 'Reset the signal cascade before changing views; active and completed cascade results are not saved yet.';
+    return null;
   }
   function runCascade(rootId, dir) {
     if (tourCur) tourClose(true);
     resetCascade();
+    const generation = cascadeGeneration;
     simRunning = true;
     lastCascade = { root: rootId, dir, t: performance.now() };
     nodeState[rootId] = { s: dir, t: performance.now(), root: true };
@@ -12458,6 +12479,7 @@
     let step = 0;
     const STEP = 1100;
     function advance() {
+      if (generation !== cascadeGeneration) return;
       const next = [];
       frontier.forEach((src) => {
         INFL.filter((e) => e.source === src && edgeVisible(e)).forEach((e) => {
@@ -12465,6 +12487,7 @@
           const sv = nodeState[src] ? nodeState[src].s : 0;
           const val = sv === 0 || sgn === 0 ? 0 : sv * sgn;
           emit(e.id, STEP * 0.85, true, () => {
+            if (generation !== cascadeGeneration) return;
             const prev = nodeState[e.target];
             const v = prev && prev.s !== val ? 0 : val;
             nodeState[e.target] = { s: v, t: performance.now() };
@@ -12476,6 +12499,7 @@
       frontier = next;
       if (frontier.length && step < 12) cascadeTimers.push(setTimeout(advance, STEP));
       else cascadeTimers.push(setTimeout(() => {
+        if (generation !== cascadeGeneration) return;
         simRunning = false;
         pill.textContent = "done · " + Object.keys(nodeState).length + " parts of the model reached from " + NODE[rootId].label;
       }, STEP));
@@ -12767,17 +12791,19 @@
   // A pick made on a small screen during a caption or tour stays in the detail buffer until another selection, a new
   // walkthrough or closing the drawer, so automatic walkthrough steps cannot replace it before Details is opened.
   let pickHtml = null;
-  function autoDetail(write) {
+  function autoDetail(write, semantic) {
     if (pickHtml !== null && detail.innerHTML === pickHtml) return;
     pickHtml = null; write();
     if (liveNavigation) {
-      if (selected && selected.node) rememberNavigationDetail('gene',{id:selected.node});
+      if (semantic) rememberNavigationDetail(semantic.type,semantic.args);
+      else if (selected && selected.node) rememberNavigationDetail('gene',{id:selected.node});
       else if (isel) rememberNavigationDetail('interior-pick',{ip:isel});
     }
     if (document.getElementById("open-right").classList.contains("ready")) detailReady(true);
   }
   let liveNavigation = null, navActivating = false;
   let navigationDetail = null, navigationDetailStamp = null;
+  const navigationStepSourceRefs = new Map();
   let navigationRestored = null, navigationRefit = null, navigationLastError = null;
   function releaseNavigationPose() { navigationRestored = null; navigationRefit = null; }
   // Dynamic controls are reconstructed on return; retain their semantic identity.
@@ -12810,8 +12836,10 @@
     const bar = document.getElementById('navigation-levels');
     if (!bar) return;
     const {L,R} = panelEdges(), w = innerWidth;
-    bar.style.left = (L+(w-L-R)/2)+'px';
-    bar.style.width = Math.max(120,w-L-R-16)+'px';
+    const dock = w-L-R < 280;
+    bar.dataset.drawerDock = String(dock);
+    bar.style.left = (dock ? w/2 : L+(w-L-R)/2)+'px';
+    bar.style.width = Math.max(1, (dock ? w-32 : w-L-R-16))+'px';
     bar.style.maxHeight = Math.max(80,innerHeight*.3)+'px'; bar.style.overflowY = 'auto';
     let bottom = 16;
     ['caption','tour-player','legend'].forEach(id=>{
@@ -12820,9 +12848,20 @@
         bottom = Math.max(bottom,innerHeight-el.getBoundingClientRect().top+8);
     });
     bar.style.bottom = bottom+'px';
+    // When a phone drawer occupies the viewport, dock below its scroll area.
+    // The controls keep their full width and the source text remains scrollable.
+    [leftP,rightP].forEach(panel => panel.style.bottom =
+      (dock && !panel.classList.contains('hidden') ? bottom+bar.offsetHeight+8 : 16)+'px');
+  }
+  function navigationDetailMarkup() {
+    // Native button presses temporarily decorate DOM inside Details. They are
+    // presentation, not an unregistered semantic destination or saved content.
+    const copy=detail.cloneNode(true);
+    copy.querySelectorAll('button.pressed').forEach(b=>{b.classList.remove('pressed');if(!b.className.trim())b.removeAttribute('class');});
+    return copy.innerHTML;
   }
   function rememberNavigationDetail(type, args) {
-    navigationDetail = {type, args: args || {}}; navigationDetailStamp = detail.innerHTML;
+    navigationDetail = {type, args: args || {}}; navigationDetailStamp = navigationDetailMarkup();
     if (liveNavigation && !navActivating) liveNavigation.render();
   }
   function showOverview() {
@@ -12904,13 +12943,17 @@
     const s = navigationRestored, {L,R} = panelEdges();
     const rect = [L,0,Math.max(1,innerWidth-L-R),Math.max(1,innerHeight-lastCapH)];
     const changed = s.viewport.width!==innerWidth || s.viewport.height!==innerHeight || rect.some((v,i)=>v!==s.viewport.renderRect[i]);
-    const fit = inside ? inside.home.dist : golgiView ? golgiFitDistance() : HOME.dist;
-    const ratio = changed && s.viewport.fitDistance>0 ? Math.max(1,fit/s.viewport.fitDistance) : 1;
-    const dist = s.pose.dist*ratio;
+    let dist=s.pose.dist,fitError=null;
+    if(changed)try { dist=window.DigitalCellNavigationFit.minimumDistance(s.viewport.fitPoints,s.pose,
+      camera.projectionMatrix.elements,rect,innerWidth,innerHeight,camera.near,camera.far); }
+    catch(error) {fitError=error.message;}
     [cam,camGoal].forEach(c=>{c.yaw=s.pose.yaw;c.pitch=s.pose.pitch;c.target.fromArray(s.pose.target);c.dist=dist;});
-    navigationRefit = {changed,originalDistance:s.pose.dist,restoredDistance:dist,savedFit:s.viewport.fitDistance,currentFit:fit,
-      reason:changed ? 'viewport-or-panel-layout' : 'unchanged-layout',policy:'proportional-existing-display-fit'};
-    if (changed) { const el=document.getElementById('navigation-status'); if(el) el.textContent='View refitted after viewport change.'; }
+    navigationRefit = {changed,originalDistance:s.pose.dist,restoredDistance:dist,
+      savedFit:s.pose.dist,currentFit:dist,fitPoints:s.viewport.fitPoints,
+      feasible:!fitError,error:fitError,
+      reason:changed ? 'viewport-or-panel-layout' : 'unchanged-layout',policy:'minimal-saved-visible-envelope'};
+    if (changed && liveNavigation) liveNavigation.status(fitError ?
+      'Saved framing cannot fit this layout. Close a panel or compact the caption.' : 'View refitted after viewport change.');
   }
   function releaseGolgiView() {
     if (!golgiView) return;
@@ -14320,7 +14363,7 @@
         if (S.ref.t === "node") { selected = { node: S.ref.id }; detail.innerHTML = nodeHtml(S.ref.id); } else { selected = null; detail.innerHTML = ipHtml(S.ref); }
         setPerturbButtons();
         if (K.si === 0) openDetail(true);
-      });
+      }, {type:S.ref.t === 'node' ? 'gene' : 'interior-pick',args:S.ref.t === 'node' ? {id:S.ref.id} : {ip:S.ref}});
       if (S.cam) { camGoal.target.set(S.cam[0], S.cam[1], S.cam[2]); camGoal.dist = ctx.home.dist * (S.cam[3] || 1); }
       else { camGoal.target.copy(ctx.home.target); camGoal.dist = ctx.home.dist; }
       K.caption();
@@ -15555,6 +15598,7 @@
         s.reactions.map((r) => r.label + " (" + r.role_or_alternative + "): " + tcaEq(r) + ".").join(" ")) +
         " The moving dot shows the order of the steps at a fixed pace, not a flux. Open the step card for gene rules and model flux ranges.",
     }));
+    STEPS.forEach(S=>{if(S.source_process_ids) navigationStepSourceRefs.set(S.ref.t+':'+S.ref.id,S.source_process_ids.slice());});
     const TOURS = {
       proton_gradient: { name: "Electron transport chain", steps: STEPS, then: "flow" },
       tca_steps: { name: "TCA cycle step by step", badge: TCA_QUAL, steps: TCA_TOUR },
@@ -15634,15 +15678,11 @@
       if (S.g != null) grT = S.g;
       ifocus = S.ref || null;
       if (S.ref) autoDetail(() => {
-        isel = null; detail.innerHTML = ipHtml(S.ref);
-        if (S.source_process_ids) {
-          detail.innerHTML += S.source_process_ids.map((id) => {
-            const ev = APR[id] && APR[id].evidence;
-            return ev ? '<h3>Step mechanism sources</h3><p class="note">' + srcHtml(ev.sources) + (ev.notes ? "<br/>" + esc(ev.notes) : "") + "</p>" : "";
-          }).join("");
-        }
+        isel = null; selected = null;
+        detail.innerHTML = navigationPickHtml({ip:S.ref,sourceProcessIds:S.source_process_ids || []});
+        setPerturbButtons();
         if (si === 0) openDetail(true);
-      });
+      }, {type:'interior-pick',args:{ip:S.ref,sourceProcessIds:S.source_process_ids || []}});
       if (S.tgt) { camGoal.target.copy(S.tgt); camGoal.dist = ctx.home.dist * S.dz; }
       else if (S.cam) { camGoal.target.set(S.cam[0] * 0.75, S.cam[1] * 0.6 - 0.1, 0.4); camGoal.dist = ctx.home.dist * Math.min(1, S.cam[2] * 1.45); }
       caption();
@@ -15677,7 +15717,13 @@
       kd(id) {
         KD[id] = !KD[id];
         if (mode !== "flow") setFlow(); else caption();
-        if (isel && isel.id === id) detail.innerHTML = ipHtml(isel);
+        if (isel && isel.id === id) {
+          detail.innerHTML = ipHtml(isel); rememberNavigationDetail('interior-pick',{ip:isel});
+        } else if (liveNavigation && navigationDetail && navigationDetail.type==='interior-pick' &&
+          navigationDetail.args.ip.id===id && navigationDetailStamp===navigationDetailMarkup()) {
+          const args=navigationDetail.args;
+          detail.innerHTML=navigationPickHtml(args); rememberNavigationDetail('interior-pick',args);
+        }
       },
       isKD: (id) => !!KD[id],
       stepIndexFor: (ref) => STEPS.findIndex((S) => S.ref && S.ref.t === ref.t && S.ref.id === ref.id),
@@ -16325,6 +16371,12 @@
     }
     return "";
   }
+  function navigationPickHtml(args) {
+    return ipHtml(args.ip) + (args.sourceProcessIds || []).map(id => {
+      const ev = APR[id] && APR[id].evidence;
+      return ev ? '<h3>Step mechanism sources</h3><p class="note">' + srcHtml(ev.sources) + (ev.notes ? '<br/>' + esc(ev.notes) : '') + '</p>' : '';
+    }).join('');
+  }
   function selectIp(ip, auto) {
     if (liveNavigation && !navActivating && liveNavigation.nav.read().current.view.kind === 'closeup') return liveNavigation.back(()=>selectIp(ip,auto));
     releaseGolgiView();
@@ -16543,29 +16595,46 @@
     inner_membrane: "mitochondria", matrix: "mitochondria", nucleus: "nucleus",
   };
   const SEARCH_IP = { protein: "prot", complex: "cx", carrier: "cr", atlas_process: "ap", atlas_compartment: "ac" };
-  function searchPanel(html) { releaseGolgiView(); isel = null; selected = null; detail.innerHTML = html; setPerturbButtons(); openDetail(); }
+  function searchDetailHtml(e) {
+    const ip = {t:SEARCH_IP[e.type],id:e.id};
+    return (!e.destination ? '<p class="note">No single recorded place for this item' +
+      (e.locations && e.locations.length ? ' (locations: ' + esc(e.locations.join(', ')) + ')' : '') +
+      ', so the view does not move.</p>' : '') + ipHtml(ip);
+  }
+  function searchPanel(e) {
+    releaseGolgiView(); isel = null; selected = null; detail.innerHTML = searchDetailHtml(e);
+    setPerturbButtons(); openDetail(); rememberNavigationDetail('search',{type:e.type,id:e.id});
+  }
   function searchGo(e) {
     if (!e) return;
     if (!liveNavigation && transition) { pendingNav = () => searchGo(e); return; }
     const d = e.destination;
     const outside = (fn) => { if (inside) exitInterior(fn); else fn(); };
     if (e.type === "pathway") {
-      outside(() => { if (focusPw !== e.id) focusPathway(e.id); else { detail.innerHTML = pathwayHtml(e.id); openDetail(); } });
+      outside(() => { if (focusPw !== e.id) focusPathway(e.id); else { detail.innerHTML = pathwayHtml(e.id); openDetail(); rememberNavigationDetail('pathway',{id:e.id}); } });
     } else if (e.type === "pathway_node") {
       outside(() => selectNode(e.id, true));
     } else if (e.type === "compartment") {
       outside(() => selectComp(d.id, true));
     } else if (e.type === "overview_process") {
-      outside(() => { selectComp(d.id, true); detail.innerHTML = procHtml(d.id, e.id); });
+      outside(() => {
+        const show = () => { detail.innerHTML = procHtml(d.id,e.id); openDetail(); rememberNavigationDetail('interior-pick',{ip:{t:'proc',comp:d.id,id:e.id}}); };
+        const select = () => { selectComp(d.id,true); show(); };
+        if (liveNavigation && d.id === 'golgi') {
+          if (liveNavigation.nav.read().current.view.kind === 'closeup') show();
+          else liveNavigation.closeup(show);
+        } else if (liveNavigation && liveNavigation.nav.read().current.view.kind === 'closeup') liveNavigation.back(select);
+        else select();
+      });
     } else if (e.type === "anatomy_detail") {
       outside(() => selectAnat(e.id, true));
     } else if (SEARCH_IP[e.type]) {
       const ip = { t: SEARCH_IP[e.type], id: e.id };
       const room = d && ATLAS_INTERIOR[d.id];
-      if (!d) searchPanel('<p class="note">No single recorded place for this item' + (e.locations && e.locations.length ? " (locations: " + esc(e.locations.join(", ")) + ")" : "") + ", so the view does not move.</p>" + ipHtml(ip));
+      if (!d) searchPanel(e);
       else if (room === "mitochondria") selectIp(ip);
-      else if (room && BUILD[room]) enterInterior(room, () => searchPanel(ipHtml(ip)));
-      else outside(() => searchPanel(ipHtml(ip)));
+      else if (room && BUILD[room]) enterInterior(room, () => searchPanel(e));
+      else outside(() => searchPanel(e));
     }
   }
   (function searchControls() {
@@ -16715,6 +16784,7 @@
   function tourClose(keepDetail) {
     if (!tourCur) return;
     tourCancelSpeech();
+    if (liveNavigation) releaseStrongParticles();
     const prev = tourCur.prevFocus, vis = tourCur.prevVisible, pc = tourCur.prevCam;
     tourCur = null;
     document.getElementById("right").classList.remove("tour-source-front");
@@ -17049,6 +17119,11 @@
     if (capOn) {
       captionEl.style.left = (L + (w - L - R) / 2) + "px";
       captionEl.style.width = Math.max(360, Math.min(780, w - L - R - 24)) + "px";
+      // Expanded teaching controls must leave a usable render rectangle even
+      // in short landscape. Their complete content remains scrollable.
+      if(document.getElementById('navigation-levels')) {
+        captionEl.style.maxHeight=Math.max(80,h*.4)+'px'; captionEl.style.overflowY='auto';
+      }
     }
     const capH = capOn && !document.body.classList.contains("cramped") ? captionEl.offsetHeight + 24 : 0;
     lastCaptionMeasured = capH;
@@ -17112,14 +17187,44 @@
     const setPose = p => { [cam,camGoal].forEach(c => { c.yaw=p.yaw; c.pitch=p.pitch; c.dist=p.dist; c.target.fromArray(p.target); }); };
     const view = id => window.DCMolecules.definitions[id] ? {kind:'molecule',rank:3,id} : {kind:'interior',rank:2,id};
     const rootView = {kind:'cell',rank:0,id:'cell'};
+    const searchDetailEntry = d => d && SEARCH.find(e => e.type === d.args.type && e.id === d.args.id && SEARCH_IP[e.type]);
     const validDetail = d => d && (d.type === 'overview' || d.type === 'compartment' && !!COMP[d.args.id] ||
       d.type === 'gene' && !!NODE[d.args.id] || d.type === 'anatomy' && !!ANAT[d.args.id] ||
-      d.type === 'pathway' && !!PW[d.args.id] || d.type === 'interior-pick' && !!ipHtml(d.args.ip));
+      d.type === 'pathway' && !!PW[d.args.id] || d.type === 'interior-pick' && !!ipHtml(d.args.ip) &&
+        (d.args.sourceProcessIds === undefined || Array.isArray(d.args.sourceProcessIds) && d.args.sourceProcessIds.length <= 64 &&
+          (d.args.sourceProcessIds.length===0 || JSON.stringify(d.args.sourceProcessIds)===
+            JSON.stringify(navigationStepSourceRefs.get(d.args.ip.t+':'+d.args.ip.id)))) ||
+      d.type === 'search' && !!searchDetailEntry(d) && !!searchDetailHtml(searchDetailEntry(d)));
+    function captureNavigationBounds(rect) {
+      updateCamera(0); camera.updateMatrixWorld(true);
+      const bounds = new THREE.Box3();
+      if(golgiView) bounds.copy(GOLGI_BOUNDS);
+      else {
+        const active=inside?inside.s:scene; active.updateMatrixWorld(true);
+        active.traverseVisible(o=>{
+          if(!o.geometry||o.isSprite) return;
+          if(o.isInstancedMesh) { if(!o.boundingBox)o.computeBoundingBox(); }
+          else if(!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+          const box=o.isInstancedMesh?o.boundingBox:o.geometry.boundingBox;
+          if(box) bounds.union(box.clone().applyMatrix4(o.matrixWorld));
+        });
+      }
+      if(bounds.isEmpty())return [];
+      const x0=2*rect[0]/innerWidth-1,x1=2*(rect[0]+rect[2])/innerWidth-1,
+        y0=1-2*(rect[1]+rect[3])/innerHeight,y1=1-2*rect[1]/innerHeight;
+      const crop=new THREE.Matrix4().set(2/(x1-x0),0,0,-(x1+x0)/(x1-x0),
+        0,2/(y1-y0),0,-(y1+y0)/(y1-y0),0,0,1,0,0,0,0,1);
+      const frustum=new THREE.Frustum().setFromProjectionMatrix(crop.multiply(camera.projectionMatrix).multiply(camera.matrixWorldInverse));
+      return window.DigitalCellNavigationFit.clipBox(bounds.min.toArray(),bounds.max.toArray(),
+        frustum.planes.map(p=>[...p.normal.toArray(),p.constant]));
+    }
     function captureNavigation() {
-      if (tourCur) throw new TypeError('Outer narrative-tour snapshots are not supported in this candidate yet');
-      if (navigationDetailStamp !== detail.innerHTML || !validDetail(navigationDetail))
+      const restriction = navigationOwnerRestriction();
+      if (restriction) throw new TypeError(restriction);
+      if (navigationDetailStamp !== navigationDetailMarkup() || !validDetail(navigationDetail))
         throw new TypeError('This detail destination has no reviewed restore resolver yet');
       const pl = inside ? inside.cut : cut, edges=panelEdges();
+      const renderRect=[edges.L,0,Math.max(1,innerWidth-edges.L-edges.R),Math.max(1,innerHeight-lastCapH)];
       return {camera:{displayed:pose(cam),goal:pose(camGoal),userZoomed},
         projection:{fov:camera.fov,near:camera.near,far:camera.far,zoom:camera.zoom,viewOffset:camera.view ? {...camera.view} : null},
         clipping:{enabled:renderer.localClippingEnabled,normal:pl.normal.toArray(),constant:pl.constant},
@@ -17129,14 +17234,16 @@
         panels:{left:!leftP.classList.contains('hidden'),right:!rightP.classList.contains('hidden'),
           leftScroll:leftP.scrollTop,rightScroll:rightP.scrollTop,ready:document.getElementById('open-right').classList.contains('ready'),compact:{...compactUser}},
         room:{playing:!!(inside && inside.navigationState.capture().state.playing),value:inside ? inside.navigationState.capture() : null},
-        owners:{spin,guidedPlaying:!!(inside && inside.api),tourPlaying:false,ceaj:!!(CJ_FADE && CJ_FADE.cam),speech:false},
-        viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio,renderRect:[edges.L,0,Math.max(1,innerWidth-edges.L-edges.R),Math.max(1,innerHeight-lastCapH)],fitDistance:inside ? inside.home.dist : golgiView ? golgiFitDistance() : HOME.dist},
+        owners:{spin,guidedPlaying:!!(inside && inside.api && inside.navigationState.capture().state.playing),tourPlaying:false,ceaj:!!(CJ_FADE && CJ_FADE.cam),speech:false},
+        viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio,renderRect,
+          fitPoints:captureNavigationBounds(renderRect),fitDistance:inside ? inside.home.dist : golgiView ? golgiFitDistance() : HOME.dist},
         returnFocus:captureNavigationFocus()};
     }
     function restoreDetail(d) {
       if(d.type==='overview') { if(inside) showInteriorOverview(); else showOverview(); }
       else { detail.innerHTML=d.type==='compartment' ? compHtml(d.args.id) : d.type==='gene' ? nodeHtml(d.args.id) :
-        d.type==='anatomy' ? anatHtml(d.args.id) : d.type==='pathway' ? pathwayHtml(d.args.id) : ipHtml(d.args.ip);
+        d.type==='anatomy' ? anatHtml(d.args.id) : d.type==='pathway' ? pathwayHtml(d.args.id) :
+        d.type==='search' ? searchDetailHtml(searchDetailEntry(d)) : navigationPickHtml(d.args);
         rememberNavigationDetail(d.type,d.args); }
       setPerturbButtons();
     }
@@ -17160,6 +17267,7 @@
           [['t-labels',showLabels],['t-genes',showGenes],['t-anatomy',anatGroup.visible]].forEach(([id,v])=>document.getElementById(id).checked=v);
           restoreDetail(s.detail);
           selected=s.selection.selected; isel=s.selection.isel; ifocus=s.selection.ifocus;
+          setPerturbButtons();
           Object.assign(compactUser,s.panels.compact);
           [['left',s.panels.left],['right',s.panels.right]].forEach(([id,on])=>{document.getElementById(id).classList.toggle('hidden',!on);document.getElementById('open-'+id).classList.toggle('on',!on);});
           camera.fov=s.projection.fov; camera.near=s.projection.near; camera.far=s.projection.far; camera.zoom=s.projection.zoom;
@@ -17192,7 +17300,8 @@
     const adapter={rootView,capture:captureNavigation,
       validateView:v=>v.kind==='cell' && v.id==='cell' || v.kind==='closeup' && v.id==='golgi' ||
         v.kind==='interior' && !!BUILD[v.id] && !window.DCMolecules.definitions[v.id] || v.kind==='molecule' && !!window.DCMolecules.definitions[v.id],
-      validateState:(s,v)=>Number.isFinite(s.viewport.fitDistance) && s.viewport.fitDistance>0 && validDetail(s.detail) && (v.kind==='cell'||v.kind==='closeup' ? s.room.value===null :
+      validateState:(s,v)=>Number.isFinite(s.viewport.fitDistance) && s.viewport.fitDistance>0 && Array.isArray(s.viewport.fitPoints) && s.viewport.fitPoints.length<=64 &&
+        s.viewport.fitPoints.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite)) && validDetail(s.detail) && (v.kind==='cell'||v.kind==='closeup' ? s.room.value===null :
         !!(interiorCache[v.id] && interiorCache[v.id].navigationState.validate(s.room.value))),
       prepare:async(v,context)=>{ const room=v.kind==='interior'||v.kind==='molecule' ? interiorCache[v.id] || (interiorCache[v.id]=buildInterior(v.id)) : null;
         if(room && room.moleculeIdentity && !room._navigationReturnCopy) {
@@ -17202,10 +17311,15 @@
         if(room) QUALITY.applyExtraMaterials(room.s); return {room}; },
       activate:activateNavigation,
       rollback:r=>activateNavigation({room:interiorCache[r.view.id]||null},{view:r.view,state:window.DigitalCellNavigation.pausedRestore(r.state)}),
-      discard:()=>{},recoverRoot:()=>{navActivating=true;try{if(inside&&inside.onExit)inside.onExit();outsideFallback();rememberNavigationDetail('overview');}finally{navActivating=false;}},
+      discard:()=>{},recoverRoot:()=>{navActivating=true;try{
+        releaseNavigationPose(); clearHover(); lastTap=null; if(tourCur)tourClose(true); cjReleaseCamera(); releaseGolgiView();
+        resetCascade();
+        spin=false; document.getElementById('t-spin').checked=false; agPlaying=false; tourCancelSpeech();
+        if(inside&&inside.onExit)inside.onExit(); outsideFallback(); rememberNavigationDetail('overview');
+      }finally{navActivating=false;}},
       onError:(error)=>{navigationLastError=error.message;const el=document.getElementById('navigation-status');if(el)el.textContent='View unavailable: '+error.message;}};
     const initial=captureNavigation();
-    liveNavigation=window.DigitalCellLiveNavigation({adapter,view,layout:resize,
+    liveNavigation=window.DigitalCellLiveNavigation({adapter,view,layout:resize,restriction:navigationOwnerRestriction,
       label:id=>(COMP[id]||window.DCMolecules.definitions[id]||{label:id}).label || window.DCMolecules.definitions[id].title,
       selectedComp:()=>selected&&selected.comp,
       inwardTarget:()=>inside ? inside.id==='mitochondria' ? 'molecule_atp' : ['rough_er','ribosomes'].includes(inside.id) ? 'molecule_ribosome' : null : selected&&BUILD[selected.comp] ? selected.comp : golgiView ? 'golgi' : null,
@@ -17219,7 +17333,11 @@
     document.getElementById('reset-view').onclick=()=>liveNavigation.home();
     document.getElementById('close-right').onclick=()=>golgiView ? liveNavigation.back() : setPanel('right',false);
     window.__liveNavigation={read:()=>liveNavigation.nav.read(),inspect:()=>liveNavigation.nav.inspect(),capture:captureNavigation,
-      refit:()=>navigationRefit,poseGuard:()=>!!navigationRestored,lastError:()=>navigationLastError};
+      refit:()=>navigationRefit,poseGuard:()=>!!navigationRestored,lastError:()=>navigationLastError,
+      fitProjection:()=>camera.projectionMatrix.elements.slice()};
+    window.__navigationOwnerState=()=>({restriction:navigationOwnerRestriction(),running:simRunning,
+      lastCascade:lastCascade && {...lastCascade},timers:cascadeTimers.length,generation:cascadeGeneration,
+      states:{...nodeState},callbacks:particles.filter(p=>p.busy && p.done).length});
   }
 
   let last = performance.now(), qInside = null;

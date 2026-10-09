@@ -200,7 +200,11 @@
     }
     async function transaction(operation, view, restoreRoute) {
       if (closed) return {status: 'closed'};
+      const intendedGeneration = generation + 1;
       cancel();
+      // abort() is synchronous: an old preparation's listener may dispatch a
+      // newer command. Never overwrite that command's ticket or share its token.
+      if (closed || generation !== intendedGeneration) return {status: 'cancelled'};
       const ticket = {generation, abort: new AbortController(), operation, restoreRoute};
       pending = ticket;
       const isCurrent = () => !closed && generation === ticket.generation;
