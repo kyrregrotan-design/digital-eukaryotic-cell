@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T17:15:05+02:00",
+    "generated_at":  "2026-10-09T17:20:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "Atlas caveat visibility",
                                  "status":  "running",
-                                 "step":  4,
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  78,
-                                 "step_title":  "Verify visible limitations",
+                                 "percent":  86.5,
+                                 "step_title":  "Record review handoff",
                                  "steps":  [
                                                "Context and scope",
                                                "Audit caveat surfaces",
@@ -37,9 +37,9 @@
                                                "Verify visible limitations",
                                                "Record review handoff"
                                            ],
-                                 "eta_seconds":  28,
+                                 "eta_seconds":  188,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T17:09:13+02:00",
+                                 "updated":  "2026-10-09T17:18:33+02:00",
                                  "last_run":  "2026-10-09T16:59:57+02:00",
                                  "next_run":  null
                              }
