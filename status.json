@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T09:55:05+02:00",
+    "generated_at":  "2026-10-09T10:00:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "Stage 2 status and source-failure continuation",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  72.5,
-                                 "step_title":  "Production probes and tests",
+                                 "percent":  91.7,
+                                 "step_title":  "Self-review and Cursor handoff",
                                  "steps":  [
                                                "Context and required condition",
                                                "Implement bounded continuation",
                                                "Production probes and tests",
                                                "Self-review and Cursor handoff"
                                            ],
-                                 "eta_seconds":  30,
+                                 "eta_seconds":  99,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T09:48:38+02:00",
+                                 "updated":  "2026-10-09T09:56:45+02:00",
                                  "last_run":  "2026-10-09T09:41:54+02:00",
                                  "next_run":  null
                              }
