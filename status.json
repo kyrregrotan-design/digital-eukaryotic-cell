@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T10:30:04+02:00",
+    "generated_at":  "2026-10-09T10:35:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "Stage 2 semantic ownership and portrait layout",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  5,
-                                 "percent":  58,
-                                 "step_title":  "Implement bounded continuation",
+                                 "percent":  71.9,
+                                 "step_title":  "Verify production probes",
                                  "steps":  [
                                                "Context and start",
                                                "Audit semantic owners",
@@ -37,9 +37,9 @@
                                                "Verify production probes",
                                                "Document and handoff"
                                            ],
-                                 "eta_seconds":  287,
+                                 "eta_seconds":  323,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-09T10:26:43+02:00",
+                                 "updated":  "2026-10-09T10:32:47+02:00",
                                  "last_run":  "2026-10-09T10:21:19+02:00",
                                  "next_run":  null
                              }
