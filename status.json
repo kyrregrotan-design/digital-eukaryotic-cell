@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-10T10:20:04+02:00",
+    "generated_at":  "2026-10-10T10:25:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "Atlas closure and excluded-source doc follow-up",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  5,
-                                 "percent":  44,
-                                 "step_title":  "Daily database check",
+                                 "percent":  78,
+                                 "step_title":  "Prepare owner edits and state",
                                  "steps":  [
                                                "Context and approved-scope reconciliation",
                                                "Inspect stale recommendations",
@@ -37,9 +37,9 @@
                                                "Prepare owner edits and state",
                                                "Verify and hand off"
                                            ],
-                                 "eta_seconds":  417,
+                                 "eta_seconds":  86,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-10T10:19:33+02:00",
+                                 "updated":  "2026-10-10T10:21:45+02:00",
                                  "last_run":  "2026-10-10T10:14:36+02:00",
                                  "next_run":  null
                              }
