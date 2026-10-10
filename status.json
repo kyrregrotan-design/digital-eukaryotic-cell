@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-10T10:10:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-10T10:15:05+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "wormatlas-licence-audit opinion",
@@ -25,22 +25,18 @@
                               },
                    "codex":  {
                                  "task":  "WormAtlas/WormImage licence audit",
-                                 "status":  "done",
-                                 "step":  5,
-                                 "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "Verify and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Context and scope",
-                                               "Official terms",
-                                               "Inventory uses",
-                                               "Classify and correct register",
-                                               "Verify and handoff"
+
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  931,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-09T21:56:47+02:00",
-                                 "last_run":  "2026-10-09T21:39:28+02:00",
+                                 "last_run":  "2026-10-10T10:14:36+02:00",
                                  "next_run":  null
                              }
                },
