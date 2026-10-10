@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-09T23:30:04+02:00",
+    "generated_at":  "2026-10-10T07:00:04+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -48,7 +48,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  43,
+    "today_runs":  0,
     "queue":  [
                   "Venter på Kyrre: test på ekte telefon (Light) av shape-1/shape-2 før shape-2 bl…",
                   "Venter på Kyrre (kommer senere): endelig godkjenning av mitokondrie-piloten ett…",
