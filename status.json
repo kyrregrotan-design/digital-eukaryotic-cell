@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-10T10:45:04+02:00",
+    "generated_at":  "2026-10-10T10:50:04+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -89,13 +89,13 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  40.7,
-                      "total":  57,
+                      "percent":  39.7,
+                      "total":  58,
                       "done":  20,
                       "in_progress":  8,
-                      "todo":  29,
-                      "remaining":  37,
-                      "weight_total":  123,
+                      "todo":  30,
+                      "remaining":  38,
+                      "weight_total":  126,
                       "weight_done":  50,
                       "groups":  [
                                      "Ferdig i dag",
@@ -386,7 +386,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-09T20:45:03+02:00",
-                      "updated_by":  "Cursor"
+                      "updated":  "2026-10-10T10:50:00+02:00",
+                      "updated_by":  "Grok Bot"
                   }
 }
