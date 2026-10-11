@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-11T09:50:01+02:00",
+    "generated_at":  "2026-10-11T09:55:01+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -23,18 +23,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Atlas closure and excluded-source doc follow-up",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "Intestinal aging timeline opinion",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  61.2,
+                                 "step_title":  "Assess architecture and pilot",
                                  "steps":  [
-
+                                               "Context and scope",
+                                               "Verify open aging evidence",
+                                               "Assess architecture and pilot",
+                                               "Write opinion and handoff"
                                            ],
-                                 "eta_seconds":  915,
+                                 "eta_seconds":  219,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-10T10:29:06+02:00",
+                                 "updated":  "2026-10-11T09:53:58+02:00",
                                  "last_run":  "2026-10-11T09:49:16+02:00",
                                  "next_run":  null
                              }
@@ -43,7 +46,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  0,
+    "today_runs":  1,
     "queue":  [
                   "Venter på Kyrre: test på ekte telefon (Light) av shape-1/shape-2 før shape-2 bl…",
                   "Venter på Kyrre (kommer senere): endelig godkjenning av mitokondrie-piloten ett…",
