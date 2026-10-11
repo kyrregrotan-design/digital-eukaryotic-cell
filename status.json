@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-11T10:10:01+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-11T10:15:02+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "Intestinal aging timeline opinion",
@@ -23,22 +23,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Intestinal aging timeline opinion",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "Golgi quality benchmark opinion",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Write opinion and handoff",
+                                 "percent":  29.7,
+                                 "step_title":  "Evidence and parity prerequisites",
                                  "steps":  [
-                                               "Context and scope",
-                                               "Verify open aging evidence",
-                                               "Assess architecture and pilot",
-                                               "Write opinion and handoff"
+                                               "Context and request",
+                                               "Evidence and parity prerequisites",
+                                               "Write benchmark opinion",
+                                               "Verify and hand off"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  441,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-11T10:02:19+02:00",
-                                 "last_run":  "2026-10-11T09:49:16+02:00",
+                                 "updated":  "2026-10-11T10:14:31+02:00",
+                                 "last_run":  "2026-10-11T10:11:55+02:00",
                                  "next_run":  null
                              }
                },
@@ -46,7 +46,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  2,
+    "today_runs":  3,
     "queue":  [
                   "Venter på Kyrre: test på ekte telefon (Light) av shape-1/shape-2 før shape-2 bl…",
                   "Venter på Kyrre (kommer senere): endelig godkjenning av mitokondrie-piloten ett…",
