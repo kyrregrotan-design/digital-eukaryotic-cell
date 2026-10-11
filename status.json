@@ -1,43 +1,43 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-11T10:00:01+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-11T10:05:02+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "approved-queue-2026-10-10 opinion",
-                                  "status":  "done",
-                                  "step":  4,
+                                  "task":  "Intestinal aging timeline opinion",
+                                  "status":  "running",
+                                  "step":  3,
                                   "total":  4,
-                                  "percent":  100,
-                                  "step_title":  "Update STATUS and finish",
+                                  "percent":  50.7,
+                                  "step_title":  "Write independent opinion",
                                   "steps":  [
-                                                "Context and log start",
-                                                "Validate pins and dry run",
-                                                "Write opinion",
-                                                "Update STATUS and finish"
+                                                "Context and Codex note",
+                                                "Verify local aging JSON",
+                                                "Write independent opinion",
+                                                "Update STATUS and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  134,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-10T10:34:08+02:00",
-                                  "last_run":  "2026-10-10T10:30:26+02:00",
+                                  "updated":  "2026-10-11T10:04:59+02:00",
+                                  "last_run":  "2026-10-11T10:02:43+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Intestinal aging timeline opinion",
-                                 "status":  "running",
-                                 "step":  3,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  72.5,
-                                 "step_title":  "Assess architecture and pilot",
+                                 "percent":  100,
+                                 "step_title":  "Write opinion and handoff",
                                  "steps":  [
                                                "Context and scope",
                                                "Verify open aging evidence",
                                                "Assess architecture and pilot",
                                                "Write opinion and handoff"
                                            ],
-                                 "eta_seconds":  21,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-11T09:53:58+02:00",
+                                 "updated":  "2026-10-11T10:02:19+02:00",
                                  "last_run":  "2026-10-11T09:49:16+02:00",
                                  "next_run":  null
                              }
@@ -55,6 +55,11 @@
                   "Kommer til Kyrre: MOL-0015 (Sec61) når Molekylbiblioteket har oppfylt de to bet…"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Intestinal aging timeline opinion",
+                       "finished":  "2026-10-11T10:02:19+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "approved-queue-2026-10-10 opinion",
@@ -79,11 +84,6 @@
                        "agent":  "codex",
                        "task":  "WormAtlas/WormImage licence audit",
                        "finished":  "2026-10-09T21:54:57+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "Opinion: estimated-mito lifecycle continuation",
-                       "finished":  "2026-10-09T20:46:19+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
