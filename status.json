@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T15:35:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-13T15:40:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "GM1 shared foundation Cursor QA",
@@ -24,22 +24,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "GM1 shared foundation review",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "G2 + HG1 independent QA",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Write opinion and Cursor handoff",
+                                 "percent":  40.5,
+                                 "step_title":  "Source and model review",
                                  "steps":  [
-                                               "Read package and pinned contracts",
-                                               "Audit templates and capabilities",
-                                               "Reproduce tests and negative cases",
-                                               "Write opinion and Cursor handoff"
+                                               "Context and scope",
+                                               "Source and model review",
+                                               "Chrome device checks",
+                                               "Verdicts and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  301,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-13T12:01:02+02:00",
-                                 "last_run":  "2026-10-13T11:46:49+02:00",
+                                 "updated":  "2026-10-13T15:38:43+02:00",
+                                 "last_run":  "2026-10-13T15:36:37+02:00",
                                  "next_run":  null
                              }
                },
