@@ -1,15 +1,15 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T15:55:03+02:00",
+    "generated_at":  "2026-10-13T16:00:03+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "G2 + HG1 independent QA",
-                                  "status":  "running",
-                                  "step":  1,
+                                  "status":  "done",
+                                  "step":  4,
                                   "total":  4,
-                                  "percent":  0,
-                                  "step_title":  "Context and start",
+                                  "percent":  100,
+                                  "step_title":  "Write opinions and handoff",
                                   "steps":  [
                                                 "Context and start",
                                                 "Reproduce audit/runtime",
@@ -18,7 +18,7 @@
                                             ],
                                   "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-13T15:54:38+02:00",
+                                  "updated":  "2026-10-13T15:59:56+02:00",
                                   "last_run":  "2026-10-13T15:53:40+02:00",
                                   "next_run":  null
                               },
@@ -53,6 +53,11 @@
               ],
     "recent":  [
                    {
+                       "agent":  "cursor",
+                       "task":  "G2 + HG1 independent QA",
+                       "finished":  "2026-10-13T15:59:56+02:00"
+                   },
+                   {
                        "agent":  "codex",
                        "task":  "G2 + HG1 independent QA",
                        "finished":  "2026-10-13T15:53:19+02:00"
@@ -76,11 +81,6 @@
                        "agent":  "codex",
                        "task":  "LIB1 shared molecule library specification review",
                        "finished":  "2026-10-13T11:39:49+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "r-alt-v3 Cursor QA",
-                       "finished":  "2026-10-13T11:24:13+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -382,7 +382,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-13T15:50:55+02:00",
-                      "updated_by":  "Codex (G2/HG1 static QA complete; devic…"
+                      "updated":  "2026-10-13T15:58:00+02:00",
+                      "updated_by":  "Cursor (G2/HG1 QA CHANGES REQUIRED matc…"
                   }
 }
