@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T11:10:03+02:00",
+    "generated_at":  "2026-10-13T11:15:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,14 +28,14 @@
                                  "status":  "running",
                                  "step":  2,
                                  "total":  3,
-                                 "percent":  42.6,
+                                 "percent":  63.3,
                                  "step_title":  "Audit rules and adversarial fixtures",
                                  "steps":  [
                                                "Pin candidate and review gates",
                                                "Audit rules and adversarial fixtures",
                                                "Write opinion and handoff"
                                            ],
-                                 "eta_seconds":  403,
+                                 "eta_seconds":  103,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-13T11:08:57+02:00",
                                  "last_run":  "2026-10-13T11:05:03+02:00",
