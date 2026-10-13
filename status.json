@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T15:40:03+02:00",
+    "generated_at":  "2026-10-13T15:45:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,7 +28,7 @@
                                  "status":  "running",
                                  "step":  2,
                                  "total":  4,
-                                 "percent":  40.5,
+                                 "percent":  47.5,
                                  "step_title":  "Source and model review",
                                  "steps":  [
                                                "Context and scope",
@@ -36,7 +36,7 @@
                                                "Chrome device checks",
                                                "Verdicts and handoff"
                                            ],
-                                 "eta_seconds":  301,
+                                 "eta_seconds":  19,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-13T15:38:43+02:00",
                                  "last_run":  "2026-10-13T15:36:37+02:00",
