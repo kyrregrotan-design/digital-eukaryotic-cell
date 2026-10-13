@@ -1,43 +1,39 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T11:15:03+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-13T11:20:03+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "Membrane PEPT-1/FGT-1 QA",
-                                  "status":  "done",
-                                  "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "Write opinion and handoff",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "Start log and pin checks",
-                                                "Reproduce SHA256SUMS and archive",
-                                                "Run validate and inspect reports",
-                                                "Inspect sources estimates screenshots",
-                                                "Write opinion and handoff"
+
                                             ],
                                   "eta_seconds":  null,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-12T14:32:52+02:00",
-                                  "last_run":  "2026-10-12T14:29:12+02:00",
+                                  "last_run":  "2026-10-13T11:19:47+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Review R-ALT v3 specification",
-                                 "status":  "running",
-                                 "step":  2,
+                                 "status":  "done",
+                                 "step":  3,
                                  "total":  3,
-                                 "percent":  63.3,
-                                 "step_title":  "Audit rules and adversarial fixtures",
+                                 "percent":  100,
+                                 "step_title":  "Write opinion and handoff",
                                  "steps":  [
                                                "Pin candidate and review gates",
                                                "Audit rules and adversarial fixtures",
                                                "Write opinion and handoff"
                                            ],
-                                 "eta_seconds":  103,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-13T11:08:57+02:00",
+                                 "updated":  "2026-10-13T11:19:10+02:00",
                                  "last_run":  "2026-10-13T11:05:03+02:00",
                                  "next_run":  null
                              }
@@ -52,6 +48,11 @@
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "Review R-ALT v3 specification",
+                       "finished":  "2026-10-13T11:19:10+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "Membrane PEPT-1/FGT-1 QA",
@@ -76,11 +77,6 @@
                        "agent":  "codex",
                        "task":  "Golgi baseline: workspace and input preflight",
                        "finished":  "2026-10-12T13:27:50+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "M15 Claude package QA",
-                       "finished":  "2026-10-12T12:24:05+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -88,8 +84,8 @@
                       "percent":  39.6,
                       "total":  64,
                       "done":  23,
-                      "in_progress":  8,
-                      "todo":  33,
+                      "in_progress":  9,
+                      "todo":  32,
                       "remaining":  41,
                       "weight_total":  139,
                       "weight_done":  55,
@@ -382,7 +378,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-13T09:08:00+02:00",
-                      "updated_by":  "Grok Bot (Kyrres beskjed 13.10)"
+                      "updated":  "2026-10-13T11:16:00+02:00",
+                      "updated_by":  "Codex (R-ALT v3 opinion; Cursor QA next)"
                   }
 }
