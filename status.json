@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T16:00:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-13T16:05:03+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "G2 + HG1 independent QA",
