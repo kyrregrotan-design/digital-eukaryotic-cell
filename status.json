@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T15:45:03+02:00",
+    "generated_at":  "2026-10-13T15:50:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "G2 + HG1 independent QA",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  47.5,
-                                 "step_title":  "Source and model review",
+                                 "percent":  97.5,
+                                 "step_title":  "Verdicts and handoff",
                                  "steps":  [
                                                "Context and scope",
                                                "Source and model review",
                                                "Chrome device checks",
                                                "Verdicts and handoff"
                                            ],
-                                 "eta_seconds":  19,
+                                 "eta_seconds":  26,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-13T15:38:43+02:00",
+                                 "updated":  "2026-10-13T15:45:24+02:00",
                                  "last_run":  "2026-10-13T15:36:37+02:00",
                                  "next_run":  null
                              }
