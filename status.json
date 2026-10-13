@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T09:05:03+02:00",
+    "generated_at":  "2026-10-13T09:10:03+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -49,11 +49,8 @@
                  },
     "today_runs":  0,
     "queue":  [
-                  "Venter på Kyrre: test på ekte telefon (Light) av shape-1/shape-2 før shape-2 bl…",
-                  "Venter på Kyrre (kommer senere): endelig godkjenning av mitokondrie-piloten ett…",
-                  "Kommer til Kyrre: resultat av WormAtlas-lisenssjekken etter Cursors vurdering",
-                  "Kommer til Kyrre: Claudes plan for cellekjernen når den er klar",
-                  "Kommer til Kyrre: MOL-0015 (Sec61) når Molekylbiblioteket har oppfylt de to bet…"
+                  "Claude: sluttsjekk av Codex-membranen PEPT-1/FGT-1",
+                  "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
                    {
@@ -89,14 +86,14 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  39.7,
-                      "total":  58,
-                      "done":  20,
+                      "percent":  39.6,
+                      "total":  64,
+                      "done":  23,
                       "in_progress":  8,
-                      "todo":  30,
-                      "remaining":  38,
-                      "weight_total":  126,
-                      "weight_done":  50,
+                      "todo":  33,
+                      "remaining":  41,
+                      "weight_total":  139,
+                      "weight_done":  55,
                       "groups":  [
                                      "Ferdig i dag",
                                      "Nå",
@@ -386,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-10T10:50:00+02:00",
-                      "updated_by":  "Grok Bot"
+                      "updated":  "2026-10-13T09:08:00+02:00",
+                      "updated_by":  "Grok Bot (Kyrres beskjed 13.10)"
                   }
 }
