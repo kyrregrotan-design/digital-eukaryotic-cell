@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T11:05:03+02:00",
+    "generated_at":  "2026-10-13T11:10:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,23 +24,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "Independent Golgi G1 and mitochondria M1 review",
+                                 "task":  "Review R-ALT v3 specification",
                                  "status":  "running",
-                                 "step":  3,
-                                 "total":  5,
-                                 "percent":  58,
-                                 "step_title":  "Review mitochondria M1",
+                                 "step":  2,
+                                 "total":  3,
+                                 "percent":  42.6,
+                                 "step_title":  "Audit rules and adversarial fixtures",
                                  "steps":  [
-                                               "Read approvals and pin criteria",
-                                               "Review Golgi G1",
-                                               "Review mitochondria M1",
-                                               "Reconcile findings and daily sources",
-                                               "Write opinions and handoff"
+                                               "Pin candidate and review gates",
+                                               "Audit rules and adversarial fixtures",
+                                               "Write opinion and handoff"
                                            ],
-                                 "eta_seconds":  29,
+                                 "eta_seconds":  403,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-13T10:35:27+02:00",
-                                 "last_run":  "2026-10-13T10:29:20+02:00",
+                                 "updated":  "2026-10-13T11:08:57+02:00",
+                                 "last_run":  "2026-10-13T11:05:03+02:00",
                                  "next_run":  null
                              }
                },
