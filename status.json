@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T10:35:04+02:00",
+    "generated_at":  "2026-10-13T10:40:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "Independent Golgi G1 and mitochondria M1 review",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  3,
                                  "total":  5,
-                                 "percent":  27.3,
-                                 "step_title":  "Review Golgi G1",
+                                 "percent":  58,
+                                 "step_title":  "Review mitochondria M1",
                                  "steps":  [
                                                "Read approvals and pin criteria",
                                                "Review Golgi G1",
@@ -37,9 +37,9 @@
                                                "Reconcile findings and daily sources",
                                                "Write opinions and handoff"
                                            ],
-                                 "eta_seconds":  913,
+                                 "eta_seconds":  276,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-13T10:33:30+02:00",
+                                 "updated":  "2026-10-13T10:35:27+02:00",
                                  "last_run":  "2026-10-13T10:29:20+02:00",
                                  "next_run":  null
                              }
