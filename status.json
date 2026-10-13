@@ -1,40 +1,43 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T11:20:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-13T11:25:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
-                                  "task":  "Membrane PEPT-1/FGT-1 QA",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "r-alt-v3 Cursor QA",
+                                  "status":  "done",
+                                  "step":  6,
+                                  "total":  6,
+                                  "percent":  100,
+                                  "step_title":  "finish handoff",
                                   "steps":  [
-
+                                                "start log",
+                                                "reproduce pins",
+                                                "assess B1/B2",
+                                                "write opinion",
+                                                "update STATUS/FREMDRIFT",
+                                                "finish handoff"
                                             ],
                                   "eta_seconds":  null,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-12T14:32:52+02:00",
+                                  "updated":  "2026-10-13T11:24:13+02:00",
                                   "last_run":  "2026-10-13T11:19:47+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "Review R-ALT v3 specification",
-                                 "status":  "done",
-                                 "step":  3,
-                                 "total":  3,
-                                 "percent":  100,
-                                 "step_title":  "Write opinion and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Pin candidate and review gates",
-                                               "Audit rules and adversarial fixtures",
-                                               "Write opinion and handoff"
+
                                            ],
                                  "eta_seconds":  null,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-13T11:19:10+02:00",
-                                 "last_run":  "2026-10-13T11:05:03+02:00",
+                                 "last_run":  "2026-10-13T11:24:34+02:00",
                                  "next_run":  null
                              }
                },
@@ -42,12 +45,17 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  0,
+    "today_runs":  1,
     "queue":  [
                   "Claude: sluttsjekk av Codex-membranen PEPT-1/FGT-1",
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
+                   {
+                       "agent":  "cursor",
+                       "task":  "r-alt-v3 Cursor QA",
+                       "finished":  "2026-10-13T11:24:13+02:00"
+                   },
                    {
                        "agent":  "codex",
                        "task":  "Review R-ALT v3 specification",
@@ -72,11 +80,6 @@
                        "agent":  "codex",
                        "task":  "Golgi baseline candidate",
                        "finished":  "2026-10-12T14:07:08+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "Golgi baseline: workspace and input preflight",
-                       "finished":  "2026-10-12T13:27:50+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -378,7 +381,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-13T11:16:00+02:00",
-                      "updated_by":  "Codex (R-ALT v3 opinion; Cursor QA next)"
+                      "updated":  "2026-10-13T11:24:00+02:00",
+                      "updated_by":  "Cursor (R-ALT v3 QA AGREE WITH CHANGES;…"
                   }
 }
