@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-14T09:05:05+02:00",
+    "generated_at":  "2026-10-14T09:10:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,10 +25,10 @@
                    "codex":  {
                                  "task":  "MITO_M3 independent QA",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  4,
                                  "total":  5,
-                                 "percent":  18,
-                                 "step_title":  "Context and pin inventory",
+                                 "percent":  78,
+                                 "step_title":  "Opinion and database check",
                                  "steps":  [
                                                "Context and pin inventory",
                                                "Source and geometry audit",
@@ -36,9 +36,9 @@
                                                "Opinion and database check",
                                                "State and Cursor handoff"
                                            ],
-                                 "eta_seconds":  495,
+                                 "eta_seconds":  95,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-14T08:57:16+02:00",
+                                 "updated":  "2026-10-14T09:05:07+02:00",
                                  "last_run":  "2026-10-14T08:55:19+02:00",
                                  "next_run":  null
                              }
