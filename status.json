@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-14T08:50:05+02:00",
+    "generated_at":  "2026-10-14T08:55:05+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -85,20 +85,21 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  38.7,
-                      "total":  65,
+                      "percent":  36.7,
+                      "total":  67,
                       "done":  23,
-                      "in_progress":  12,
+                      "in_progress":  14,
                       "todo":  30,
-                      "remaining":  42,
-                      "weight_total":  142,
+                      "remaining":  44,
+                      "weight_total":  150,
                       "weight_done":  55,
                       "groups":  [
                                      "Ferdig i dag",
                                      "Nå",
                                      "Neste",
                                      "Senere",
-                                     "N?"
+                                     "N?",
+                                     "Pågår"
                                  ],
                       "items":  [
                                     {
@@ -382,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-13T15:58:00+02:00",
-                      "updated_by":  "Cursor (G2/HG1 QA CHANGES REQUIRED matc…"
+                      "updated":  "2026-10-14T08:51:56+02:00",
+                      "updated_by":  "Grok Bot"
                   }
 }
