@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-13T23:30:03+02:00",
+    "generated_at":  "2026-10-14T08:50:05+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -46,7 +46,7 @@
                      "agent":  null,
                      "time":  null
                  },
-    "today_runs":  4,
+    "today_runs":  0,
     "queue":  [
                   "Claude: sluttsjekk av Codex-membranen PEPT-1/FGT-1",
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
