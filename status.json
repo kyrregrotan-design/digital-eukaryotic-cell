@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T16:20:04+02:00",
+    "generated_at":  "2026-10-15T16:25:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "NFIX4 independent QA",
                                  "status":  "running",
-                                 "step":  1,
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  0,
-                                 "step_title":  "Context and scope",
+                                 "percent":  72.5,
+                                 "step_title":  "Independent runtime checks",
                                  "steps":  [
                                                "Context and scope",
                                                "Pins and replay",
                                                "Independent runtime checks",
                                                "Verdict and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  190,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T16:15:51+02:00",
+                                 "updated":  "2026-10-15T16:21:15+02:00",
                                  "last_run":  "2026-10-15T16:14:19+02:00",
                                  "next_run":  null
                              }
