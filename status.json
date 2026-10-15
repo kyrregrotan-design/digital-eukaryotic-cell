@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T09:20:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-15T09:25:03+02:00",
+    "active_agent":  null,
     "agents":  {
                    "cursor":  {
                                   "task":  "g2fix2-reqa independent QA",
