@@ -1,44 +1,44 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T21:45:02+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-15T21:50:02+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "MEMPLAN independent plan opinion",
-                                  "status":  "done",
-                                  "step":  6,
+                                  "task":  "PEROXB1 independent QA (B1-B4)",
+                                  "status":  "running",
+                                  "step":  2,
                                   "total":  6,
-                                  "percent":  100,
-                                  "step_title":  "finish+handoff",
+                                  "percent":  31.3,
+                                  "step_title":  "pin-continuity",
                                   "steps":  [
-                                                "start+progress",
-                                                "file/arithmetic checks",
-                                                "B1-B4/C1-C5 spot-check",
-                                                "write review",
-                                                "STATUS/FREMDRIFT",
-                                                "finish+handoff"
+                                                "start-log",
+                                                "pin-continuity",
+                                                "verify-B1-B4",
+                                                "write-report",
+                                                "update-status",
+                                                "finish-handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  296,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-15T20:16:32+02:00",
-                                  "last_run":  "2026-10-15T20:11:47+02:00",
+                                  "updated":  "2026-10-15T21:48:57+02:00",
+                                  "last_run":  "2026-10-15T21:47:46+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "PEROXB1 QA completion",
-                                 "status":  "running",
-                                 "step":  2,
+                                 "status":  "done",
+                                 "step":  3,
                                  "total":  3,
-                                 "percent":  45.9,
-                                 "step_title":  "Resolve review findings",
+                                 "percent":  100,
+                                 "step_title":  "Write verdict and handoff",
                                  "steps":  [
                                                "Recover saved evidence",
                                                "Resolve review findings",
                                                "Write verdict and handoff"
                                            ],
-                                 "eta_seconds":  706,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T21:42:17+02:00",
+                                 "updated":  "2026-10-15T21:46:50+02:00",
                                  "last_run":  "2026-10-15T21:35:03+02:00",
                                  "next_run":  null
                              }
@@ -53,6 +53,11 @@
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "PEROXB1 QA completion",
+                       "finished":  "2026-10-15T21:46:50+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "MEMPLAN independent plan opinion",
@@ -77,22 +82,17 @@
                        "agent":  "codex",
                        "task":  "NFIX4 independent QA",
                        "finished":  "2026-10-15T16:26:47+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "MITO_M3FIX independent QA",
-                       "finished":  "2026-10-15T15:14:06+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  40.7,
-                      "total":  71,
+                      "percent":  40,
+                      "total":  72,
                       "done":  26,
-                      "in_progress":  15,
+                      "in_progress":  16,
                       "todo":  30,
-                      "remaining":  45,
-                      "weight_total":  162,
+                      "remaining":  46,
+                      "weight_total":  165,
                       "weight_done":  66,
                       "groups":  [
                                      "Ferdig i dag",
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-15T20:16:32+02:00",
-                      "updated_by":  "Cursor (MEMPLAN independent AGREE WITH…"
+                      "updated":  "2026-10-15T21:46:50+02:00",
+                      "updated_by":  "Codex (PEROXB1 independent QA; Cursor n…"
                   }
 }
