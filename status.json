@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T11:00:03+02:00",
+    "generated_at":  "2026-10-15T11:05:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,18 +26,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "G2FIX2 re-QA og daglig databasekontroll",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "HG1FIX2 re-QA",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  37.3,
+                                 "step_title":  "Pins and unchanged geometry",
                                  "steps":  [
-
+                                               "Context and review scope",
+                                               "Pins and unchanged geometry",
+                                               "Tolerance and saved evidence",
+                                               "Verdict and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  596,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T09:14:31+02:00",
+                                 "updated":  "2026-10-15T11:03:05+02:00",
                                  "last_run":  "2026-10-15T10:59:08+02:00",
                                  "next_run":  null
                              }
