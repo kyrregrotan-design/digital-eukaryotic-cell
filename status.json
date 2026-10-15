@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T17:20:04+02:00",
+    "generated_at":  "2026-10-15T17:25:04+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-15T16:30:00+02:00",
-                      "updated_by":  "Cursor (NFIX4 independent QA AGREE WITH…"
+                      "updated":  "2026-10-15T17:21:57+02:00",
+                      "updated_by":  "Grok Bot (bokføring: Claude sluttsjekk…"
                   }
 }
