@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T20:00:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-15T20:05:03+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "NFIX4 independent QA",
@@ -24,22 +24,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "NFIX4 independent QA",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "MEMPLAN uavhengig planvurdering",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Verdict and handoff",
+                                 "percent":  39.8,
+                                 "step_title":  "Plan og delgjennomganger",
                                  "steps":  [
-                                               "Context and scope",
-                                               "Pins and replay",
-                                               "Independent runtime checks",
-                                               "Verdict and handoff"
+                                               "Kontekst og avgrensning",
+                                               "Plan og delgjennomganger",
+                                               "Kilde- og kontraktskontroll",
+                                               "Rapport og overlevering"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  446,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T16:26:47+02:00",
-                                 "last_run":  "2026-10-15T16:14:19+02:00",
+                                 "updated":  "2026-10-15T20:03:12+02:00",
+                                 "last_run":  "2026-10-15T20:00:07+02:00",
                                  "next_run":  null
                              }
                },
