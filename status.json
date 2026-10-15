@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T21:05:05+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-15T21:10:05+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "MEMPLAN independent plan opinion",
@@ -25,22 +25,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "MEMPLAN uavhengig planvurdering",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "PEROXB1 independent QA",
+                                 "status":  "running",
+                                 "step":  2,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Rapport og overlevering",
+                                 "percent":  39.1,
+                                 "step_title":  "GLB and integrity audit",
                                  "steps":  [
-                                               "Kontekst og avgrensning",
-                                               "Plan og delgjennomganger",
-                                               "Kilde- og kontraktskontroll",
-                                               "Rapport og overlevering"
+                                               "Context and frozen inputs",
+                                               "GLB and integrity audit",
+                                               "Viewer and science review",
+                                               "Verdict and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  425,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T20:11:28+02:00",
-                                 "last_run":  "2026-10-15T20:00:07+02:00",
+                                 "updated":  "2026-10-15T21:08:25+02:00",
+                                 "last_run":  "2026-10-15T21:05:31+02:00",
                                  "next_run":  null
                              }
                },
