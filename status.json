@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T21:35:02+02:00",
+    "generated_at":  "2026-10-15T21:40:02+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,22 +25,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "PEROXB1 independent QA",
+                                 "task":  "PEROXB1 QA completion",
                                  "status":  "running",
-                                 "step":  3,
-                                 "total":  4,
-                                 "percent":  72.5,
-                                 "step_title":  "Viewer and science review",
+                                 "step":  1,
+                                 "total":  3,
+                                 "percent":  0,
+                                 "step_title":  "Recover saved evidence",
                                  "steps":  [
-                                               "Context and frozen inputs",
-                                               "GLB and integrity audit",
-                                               "Viewer and science review",
-                                               "Verdict and handoff"
+                                               "Recover saved evidence",
+                                               "Resolve review findings",
+                                               "Write verdict and handoff"
                                            ],
-                                 "eta_seconds":  38,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T21:13:29+02:00",
-                                 "last_run":  "2026-10-15T21:05:31+02:00",
+                                 "updated":  "2026-10-15T21:39:12+02:00",
+                                 "last_run":  "2026-10-15T21:35:03+02:00",
                                  "next_run":  null
                              }
                },
