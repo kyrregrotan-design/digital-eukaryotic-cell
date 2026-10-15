@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T09:10:03+02:00",
+    "generated_at":  "2026-10-15T09:15:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,20 +26,20 @@
                               },
                    "codex":  {
                                  "task":  "G2FIX2 re-QA og daglig databasekontroll",
-                                 "status":  "running",
-                                 "step":  2,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  42.9,
-                                 "step_title":  "Filhash og kodekontroll",
+                                 "percent":  100,
+                                 "step_title":  "Vurdering og overlevering",
                                  "steps":  [
                                                "Kontekst og avgrensing",
                                                "Filhash og kodekontroll",
                                                "Maalegrunnlag og databasekontroll",
                                                "Vurdering og overlevering"
                                            ],
-                                 "eta_seconds":  685,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T09:06:27+02:00",
+                                 "updated":  "2026-10-15T09:14:31+02:00",
                                  "last_run":  "2026-10-15T09:01:28+02:00",
                                  "next_run":  null
                              }
@@ -54,6 +54,11 @@
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "G2FIX2 re-QA og daglig databasekontroll",
+                       "finished":  "2026-10-15T09:14:31+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "g2fix-hg1fix-reqa independent re-QA",
@@ -78,11 +83,6 @@
                        "agent":  "cursor",
                        "task":  "G2 + HG1 independent QA",
                        "finished":  "2026-10-13T15:59:56+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "G2 + HG1 independent QA",
-                       "finished":  "2026-10-13T15:53:19+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
@@ -384,7 +384,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-14T18:46:00+02:00",
-                      "updated_by":  "Claude manager (G2FINAL DONE REJECT 17:…"
+                      "updated":  "2026-10-15T09:12:12+02:00",
+                      "updated_by":  "Codex (G2FIX2 re-QA; QA-B1 BLOCKING; Cu…"
                   }
 }
