@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T13:00:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-15T13:05:04+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "HG1FIX2 independent re-QA",
@@ -24,22 +24,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "HG1FIX2 re-QA",
-                                 "status":  "done",
-                                 "step":  4,
+                                 "task":  "G2FIX2-QA-B1 bounded CPU re-QA",
+                                 "status":  "running",
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Verdict and handoff",
+                                 "percent":  72.5,
+                                 "step_title":  "Verify pins and review result",
                                  "steps":  [
-                                               "Context and review scope",
-                                               "Pins and unchanged geometry",
-                                               "Tolerance and saved evidence",
-                                               "Verdict and handoff"
+                                               "Read bounded correction",
+                                               "Replay CPU resource guard",
+                                               "Verify pins and review result",
+                                               "Record handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  21,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T11:12:48+02:00",
-                                 "last_run":  "2026-10-15T10:59:08+02:00",
+                                 "updated":  "2026-10-15T13:03:31+02:00",
+                                 "last_run":  "2026-10-15T13:01:40+02:00",
                                  "next_run":  null
                              }
                },
