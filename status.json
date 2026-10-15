@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-15T20:05:03+02:00",
+    "generated_at":  "2026-10-15T20:10:04+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,19 +26,19 @@
                    "codex":  {
                                  "task":  "MEMPLAN uavhengig planvurdering",
                                  "status":  "running",
-                                 "step":  2,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  39.8,
-                                 "step_title":  "Plan og delgjennomganger",
+                                 "percent":  79.3,
+                                 "step_title":  "Rapport og overlevering",
                                  "steps":  [
                                                "Kontekst og avgrensning",
                                                "Plan og delgjennomganger",
                                                "Kilde- og kontraktskontroll",
                                                "Rapport og overlevering"
                                            ],
-                                 "eta_seconds":  446,
+                                 "eta_seconds":  155,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T20:03:12+02:00",
+                                 "updated":  "2026-10-15T20:09:29+02:00",
                                  "last_run":  "2026-10-15T20:00:07+02:00",
                                  "next_run":  null
                              }
@@ -86,13 +86,13 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  41.5,
-                      "total":  70,
+                      "percent":  40.7,
+                      "total":  71,
                       "done":  26,
-                      "in_progress":  14,
+                      "in_progress":  15,
                       "todo":  30,
-                      "remaining":  44,
-                      "weight_total":  159,
+                      "remaining":  45,
+                      "weight_total":  162,
                       "weight_done":  66,
                       "groups":  [
                                      "Ferdig i dag",
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-15T17:28:01+02:00",
-                      "updated_by":  "Grok Bot (bokføring: Kyrre godkjente G2…"
+                      "updated":  "2026-10-15T20:10:00+02:00",
+                      "updated_by":  "Codex (MEMPLAN planvurdering; Cursor ua…"
                   }
 }
