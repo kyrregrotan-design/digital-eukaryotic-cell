@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T15:45:02+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-16T15:50:02+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "INTEL2 plan read-only QA",
@@ -24,23 +24,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "INTEL2 plan independent read-only review",
-                                 "status":  "done",
-                                 "step":  5,
-                                 "total":  5,
-                                 "percent":  100,
-                                 "step_title":  "Handoff",
+                                 "task":  "NFIX5FIX independent QA",
+                                 "status":  "running",
+                                 "step":  1,
+                                 "total":  4,
+                                 "percent":  0,
+                                 "step_title":  "Read pinned inputs",
                                  "steps":  [
-                                               "Context and plan pin",
-                                               "Read plan and safety logic",
-                                               "Compare QA evidence",
-                                               "Write verdict",
-                                               "Handoff"
+                                               "Read pinned inputs",
+                                               "Audit fixes and regression safety",
+                                               "Run CPU verification",
+                                               "Write review and handoff"
                                            ],
                                  "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T12:35:52+02:00",
-                                 "last_run":  "2026-10-16T12:27:25+02:00",
+                                 "updated":  "2026-10-16T15:48:52+02:00",
+                                 "last_run":  "2026-10-16T15:47:54+02:00",
                                  "next_run":  null
                              }
                },
