@@ -1,45 +1,40 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T08:35:02+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-16T08:40:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "PEROXB1 independent QA (B1-B4)",
-                                  "status":  "done",
-                                  "step":  6,
-                                  "total":  6,
-                                  "percent":  100,
-                                  "step_title":  "finish-handoff",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "start-log",
-                                                "pin-continuity",
-                                                "verify-B1-B4",
-                                                "write-report",
-                                                "update-status",
-                                                "finish-handoff"
+
                                             ],
                                   "eta_seconds":  null,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-15T21:52:52+02:00",
-                                  "last_run":  "2026-10-15T21:47:46+02:00",
+                                  "last_run":  "2026-10-16T08:38:05+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "NFIX5 independent QA",
-                                 "status":  "running",
-                                 "step":  2,
+                                 "status":  "done",
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  47.5,
-                                 "step_title":  "Pins and code review",
+                                 "percent":  100,
+                                 "step_title":  "Verdict and handoff",
                                  "steps":  [
                                                "Context and scope",
                                                "Pins and code review",
                                                "CPU tests and daily sources",
                                                "Verdict and handoff"
                                            ],
-                                 "eta_seconds":  552,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T08:29:18+02:00",
+                                 "updated":  "2026-10-16T08:37:43+02:00",
                                  "last_run":  "2026-10-16T08:24:21+02:00",
                                  "next_run":  null
                              }
@@ -54,6 +49,11 @@
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "NFIX5 independent QA",
+                       "finished":  "2026-10-16T08:37:43+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "PEROXB1 independent QA (B1-B4)",
@@ -78,22 +78,17 @@
                        "agent":  "cursor",
                        "task":  "NFIX4 independent QA",
                        "finished":  "2026-10-15T16:30:07+02:00"
-                   },
-                   {
-                       "agent":  "cursor",
-                       "task":  "NFIX4 independent QA",
-                       "finished":  "2026-10-15T16:29:57+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  40,
-                      "total":  72,
+                      "percent":  39.3,
+                      "total":  73,
                       "done":  26,
-                      "in_progress":  16,
+                      "in_progress":  17,
                       "todo":  30,
-                      "remaining":  46,
-                      "weight_total":  165,
+                      "remaining":  47,
+                      "weight_total":  168,
                       "weight_done":  66,
                       "groups":  [
                                      "Ferdig i dag",
@@ -384,7 +379,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-15T21:52:02+02:00",
-                      "updated_by":  "Cursor (PEROXB1 independent AGREE WITH…"
+                      "updated":  "2026-10-16T08:36:46+02:00",
+                      "updated_by":  "Codex (NFIX5 independent QA; Cursor nex…"
                   }
 }
