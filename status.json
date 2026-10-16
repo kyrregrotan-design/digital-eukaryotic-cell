@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T18:45:02+02:00",
+    "generated_at":  "2026-10-16T18:50:03+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -28,7 +28,7 @@
                                  "status":  "running",
                                  "step":  3,
                                  "total":  4,
-                                 "percent":  56.3,
+                                 "percent":  72.5,
                                  "step_title":  "CPU replay and negative probes",
                                  "steps":  [
                                                "Read scope and pins",
@@ -36,7 +36,7 @@
                                                "CPU replay and negative probes",
                                                "Write verdict and handoff"
                                            ],
-                                 "eta_seconds":  225,
+                                 "eta_seconds":  19,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-16T18:44:29+02:00",
                                  "last_run":  "2026-10-16T18:40:12+02:00",
