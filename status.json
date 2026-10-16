@@ -1,25 +1,26 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T12:20:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-16T12:25:02+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "MITO_M3FIX2 independent re-QA",
-                                  "status":  "done",
+                                  "task":  "INTEL2 plan read-only QA",
+                                  "status":  "running",
                                   "step":  4,
-                                  "total":  4,
-                                  "percent":  100,
-                                  "step_title":  "Verdict and handoff",
+                                  "total":  5,
+                                  "percent":  67.1,
+                                  "step_title":  "Write verdict",
                                   "steps":  [
-                                                "Context and pins",
-                                                "Identity audit",
-                                                "CPU counterexamples",
-                                                "Verdict and handoff"
+                                                "Context",
+                                                "Read plan",
+                                                "Compare with today\u0027s QA",
+                                                "Write verdict",
+                                                "Handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  126,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-16T11:22:54+02:00",
-                                  "last_run":  "2026-10-16T11:15:59+02:00",
+                                  "updated":  "2026-10-16T12:24:33+02:00",
+                                  "last_run":  "2026-10-16T12:20:45+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
