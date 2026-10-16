@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T18:40:03+02:00",
-    "active_agent":  "cursor",
+    "generated_at":  "2026-10-16T18:45:02+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "MITO_M3FIX3 Cursor QA",
@@ -24,22 +24,22 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "NFIX5FIX independent QA",
-                                 "status":  "stale",
-                                 "step":  2,
+                                 "task":  "PEROXB1FIX2 independent QA",
+                                 "status":  "running",
+                                 "step":  3,
                                  "total":  4,
-                                 "percent":  47.5,
-                                 "step_title":  "Audit fixes and regression safety",
+                                 "percent":  56.3,
+                                 "step_title":  "CPU replay and negative probes",
                                  "steps":  [
-                                               "Read pinned inputs",
-                                               "Audit fixes and regression safety",
-                                               "Run CPU verification",
-                                               "Write review and handoff"
+                                               "Read scope and pins",
+                                               "Audit code and release files",
+                                               "CPU replay and negative probes",
+                                               "Write verdict and handoff"
                                            ],
-                                 "eta_seconds":  56,
+                                 "eta_seconds":  225,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T15:55:06+02:00",
-                                 "last_run":  "2026-10-16T15:47:54+02:00",
+                                 "updated":  "2026-10-16T18:44:29+02:00",
+                                 "last_run":  "2026-10-16T18:40:12+02:00",
                                  "next_run":  null
                              }
                },
