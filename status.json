@@ -1,7 +1,7 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T11:00:03+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-16T11:05:02+02:00",
+    "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
                                   "task":  "MEMB2 independent QA",
@@ -24,21 +24,18 @@
                               },
                    "codex":  {
                                  "task":  "MEMB2 independent QA",
-                                 "status":  "done",
-                                 "step":  4,
-                                 "total":  4,
-                                 "percent":  100,
-                                 "step_title":  "Verdict and handoff",
+                                 "status":  "previous",
+                                 "step":  0,
+                                 "total":  0,
+                                 "percent":  null,
+                                 "step_title":  null,
                                  "steps":  [
-                                               "Context and pins",
-                                               "Rendering and harness review",
-                                               "CPU verification",
-                                               "Verdict and handoff"
+
                                            ],
                                  "eta_seconds":  null,
                                  "eta_label":  "estimat",
                                  "updated":  "2026-10-16T09:25:28+02:00",
-                                 "last_run":  "2026-10-16T09:12:56+02:00",
+                                 "last_run":  "2026-10-16T11:04:35+02:00",
                                  "next_run":  null
                              }
                },
