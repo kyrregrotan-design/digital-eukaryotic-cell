@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T11:10:02+02:00",
+    "generated_at":  "2026-10-16T11:15:02+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,19 +25,19 @@
                    "codex":  {
                                  "task":  "MITO_M3FIX2 independent re-QA",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  4,
                                  "total":  4,
-                                 "percent":  58.2,
-                                 "step_title":  "CPU failure and navigation probes",
+                                 "percent":  79.1,
+                                 "step_title":  "Report and handoff",
                                  "steps":  [
                                                "Context and pins",
                                                "Source regression audit",
                                                "CPU failure and navigation probes",
                                                "Report and handoff"
                                            ],
-                                 "eta_seconds":  235,
+                                 "eta_seconds":  165,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T11:09:15+02:00",
+                                 "updated":  "2026-10-16T11:14:28+02:00",
                                  "last_run":  "2026-10-16T11:04:35+02:00",
                                  "next_run":  null
                              }
@@ -382,7 +382,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-16T09:31:00+02:00",
-                      "updated_by":  "Cursor (MEMB2 independent AGREE WITH CH…"
+                      "updated":  "2026-10-16T11:13:47+02:00",
+                      "updated_by":  "Codex (MITO_M3FIX2 bounded re-QA PASS;…"
                   }
 }
