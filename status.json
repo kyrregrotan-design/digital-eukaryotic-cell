@@ -1,21 +1,24 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T09:05:03+02:00",
+    "generated_at":  "2026-10-16T09:10:04+02:00",
     "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "NFIX5 independent QA (B1-B5)",
-                                  "status":  "previous",
-                                  "step":  0,
-                                  "total":  0,
-                                  "percent":  null,
-                                  "step_title":  null,
+                                  "task":  "PEROXB1FIX independent QA",
+                                  "status":  "running",
+                                  "step":  2,
+                                  "total":  4,
+                                  "percent":  33.7,
+                                  "step_title":  "Old B1-B4 geometry",
                                   "steps":  [
-
+                                                "Context and pins",
+                                                "Old B1-B4 geometry",
+                                                "Harness counterexamples",
+                                                "Verdict and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  623,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-16T08:47:31+02:00",
+                                  "updated":  "2026-10-16T09:08:39+02:00",
                                   "last_run":  "2026-10-16T09:04:45+02:00",
                                   "next_run":  null
                               },
