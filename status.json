@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T08:25:02+02:00",
+    "generated_at":  "2026-10-16T08:30:02+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -25,18 +25,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "PEROXB1 QA completion",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "NFIX5 independent QA",
+                                 "status":  "running",
+                                 "step":  2,
+                                 "total":  4,
+                                 "percent":  28.5,
+                                 "step_title":  "Pins and code review",
                                  "steps":  [
-
+                                               "Context and scope",
+                                               "Pins and code review",
+                                               "CPU tests and daily sources",
+                                               "Verdict and handoff"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  852,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-15T21:46:50+02:00",
+                                 "updated":  "2026-10-16T08:29:18+02:00",
                                  "last_run":  "2026-10-16T08:24:21+02:00",
                                  "next_run":  null
                              }
