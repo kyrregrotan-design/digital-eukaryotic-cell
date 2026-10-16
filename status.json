@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T12:30:03+02:00",
+    "generated_at":  "2026-10-16T12:35:02+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -26,10 +26,10 @@
                    "codex":  {
                                  "task":  "INTEL2 plan independent read-only review",
                                  "status":  "running",
-                                 "step":  3,
+                                 "step":  5,
                                  "total":  5,
-                                 "percent":  40.7,
-                                 "step_title":  "Compare QA evidence",
+                                 "percent":  82.3,
+                                 "step_title":  "Handoff",
                                  "steps":  [
                                                "Context and plan pin",
                                                "Read plan and safety logic",
@@ -37,9 +37,9 @@
                                                "Write verdict",
                                                "Handoff"
                                            ],
-                                 "eta_seconds":  227,
+                                 "eta_seconds":  98,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T12:29:58+02:00",
+                                 "updated":  "2026-10-16T12:34:48+02:00",
                                  "last_run":  "2026-10-16T12:27:25+02:00",
                                  "next_run":  null
                              }
