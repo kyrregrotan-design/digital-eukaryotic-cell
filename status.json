@@ -1,33 +1,33 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-16T11:15:02+02:00",
-    "active_agent":  "codex",
+    "generated_at":  "2026-10-16T11:20:02+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
-                                  "task":  "MEMB2 independent QA",
-                                  "status":  "done",
-                                  "step":  4,
+                                  "task":  "MITO_M3FIX2 independent re-QA",
+                                  "status":  "running",
+                                  "step":  2,
                                   "total":  4,
-                                  "percent":  100,
-                                  "step_title":  "Verdict and handoff",
+                                  "percent":  29.7,
+                                  "step_title":  "Identity audit",
                                   "steps":  [
                                                 "Context and pins",
-                                                "Measurement-tool negatives",
-                                                "B4 B6 and image names",
+                                                "Identity audit",
+                                                "CPU counterexamples",
                                                 "Verdict and handoff"
                                             ],
-                                  "eta_seconds":  null,
+                                  "eta_seconds":  572,
                                   "eta_label":  "estimat",
-                                  "updated":  "2026-10-16T09:32:55+02:00",
-                                  "last_run":  "2026-10-16T09:25:59+02:00",
+                                  "updated":  "2026-10-16T11:19:22+02:00",
+                                  "last_run":  "2026-10-16T11:15:59+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
                                  "task":  "MITO_M3FIX2 independent re-QA",
-                                 "status":  "running",
+                                 "status":  "done",
                                  "step":  4,
                                  "total":  4,
-                                 "percent":  79.1,
+                                 "percent":  100,
                                  "step_title":  "Report and handoff",
                                  "steps":  [
                                                "Context and pins",
@@ -35,9 +35,9 @@
                                                "CPU failure and navigation probes",
                                                "Report and handoff"
                                            ],
-                                 "eta_seconds":  165,
+                                 "eta_seconds":  null,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T11:14:28+02:00",
+                                 "updated":  "2026-10-16T11:15:30+02:00",
                                  "last_run":  "2026-10-16T11:04:35+02:00",
                                  "next_run":  null
                              }
@@ -52,6 +52,11 @@
                   "Codex → Cursor → Claude → Kyrre: R-ALT v3, LIB1, GM1"
               ],
     "recent":  [
+                   {
+                       "agent":  "codex",
+                       "task":  "MITO_M3FIX2 independent re-QA",
+                       "finished":  "2026-10-16T11:15:30+02:00"
+                   },
                    {
                        "agent":  "cursor",
                        "task":  "MEMB2 independent QA",
@@ -76,11 +81,6 @@
                        "agent":  "cursor",
                        "task":  "NFIX5 independent QA (B1-B5)",
                        "finished":  "2026-10-16T08:47:31+02:00"
-                   },
-                   {
-                       "agent":  "codex",
-                       "task":  "NFIX5 independent QA",
-                       "finished":  "2026-10-16T08:37:43+02:00"
                    }
                ],
     "update_window":  "07:00-23:30",
