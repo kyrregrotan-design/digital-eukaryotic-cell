@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-17T15:05:05+02:00",
+    "generated_at":  "2026-10-17T15:10:05+02:00",
     "active_agent":  "codex",
     "agents":  {
                    "cursor":  {
@@ -24,18 +24,21 @@
                                   "next_run":  null
                               },
                    "codex":  {
-                                 "task":  "PEROXB1FIX2 independent QA",
-                                 "status":  "previous",
-                                 "step":  0,
-                                 "total":  0,
-                                 "percent":  null,
-                                 "step_title":  null,
+                                 "task":  "ROADMAPV24 dokument-QA",
+                                 "status":  "running",
+                                 "step":  3,
+                                 "total":  4,
+                                 "percent":  72.1,
+                                 "step_title":  "Integritet og avhengigheter",
                                  "steps":  [
-
+                                               "Kontekst og pin",
+                                               "V2.3-rettinger og nye fakta",
+                                               "Integritet og avhengigheter",
+                                               "Rapport og overlevering"
                                            ],
-                                 "eta_seconds":  null,
+                                 "eta_seconds":  156,
                                  "eta_label":  "estimat",
-                                 "updated":  "2026-10-16T18:51:15+02:00",
+                                 "updated":  "2026-10-17T15:07:59+02:00",
                                  "last_run":  "2026-10-17T15:03:20+02:00",
                                  "next_run":  null
                              }
