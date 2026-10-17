@@ -1,26 +1,22 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-17T11:45:04+02:00",
-    "active_agent":  null,
+    "generated_at":  "2026-10-17T11:50:04+02:00",
+    "active_agent":  "cursor",
     "agents":  {
                    "cursor":  {
                                   "task":  "PEROXB1FIX2 Cursor QA",
-                                  "status":  "done",
-                                  "step":  5,
-                                  "total":  5,
-                                  "percent":  100,
-                                  "step_title":  "write verdict",
+                                  "status":  "previous",
+                                  "step":  0,
+                                  "total":  0,
+                                  "percent":  null,
+                                  "step_title":  null,
                                   "steps":  [
-                                                "start log",
-                                                "hash pin",
-                                                "CPU probes B01 B04 B05",
-                                                "static B02 B03 and closures",
-                                                "write verdict"
+
                                             ],
                                   "eta_seconds":  null,
                                   "eta_label":  "estimat",
                                   "updated":  "2026-10-16T18:59:14+02:00",
-                                  "last_run":  "2026-10-16T18:51:37+02:00",
+                                  "last_run":  "2026-10-17T11:47:21+02:00",
                                   "next_run":  null
                               },
                    "codex":  {
