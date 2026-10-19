@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-19T18:25:05+02:00",
+    "generated_at":  "2026-10-19T18:30:05+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -86,13 +86,13 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  38,
-                      "total":  89,
+                      "percent":  34.7,
+                      "total":  100,
                       "done":  35,
                       "in_progress":  20,
-                      "todo":  34,
-                      "remaining":  54,
-                      "weight_total":  200,
+                      "todo":  45,
+                      "remaining":  65,
+                      "weight_total":  219,
                       "weight_done":  76,
                       "groups":  [
                                      "Ferdig i dag",
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-19T18:14:00+02:00",
+                      "updated":  "2026-10-19T18:30:00+02:00",
                       "updated_by":  "hjelpeagent på boksen (koordinert av Cl…"
                   }
 }
