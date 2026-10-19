@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-19T18:35:05+02:00",
+    "generated_at":  "2026-10-19T18:40:05+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-19T18:36:00+02:00",
+                      "updated":  "2026-10-19T18:40:00+02:00",
                       "updated_by":  "hjelpeagent på boksen (koordinert av Cl…"
                   }
 }
