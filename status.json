@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-19T18:00:06+02:00",
+    "generated_at":  "2026-10-19T18:05:05+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -86,14 +86,14 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  38.6,
-                      "total":  74,
-                      "done":  26,
-                      "in_progress":  18,
-                      "todo":  30,
-                      "remaining":  48,
-                      "weight_total":  171,
-                      "weight_done":  66,
+                      "percent":  37.7,
+                      "total":  88,
+                      "done":  34,
+                      "in_progress":  20,
+                      "todo":  34,
+                      "remaining":  54,
+                      "weight_total":  199,
+                      "weight_done":  75,
                       "groups":  [
                                      "Ferdig i dag",
                                      "Nå",
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-16T11:28:00+02:00",
-                      "updated_by":  "Cursor (MITO_M3FIX2 independent AGREE /…"
+                      "updated":  "2026-10-19T17:59:00+02:00",
+                      "updated_by":  "hjelpeagent på boksen (koordinert av Cl…"
                   }
 }
