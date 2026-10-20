@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-19T23:30:03+02:00",
+    "generated_at":  "2026-10-20T07:00:04+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -86,14 +86,14 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  34.8,
-                      "total":  101,
-                      "done":  36,
+                      "percent":  40.9,
+                      "total":  103,
+                      "done":  42,
                       "in_progress":  20,
-                      "todo":  45,
-                      "remaining":  65,
-                      "weight_total":  221,
-                      "weight_done":  77,
+                      "todo":  41,
+                      "remaining":  61,
+                      "weight_total":  225,
+                      "weight_done":  92,
                       "groups":  [
                                      "Ferdig i dag",
                                      "Nå",
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-19T18:40:00+02:00",
-                      "updated_by":  "hjelpeagent på boksen (koordinert av Cl…"
+                      "updated":  "2026-10-20T06:54:09+02:00",
+                      "updated_by":  "Claude Code (claude-opus-5-5 max), jobb…"
                   }
 }
