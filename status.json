@@ -1,6 +1,6 @@
 {
     "schema":  1,
-    "generated_at":  "2026-10-20T08:40:05+02:00",
+    "generated_at":  "2026-10-20T08:45:03+02:00",
     "active_agent":  null,
     "agents":  {
                    "cursor":  {
@@ -86,14 +86,14 @@
                ],
     "update_window":  "07:00-23:30",
     "checklist":  {
-                      "percent":  40.9,
+                      "percent":  43.1,
                       "total":  103,
-                      "done":  42,
+                      "done":  43,
                       "in_progress":  20,
-                      "todo":  41,
-                      "remaining":  61,
+                      "todo":  40,
+                      "remaining":  60,
                       "weight_total":  225,
-                      "weight_done":  92,
+                      "weight_done":  97,
                       "groups":  [
                                      "Ferdig i dag",
                                      "Nå",
@@ -383,7 +383,7 @@
                                         "weight":  1
                                     }
                                 ],
-                      "updated":  "2026-10-20T06:54:09+02:00",
+                      "updated":  "2026-10-20T08:44:43+02:00",
                       "updated_by":  "Claude Code (claude-opus-5-5 max), jobb…"
                   }
 }
